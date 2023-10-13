@@ -1,0 +1,63 @@
+<%- include('layout/headerAdmin') %>
+<%- include('layout/sidebarAdmin') %>
+
+
+
+
+<div>
+
+    <div class="mt-4">
+      <h4>Products View</h4>
+        <form  action="/addProducts" method="get">
+            <button class="btn btn-primary">Add Products</button>
+        </form>
+
+      <div class="row my-4">
+          <div class="col-lg-10">
+              <div class="table-responsive">
+                  <% if (locals.products) { %>
+                  <table class="table table-striped text-center">
+                      <thead>
+                          <tr class="table-dark">
+                              <th>Sl No</th>
+                              <th>Product Name</th>
+                              <th>Brand</th>
+                              <th>Image</th>
+                              <th>Final Price</th>
+                              <th>Description</th>
+                              <th>Action</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <% products.forEach((product,index) => { %>
+                          <tr class="align-middle">
+                              <td><%= index+1 %></td>
+                              <td><%= product.product_name %></td>
+                              <td><%= product.brand %></td>
+                              <td><img style="height: 40px;width: 60px;" src="http://localhost:5000/<%= product.imageUrl %>" alt="Bike image"></td>
+                              <td><%= product.finalPrice %></td>
+                              <td><%= product.description.slice(0,50) %></td>
+                              <td>
+                                  <a href="/editProducts/<%= product._id %>" class="text-success"><i class="fas fa-edit fa-lg mx-1"></i></a>
+                                  <a href="/admin/deleteProducts/<%= product._id %>"class="text-danger"><i class="fas fa-trash fa-lg mx-1"></i></a>
+                              </td>
+                          </tr>
+                          <% }) %>
+                      </tbody>
+                  </table>
+                  <% } %>
+                   
+              </div>
+          </div>
+      </div>
+  </div>
+  
+  
+  </div>
+  </div>
+  </div>
+  
+
+
+
+<%- include('layout/footerAdmin') %>

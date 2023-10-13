@@ -1,0 +1,27 @@
+<%- include('layout/headerAdmin') %>
+<%- include('layout/sidebarAdmin') %>
+
+
+
+<div>
+
+  <div class="mt-4">
+    <% if (locals.message) { %>
+     <h5><%= message %></h5>
+    <% } %>
+    <div class="mt-5 d-flex justify-content-around">
+        <form  action="/admin/products" method="get">
+            <button class="btn btn-primary">View Products</button>
+        </form>
+        <form  action="/addProducts" method="get">
+            <button class="btn btn-primary">Add Product</button>
+        </form>
+    </div>
+
+</div>
+</div>
+</div>
+
+
+
+<%- include('layout/footerAdmin') %>

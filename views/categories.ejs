@@ -1,0 +1,54 @@
+<%- include('layout/headerAdmin') %>
+<%- include('layout/sidebarAdmin') %>
+
+
+
+<div>
+
+  <div>
+    <h4>Categories</h4>
+    <form  action="/addAdminCategories" method="get">
+        <button class="btn btn-primary">Add Category</button>
+    </form>
+    <div class="row my-4">
+        <div class="col-lg-10">
+            <div class="table-responsive">
+                <% if (locals.categories) { %>
+                <table class="table table-striped text-center">
+                    <thead>
+                        <tr class="table-dark">
+                            <th>Sl No</th>
+                            <th>Category Name</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% categories.forEach((category,index) => { %>
+                        <tr class="align-middle">
+                            <td><%= index+1 %></td>
+                            <td><%= category.category_name %></td>
+                            <td><%= category.description %></td>
+                            <td>
+                                <a href="/editCategories/<%= category._id %>" class="text-success"><i class="fas fa-edit fa-lg mx-1"></i></a>
+                                <a href="/admin/deleteCategories/<%= category._id %>"class="text-danger"><i class="fas fa-trash fa-lg mx-1"></i></a>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+                <% } %>
+                 
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</div>
+</div>
+</div>
+
+
+
+<%- include('layout/footerAdmin') %>

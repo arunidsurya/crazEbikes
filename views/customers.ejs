@@ -1,0 +1,58 @@
+<%- include('layout/headerAdmin') %>
+<%- include('layout/sidebarAdmin') %>
+
+
+
+
+<div>
+
+    <div>
+      <h4>Categories</h4>
+      <form  action="/addCustomers" method="get">
+          <button class="btn btn-primary">Add Customers</button>
+      </form>
+      <div class="row my-4">
+          <div class="col-lg-10">
+              <div class="table-responsive">
+                  <% if (locals.users) { %>
+                  <table class="table table-striped text-center">
+                      <thead>
+                          <tr class="table-dark">
+                              <th>Sl No</th>
+                              <th>Name</th>
+                              <th>Email</th>
+                              <th>Contact</th>
+                              <th>Action</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <% users.forEach((user,index) => { %>
+                          <tr class="align-middle">
+                              <td><%= index+1 %></td>
+                              <td><%= user.name %></td>
+                              <td><%= user.email %></td>
+                              <td><%= user.contactNumber %></td>
+                              <td>
+                                  <a href="/editCustomers/<%= user._id %>" class="text-success"><i class="fas fa-edit fa-lg mx-1"></i></a>
+                                  <a href="/admin/deleteCustomers/<%= user._id %>"class="text-danger"><i class="fas fa-trash fa-lg mx-1"></i></a>
+                              </td>
+                          </tr>
+                          <% }) %>
+                      </tbody>
+                  </table>
+                  <% } %>
+                   
+              </div>
+          </div>
+      </div>
+  </div>
+  
+  
+  </div>
+  </div>
+  </div>
+  
+
+
+
+<%- include('layout/footerAdmin') %>

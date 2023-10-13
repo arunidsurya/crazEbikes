@@ -1,0 +1,89 @@
+<%- include('layout/headerAdmin') %>
+<%- include('layout/sidebarAdmin') %>
+
+
+
+<div class="col py-3">
+
+
+    <div class="container primary">
+        <div class="row">
+            <div class="col-lg-12 mx-auto mt-4">
+                <div class="card shadow">
+                    <div class="card-header bg-success">
+                        <h3 class="text-light">Edit Category </h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <form action="/admin/editProducts/<%= product._id %>" method="post" id="add-form" enctype="multipart/form-data">
+
+                            <div class="form-group row">
+                            </div>
+                            <div class="form-group row">
+                              <label for="product_name" class="col-sm-2 col-form-label">Product Name:</label>
+                              <div class="col-sm-10">
+                                <input type="text" name="product_name" value="<%= product.product_name %>" class="form-control" id="category_name" >
+                              </div>
+                              <label for="category_description" class="col-sm-2 col-form-label">Select category:</label>
+                              <div class="col-sm-10">
+                               <select name="categoryId" id="" class="form-control" >
+                                 <option value="">Select Category</option>
+                                 <% for(let category of categories) {%>
+                                   <option value="<%= category.id %>"><%= category.category_name %></option>
+                                 <%} %>
+                               </select>
+                              </div>
+                              <label for="brand" class="col-sm-2 col-form-label">Brand:</label>
+                              <div class="col-sm-10">
+                                <input type="text" name="brand" value="<%= product.brand %>" class="form-control" id="brand">
+                              </div>
+                   
+                              <label for="color" class="col-sm-2 col-form-label">Color:</label>
+                              <div class="col-sm-10">
+                                <input type="text" name="color" value="<%= product.color %>" class="form-control" id="brand">
+                              </div>
+                   
+                              <label for="image" class="col-sm-2 col-form-label">Image:</label>
+                              <div class="col-sm-10">
+                                <input type="file" name="image" class="form-control" id="image">
+                              </div>
+                   
+                              <label for="retail_price" class="col-sm-2 col-form-label">Retail Price:</label>
+                              <div class="col-sm-10">
+                                <input type="text" name="retailPrice" value="<%= product.retailPrice %>" class="form-control" id="retailPrice">
+                              </div>
+                   
+                              <label for="discount" class="col-sm-2 col-form-label">Discount:</label>
+                              <div class="col-sm-10">
+                                <input type="text" name="discount" value="<%= product.discount %>" class="form-control" id="discount">
+                              </div>
+                   
+                              <label for="finalPrice" class="col-sm-2 col-form-label">Final Price:</label>
+                              <div class="col-sm-10">
+                                <input type="text" name="finalPrice" value="<%= product.finalPrice %>" class="form-control" id="finalPrice">
+                              </div>
+                   
+                              <label for="category_description" class="col-sm-2 col-form-label">Description:</label>
+                              <div class="col-sm-10">
+                                <textarea type="text" name="description" value="<%= product.description %>" class="form-control" >
+                                </textarea>
+                              </div>
+                            </div>
+                            <center>
+                              <button type="submit" class="text-center mt-4 btn btn-success" >Submit</button>
+                            </center>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+</div>
+</div>
+
+
+
+<%- include('layout/footerAdmin') %>
