@@ -18,6 +18,8 @@ const PORT = 5000;
 connectMongoDB(process.env.MONGO_URL)
 .then(()=>console.log('mongoDB is connected'));
 
+
+
 app.set('view engine','ejs');
 app.set("views",path.resolve("./views"));
 
@@ -26,15 +28,11 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname,'public')));
 app.use('/images',express.static(path.join(__dirname,'images')));
-app.use(multer({dest:'images',storage: fileStorage , fileFilter:fileFilter}).single('image'));
+app.use(multer({dest:'images',storage: fileStorage , fileFilter:fileFilter}).array('image',10)); 
 
 app.use("/admin",adminRouter);
 app.use('/',checkAdminAuth,staticRouter);
 
-
-app.get("/",(req,res)=>{
-    res.render('adminHome')
-});
 
 
 

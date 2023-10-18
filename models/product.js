@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Category = require('../models/category');
 
 const productSchema= new mongoose.Schema({
     product_name:{
@@ -6,7 +7,8 @@ const productSchema= new mongoose.Schema({
         required:true,
     },
     categoryId:{
-        type:String,
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'category',
         required:true,
     },
     brand:{
@@ -17,24 +19,24 @@ const productSchema= new mongoose.Schema({
         type:String,
         required:true,
     },
-    imageUrl:{
+    imageUrl:[{
         type:String,
-    },
-    retailPrice:{
-        type:String,
+    }],
+    price:{
+        type:Number,
         required:true,
     },
-    discount:{
-        type:String,
-        required:true,
-    },
-    finalPrice:{
-        type:String,
+    stock:{
+        type:Number,
         required:true,
     },
     description:{
         type:String,
         required:true,
+    },
+    isDeleted:{
+        type:Boolean,
+        default:false,
     },
 },{
     timestamps:true,

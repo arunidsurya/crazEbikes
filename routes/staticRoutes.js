@@ -8,8 +8,12 @@ const router = express.Router();
 
 router.get("/",async(req,res)=>{
     // if(!req.user && req.user==null) return res.redirect('/login');
+    const images ={
+        cover:'resources/images/coverPhoto.jpg',
+        logo:'resources/images/logo.jpg'
+    }
     const allProducts= await Product.find({});
-    return res.render("userHome",{products:allProducts});
+    return res.render("userHome",{products:allProducts,images:images});
 })
 
 router.get("/admin",async(req,res)=>{
@@ -42,6 +46,7 @@ router.get("/editProducts/:id",async(req,res)=>{
     // if(!req.admin) return res.redirect('/adminlogin');
     let id = req.params.id;
     const product = await Product.findOne({_id:id});
+    
     const categories = await Category.find({},{category_name:1,_id:1});
     // if(!user && user==null) res.render("/categories");
     res.render("editProducts",{product:product,categories:categories});

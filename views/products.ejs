@@ -4,14 +4,12 @@
 
 
 
-<div>
-
+<div class="container">
     <div class="mt-4">
       <h4>Products View</h4>
         <form  action="/addProducts" method="get">
             <button class="btn btn-primary">Add Products</button>
         </form>
-
       <div class="row my-4">
           <div class="col-lg-10">
               <div class="table-responsive">
@@ -21,25 +19,30 @@
                           <tr class="table-dark">
                               <th>Sl No</th>
                               <th>Product Name</th>
+                              <th>Category</th>
                               <th>Brand</th>
                               <th>Image</th>
-                              <th>Final Price</th>
+                              <th>Price</th>
                               <th>Description</th>
                               <th>Action</th>
                           </tr>
                       </thead>
                       <tbody>
                           <% products.forEach((product,index) => { %>
-                          <tr class="align-middle">
+                          <tr class="align-middle mt-5">
                               <td><%= index+1 %></td>
                               <td><%= product.product_name %></td>
+                              <td><%= product.categoryId.category_name %></td>
                               <td><%= product.brand %></td>
-                              <td><img style="height: 40px;width: 60px;" src="http://localhost:5000/<%= product.imageUrl %>" alt="Bike image"></td>
-                              <td><%= product.finalPrice %></td>
+                              <td><img style="height: 40px;width: 60px;" src="http://localhost:5000/<%= product.imageUrl[0] %>" alt="Bike image"></td>
+                              <td><%= product.price %></td>
                               <td><%= product.description.slice(0,50) %></td>
                               <td>
                                   <a href="/editProducts/<%= product._id %>" class="text-success"><i class="fas fa-edit fa-lg mx-1"></i></a>
-                                  <a href="/admin/deleteProducts/<%= product._id %>"class="text-danger"><i class="fas fa-trash fa-lg mx-1"></i></a>
+                                  <a href="/admin/deleteProducts/<%= product._id %>"class="text-danger" onclick="return confirm('Are you sure want to delete this product?')"><i class="fas fa-trash fa-lg mx-1"></i></a>
+                                  <!-- <form action="/admin/deleteProducts/<%= product._id %>" id="deleteProduct" method="get">
+                                    <button type="button" class="btn btn-danger" form="deleteProduct" onclick="checker()"><i class="fas fa-trash fa-lg mx-1"></i></a></button>
+                                </form> -->
                               </td>
                           </tr>
                           <% }) %>

@@ -31,7 +31,7 @@
                             <td><%= category.description %></td>
                             <td>
                                 <a href="/editCategories/<%= category._id %>" class="text-success"><i class="fas fa-edit fa-lg mx-1"></i></a>
-                                <a href="/admin/deleteCategories/<%= category._id %>"class="text-danger"><i class="fas fa-trash fa-lg mx-1"></i></a>
+                                <a href="/admin/deleteCategories/<%= category._id %>"class="text-danger" onclick="return confirm('Are sure want to delete this category')"><i class="fas fa-trash fa-lg mx-1"></i></a>
                             </td>
                         </tr>
                         <% }) %>

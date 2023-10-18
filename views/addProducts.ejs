@@ -1,81 +1,79 @@
 <%- include('layout/headerAdmin') %>
-<%- include('layout/sidebarAdmin') %>
+  <%- include('layout/sidebarAdmin') %>
 
 
 
 
-<div class="col py-3">
-    <h4>Add Product</h4> 
-    <% if (locals.message) { %>
-     <h7 style="color: red;"><%= message %></h7>
-    <% } %>
-    <h5></h5>
-     <form action="/admin/addProduct" method="post" enctype="multipart/form-data">
-         <div class="form-group row">
-         </div>
-         <div class="form-group row">
-           <label for="product_name" class="col-sm-2 col-form-label">Product Name:</label>
-           <div class="col-sm-10">
-             <input type="text" name="product_name" class="form-control" id="category_name" >
-           </div>
-           <label for="category_description" class="col-sm-2 col-form-label">Select category:</label>
-           <div class="col-sm-10">
-            <select name="categoryId" id="" class="form-control" >
-              <option value="">Select Category</option>
-              <% for(let category of categories) {%>
-                <option value="<%= category.id %>"><%= category.category_name %></option>
-              <%} %>
-            </select>
-           </div>
-           <label for="brand" class="col-sm-2 col-form-label">Brand:</label>
-           <div class="col-sm-10">
-             <input type="text" name="brand" class="form-control" id="brand">
-           </div>
+    <div class="col py-3">
+      <h4>Add Product</h4>
+      <% if (locals.message) { %>
+        <h7 style="color: red;">
+          <%= message %>
+        </h7>
+        <% } %>
+          <h5></h5>
+          <form action="/admin/addProduct" method="post" enctype="multipart/form-data">
+            <div class="form-group row">
+            </div>
+            <div class="form-group row">
+              <label for="product_name" class="col-sm-2 col-form-label">Product Name:</label>
+              <div class="col-sm-10">
+                <input type="text" name="product_name" class="form-control" id="category_name">
+              </div>
+              <label for="category_description" class="col-sm-2 col-form-label">Select category:</label>
+              <div class="col-sm-10">
+                <select name="categoryId" id="" class="form-control">
+                  <option value="">Select Category</option>
+                  <% for(let category of categories) {%>
+                    <option value="<%= category.id %>">
+                      <%= category.category_name %>
+                    </option>
+                    <%} %>
+                </select>
+              </div>
+              <label for="brand" class="col-sm-2 col-form-label">Brand:</label>
+              <div class="col-sm-10">
+                <input type="text" name="brand" class="form-control" id="brand">
+              </div>
 
-           <label for="color" class="col-sm-2 col-form-label">Color:</label>
-           <div class="col-sm-10">
-             <input type="text" name="color" class="form-control" id="brand">
-           </div>
+              <label for="color" class="col-sm-2 col-form-label">Color:</label>
+              <div class="col-sm-10">
+                <input type="text" name="color" class="form-control" id="brand">
+              </div>
 
-           <label for="image" class="col-sm-2 col-form-label">Image:</label>
-           <div class="col-sm-10">
-             <input type="file" name="image" class="form-control" id="image">
-           </div>
+              <label for="image" class="col-sm-2 col-form-label">Image:</label>
+              <div class="col-sm-10">
+                <input type="file" multiple name="image" class="form-control" id="image">
+              </div>
 
-           <label for="retail_price" class="col-sm-2 col-form-label">Retail Price:</label>
-           <div class="col-sm-10">
-             <input type="text" name="retailPrice" class="form-control" id="retailPrice">
-           </div>
+              <label for="retail_price" class="col-sm-2 col-form-label">Price:</label>
+              <div class="col-sm-10">
+                <input type="text" name="price" class="form-control" id="retailPrice">
+              </div>
 
-           <label for="discount" class="col-sm-2 col-form-label">Discount:</label>
-           <div class="col-sm-10">
-             <input type="text" name="discount" class="form-control" id="discount">
-           </div>
+              <label for="discount" class="col-sm-2 col-form-label">Stock:</label>
+              <div class="col-sm-10">
+                <input type="text" name="stock" class="form-control" id="stock">
+              </div>
 
-           <label for="finalPrice" class="col-sm-2 col-form-label">Final Price:</label>
-           <div class="col-sm-10">
-             <input type="text" name="finalPrice" class="form-control" id="finalPrice">
-           </div>
+              <label for="product_description" class="col-sm-2 col-form-label">Description:</label>
+              <div class="col-sm-10">
+                <input type="text" name="description" class="form-control id="description">
+              </div>
+            </div>
+            <center>
+              <button type="submit" class="text-center mt-4 btn btn-success">Submit</button>
+            </center>
 
-           <label for="category_description" class="col-sm-2 col-form-label">Description:</label>
-           <div class="col-sm-10">
-             <textarea type="text" name="description" class="form-control" >
-             </textarea>
-           </div>
-         </div>
-         <center>
-           <button type="submit" class="text-center mt-4 btn btn-success" >Submit</button>
-         </center>
-         
-       </form>
-       
-       <form  action="/admin/products" method="get">
-         <button class="btn btn-primary">Category view</button>
-     </form>
- </div>
- </div>
- </div>
- 
+          </form>
+
+          <form action="/admin/products" method="get">
+            <button class="btn btn-primary">Product view</button>
+          </form>
+    </div>
+    </div>
+    </div>
 
 
-<%- include('layout/footerAdmin') %>
+
+    <%- include('layout/footerAdmin') %>

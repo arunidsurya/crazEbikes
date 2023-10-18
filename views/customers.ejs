@@ -7,10 +7,11 @@
 <div>
 
     <div>
-      <h4>Categories</h4>
-      <form  action="/addCustomers" method="get">
-          <button class="btn btn-primary">Add Customers</button>
-      </form>
+            <h4>Customers</h4>
+            <form  action="/addCustomers" method="get">
+                <button class="btn btn-primary">Add Customers</button>
+            </form>
+ 
       <div class="row my-4">
           <div class="col-lg-10">
               <div class="table-responsive">
@@ -23,6 +24,7 @@
                               <th>Email</th>
                               <th>Contact</th>
                               <th>Action</th>
+                              <th>Block</th>
                           </tr>
                       </thead>
                       <tbody>
@@ -36,7 +38,18 @@
                                   <a href="/editCustomers/<%= user._id %>" class="text-success"><i class="fas fa-edit fa-lg mx-1"></i></a>
                                   <a href="/admin/deleteCustomers/<%= user._id %>"class="text-danger"><i class="fas fa-trash fa-lg mx-1"></i></a>
                               </td>
-                          </tr>
+                              <td>
+                                <% if (user.isBlocked) { %>
+                                    <form action="/admin/unBlockCustomers/<%= user._id %>">
+                                        <button class="<%= user.isBlocked? 'btn btn-primary btn-sm' :'btn btn-danger btn-sm' %>">Unblock</button>
+                                    </form>
+                                  <% } else { %>
+                                    <form action="/admin/blockCustomers/<%= user._id %>">
+                                        <button class="btn btn-danger btn-sm">Block</button>
+                                    </form>
+                                    <% }  %> 
+                              </td>
+                          </tr>                 
                           <% }) %>
                       </tbody>
                   </table>

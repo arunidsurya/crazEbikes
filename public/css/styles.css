@@ -1,0 +1,78 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+body{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+}
+a{
+    color: red;
+    text-decoration: none;
+}
+ul{
+    list-style: none;
+}
+
+#logoimg{
+    height: 50px;
+    width: 100px;
+}
+#Bname1{
+    color: goldenrod;
+}
+#Bname2{
+    color: black;
+}
+#Bname3{
+    color: red;
+}
+#sitename{
+    font-weight:900;
+    font-size: 30px;
+}
+
+.cover-image-container {
+    position: relative;
+    display: inline-block;
+}
+
+.text-over-image {
+    position: absolute;
+    top: 70%;
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.5); 
+    color: white; 
+    text-align: center;
+    font-size: 2vw;
+    font-weight: 700;
+    padding: 2vw;
+    max-width: 100%; 
+}
+
+#cover-image{
+    width:100%;
+    height: auto;
+}
+
+.top-selectors{
+    margin: 12px;
+    color: grey;
+    text-decoration: none;
+}
+.dropdown-menu {
+    max-height: 70vh; 
+}
+.custom-button {
+    background-color: #111111;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    height: auto;
+    width: auto;
+}

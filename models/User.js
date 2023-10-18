@@ -19,6 +19,14 @@ const UserSchema= new mongoose.Schema({
         required:true,
         unique:true,
     },
+    isDeleted:{
+        type:Boolean,
+        default:false,
+    },
+    isBlocked:{
+        type:Boolean,
+        default:false,
+    },
 })
 
 const User= mongoose.model('user',UserSchema);

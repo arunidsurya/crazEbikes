@@ -44,28 +44,36 @@
                    
                               <label for="image" class="col-sm-2 col-form-label">Image:</label>
                               <div class="col-sm-10">
-                                <input type="file" name="image" class="form-control" id="image">
+                                <input type="file" name="image" class="form-control" id="image" multiple>
+                              </div>
+                              <div style="margin-left: 17%;margin-top: 5%;margin-bottom: 5%;" class=" d-flex">
+
+                                <% for (let i = 0; i < product.imageUrl.length; i++) { %>
+                                  <img src="http://localhost:5000/<%= product.imageUrl[i] %>" style="height: 40px;width: 60px;" alt="image">
+                                  <a href="/admin/deleteImages?index=<%=[i] %>&&productid=<%=product._id  %>"class="text-danger" onclick="return confirm('Are you sure want to delete this product?')"><i class="fas fa-trash fa-lg mx-1"></i></a>
+                                <% } %>
+                              
+                                <!-- <% product.imageUrl.forEach((image,index) => { %>
+                                 <img src="http://localhost:5000/<%= image %>" style="height: 40px;width: 60px;" alt="image">
+                                 <div>
+                                 <a href="/admin/deleteImages/<%= index %>/<%= product._id %>"class="text-danger" onclick="return confirm('Are you sure want to delete this product?')"><i class="fas fa-trash fa-lg mx-1"></i></a>
+                                 </div>
+                                <% }) %> -->
                               </div>
                    
-                              <label for="retail_price" class="col-sm-2 col-form-label">Retail Price:</label>
+                              <label for="retail_price" class="col-sm-2 col-form-label">Price:</label>
                               <div class="col-sm-10">
-                                <input type="text" name="retailPrice" value="<%= product.retailPrice %>" class="form-control" id="retailPrice">
+                                <input type="text" name="retailPrice" value="<%= product.price %>" class="form-control" id="retailPrice">
                               </div>
                    
-                              <label for="discount" class="col-sm-2 col-form-label">Discount:</label>
+                              <label for="discount" class="col-sm-2 col-form-label">stock:</label>
                               <div class="col-sm-10">
-                                <input type="text" name="discount" value="<%= product.discount %>" class="form-control" id="discount">
-                              </div>
-                   
-                              <label for="finalPrice" class="col-sm-2 col-form-label">Final Price:</label>
-                              <div class="col-sm-10">
-                                <input type="text" name="finalPrice" value="<%= product.finalPrice %>" class="form-control" id="finalPrice">
+                                <input type="text" name="discount" value="<%= product.stock %>" class="form-control" id="discount">
                               </div>
                    
                               <label for="category_description" class="col-sm-2 col-form-label">Description:</label>
                               <div class="col-sm-10">
-                                <textarea type="text" name="description" value="<%= product.description %>" class="form-control" >
-                                </textarea>
+                                <input type="text" name="description" value="<%= product.description %>" class="form-control" >
                               </div>
                             </div>
                             <center>
