@@ -2,7 +2,8 @@ const Category = require('../models/category');
 const User = require('../models/User');
 const Product = require('../models/product');
 const Admin = require('../models/admin');
-const { setAdmin } = require('../service/auth')
+const { setAdmin } = require('../service/auth');
+const mongoose = require('mongoose');
 
 
 async function handleAdminSignup(req, res) {
@@ -164,8 +165,8 @@ async function handleCustomerUnblock(req, res) {
 async function handleProductsView(req, res) {
     try {
         const products = await Product.find({ isDeleted: false }).populate({
-           path:'categoryId',
-           select:'category_name',
+            path: 'categoryId',
+            select: 'category_name',
         });
         res.render('products', { products });
     } catch (error) {
@@ -210,7 +211,9 @@ async function handleProductUpdate(req, res) {
             newImagePaths.push(file.path)
         })
     };
+
     const combImagePath = [...product.imageUrl, ...newImagePaths];
+
     try {
         await Product.findByIdAndUpdate(id, {
             product_name: req.body.product_name,
@@ -218,9 +221,8 @@ async function handleProductUpdate(req, res) {
             brand: req.body.brand,
             color: req.body.color,
             imageUrl: combImagePath,
-            retailPrice: req.body.retailPrice,
-            discount: req.body.discount,
-            finalPrice: req.body.finalPrice,
+            price: req.body.price,
+            stock: req.body.stock,
             description: req.body.description,
         });
         return res.redirect("/admin/products");
@@ -243,7 +245,7 @@ async function handleProdcutDelete(req, res) {
 async function handleImageDelete(req, res) {
     let index = req.query.index;
     let id = req.query.productid;
-  
+
     try {
         const product = await Product.findById(id);
 

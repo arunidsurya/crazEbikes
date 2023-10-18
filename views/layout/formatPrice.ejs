@@ -1,0 +1,6 @@
+<% function formatPrice(price) { %>
+    <%= price.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }) %> .00
+  <% } %>

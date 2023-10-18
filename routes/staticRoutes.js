@@ -5,16 +5,71 @@ const Product = require("../models/product");
 
 const router = express.Router();
 
-
+const productsPerPage = 12;
 router.get("/",async(req,res)=>{
     // if(!req.user && req.user==null) return res.redirect('/login');
     const images ={
         cover:'resources/images/coverPhoto.jpg',
-        logo:'resources/images/logo.jpg'
-    }
-    const allProducts= await Product.find({});
-    return res.render("userHome",{products:allProducts,images:images});
-})
+        logo:'resources/images/logo.jpg',
+        amazon:'resources/images/amazon.jpg',
+        dhl:'resources/images/dhl.jpg',
+        fedex:'resources/images/fedex.jpg',
+        gPay:'resources/images/gPay.jpg',
+        master:'resources/images/master.jpg',
+        visa:'resources/images/visa.jpg',
+    };
+    function formatPrice(price) {
+        return price.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      };
+    const products= await Product.find({});
+
+    const page = parseInt(req.query.page) || 1;
+    const startIndex = (page - 1) * productsPerPage;
+    const endIndex = page * productsPerPage;
+    const slicedProducts = products.slice(startIndex, endIndex);
+    const imgUri = process.env.IMGURI;
+    return res.render("userHome",{
+        products:slicedProducts,
+        page,
+        pageCount: Math.ceil(products.length / productsPerPage),
+        images:images,
+        imgUri:imgUri,
+        formatPrice,
+    });
+});
+router.get("/product-description",async(req,res)=>{
+        // if(!req.user && req.user==null) return res.redirect('/login');
+        const images ={
+            cover:'resources/images/coverPhoto.jpg',
+            logo:'resources/images/logo.jpg',
+            amazon:'resources/images/amazon.jpg',
+            dhl:'resources/images/dhl.jpg',
+            fedex:'resources/images/fedex.jpg',
+            gPay:'resources/images/gPay.jpg',
+            master:'resources/images/master.jpg',
+            visa:'resources/images/visa.jpg',
+        };
+        function formatPrice(price) {
+            return price.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });
+          };
+          const id=req.query.productid;
+        const products= await Product.findOne({_id:id});
+    
+    
+        const imgUri = process.env.IMGURI;
+        return res.render("productDescription",{
+            products:products,
+            images:images,
+            imgUri:imgUri,
+            formatPrice,
+        });
+});
 
 router.get("/admin",async(req,res)=>{
     if(!req.admin&& req.admin==null) return res.redirect('/adminLogin');
@@ -91,3 +146,4 @@ router.get("/adminPayments",(req,res)=>{
 
 
 module.exports = router;
+

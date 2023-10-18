@@ -1,39 +1,51 @@
-*{
+* {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
 }
-body{
+
+/* Body and general text styles */
+body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 15px;
     line-height: 1.5;
 }
-a{
+
+/* Links */
+a {
     color: red;
     text-decoration: none;
 }
-ul{
+
+/* Lists */
+ul {
     list-style: none;
 }
 
-#logoimg{
+/* Header styles */
+#logoimg {
     height: 50px;
     width: 100px;
 }
-#Bname1{
+
+#Bname1 {
     color: goldenrod;
 }
-#Bname2{
+
+#Bname2 {
     color: black;
 }
-#Bname3{
+
+#Bname3 {
     color: red;
 }
-#sitename{
-    font-weight:900;
+
+#sitename {
+    font-weight: 900;
     font-size: 30px;
 }
 
+/* Cover image styles */
 .cover-image-container {
     position: relative;
     display: inline-block;
@@ -42,30 +54,38 @@ ul{
 .text-over-image {
     position: absolute;
     top: 70%;
-    left: 50%; 
+    left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.5); 
-    color: white; 
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
     text-align: center;
     font-size: 2vw;
     font-weight: 700;
     padding: 2vw;
-    max-width: 100%; 
+    max-width: 100%;
 }
 
-#cover-image{
-    width:100%;
+#cover-image {
+    width: 100%;
     height: auto;
 }
 
-.top-selectors{
+/* Navigation links */
+.top-selectors {
     margin: 12px;
     color: grey;
+    font-weight: 800;
     text-decoration: none;
+
 }
+
+
+/* Dropdown menu styles */
 .dropdown-menu {
-    max-height: 70vh; 
+    max-height: 70vh;
 }
+
+/* Custom button styles */
 .custom-button {
     background-color: #111111;
     color: #fff;
@@ -75,4 +95,138 @@ ul{
     cursor: pointer;
     height: auto;
     width: auto;
+}
+
+/* Styling for the product container */
+.product-container {
+    text-align: center; /* Center-align the heading */
+    margin: 50px 0 5px 0;
+  }
+  
+  /* Styling for the card rows */
+  .card-row {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin: 0 -10px; /* To remove left and right margins */
+  }
+  
+  /* Styling for each product card */
+  .product-card {
+    flex: 0 1 calc(25% - 20px); /* To ensure 4 cards per row with spacing */
+    margin: 10px; /* Add spacing between cards */
+    box-sizing: border-box;
+    text-align: center;
+    padding: 10px; /* Reduce padding */
+    border: 1px solid #e0e0e0;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Reduce shadow for a smaller card */
+  }
+  
+  /* Styling for product images */
+  .product-image {
+    max-width: 100%;
+    height: auto;
+    max-height: 100px; /* Set a maximum height for the images */
+  }
+  
+  /* Styling for product name and price */
+  .product-card h2, .product-card h4 {
+    margin: 5px 0; /* Reduce spacing above and below product name and price */
+    font-size: 18px; /* Reduce font size */
+    color: #333;
+  }
+  
+/* Styling for the pagination container */
+.pagination {
+    margin: auto;
+    padding: 10px;
+    align-items: center;
+  }
+  
+  
+  /* Styling for pagination links */
+  .pagination a {
+    text-decoration: none;
+    margin: 0 5px;
+    color: #007BFF;
+  }
+  
+  /* Styling for the current page indicator */
+  .pagination span {
+    font-weight: bold;
+    margin: 0 5px;
+  }
+  
+  /* Style for the main footer element */
+.footer {
+    background-color: #f2f2f2;
+    color: #616161;
+    padding: 20px; /* Add padding to the footer for spacing */
+    margin: 50px 0 5px 0;
+    /* Center the text within the footer */
+    text-align: center;
+}
+
+/* Style for the services section */
+.services {
+    display: flex;
+    justify-content: space-between;
+    margin: 40px 0 70px 0 ;
+}
+
+.services .item {
+    flex: 1;
+    margin: 0 10px;
+}
+
+.services h4 {
+    color: #585757;; /* Text color for service headings */
+    font-weight: 800;
+}
+
+/* Style for the info section */
+.info a {
+    text-decoration: none; /* Remove underlines from links */
+    color: #585757; /* Text color for info section links */
+    margin: 0 10px;
+}
+
+.info a:hover {
+    color: #0c0c0c; /* Change color on hover */
+}
+
+/* Style for the trade section */
+.trade a {
+    text-decoration: none; /* Remove underlines from links */
+    color: #585757; /* Text color for the trade section link */
+}
+
+.trade a:hover {
+    color: #0c0c0c; /* Change color on hover */
+}
+
+#footer-img{
+    height: 30px;
+    width: 80px;
+    margin: 0 5px;
+}
+
+
+/*Prduct description page*/
+
+
+.thumbnail-item {
+    border: 2px solid #ccc;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.thumbnail-item.active {
+    border-color: #007bff;
+}
+.product-description{
+    margin: 20px 0 20px 0;
+    text-align: center;
 }
