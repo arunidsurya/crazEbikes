@@ -4,14 +4,17 @@ const Product = require('../models/product');
 const Admin = require('../models/admin');
 const { setAdmin } = require('../service/auth');
 const mongoose = require('mongoose');
+const bycrypt = require("bcrypt");
 
 
 async function handleAdminSignup(req, res) {
     const { name, email, password, contactNumber } = req.body;
+    const saltRounds = 10;
+    const hashedPassword= await bycrypt.hash(password, saltRounds);
     await Admin.create({
         name,
         email,
-        password,
+        password:hashedPassword,
         contactNumber,
     });
     return res.redirect("/adminLogin");
@@ -19,10 +22,10 @@ async function handleAdminSignup(req, res) {
 
 async function handleAdminLogin(req, res) {
     const { email, password } = req.body;
-    // console.log(email,login);
-    const admin = await Admin.findOne({ email, password });
 
-    if (!admin) return res.render("adminlogin", {
+    const admin = await Admin.findOne({ email});
+    const validPassword = await bycrypt.compare(password,admin.password);
+    if (!admin || !validPassword) return res.render("adminlogin", {
         error: "Invalid email or password",
     });
 
@@ -41,6 +44,23 @@ async function handleAdminLogout(req, res) {
 async function handleCategoryView(req, res) {
     try {
         const categories = await Category.find({ isDeleted: false })
+        res.render('categories', { categories });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function handleCategorySearch(req, res) {
+    const searchKey=req.body.searchKey;
+    const query = { 
+        category_name: { $regex: searchKey, $options: 'i' }, 
+        isDeleted: false,
+    };
+    const projection = {}; // Optional fields to include/exclude
+    const options = {}; // Additional options (e.g., limit, sort)
+
+    try {
+        const categories = await Category.find(query,projection,options)
         res.render('categories', { categories });
     } catch (error) {
         console.log(error);
@@ -97,19 +117,38 @@ async function handleUserView(req, res) {
     }
 }
 
+async function handleUserSearch(req, res) {
+    const searchKey = req.body.searchKey;
+    const query ={
+        name:{$regex:searchKey,$options:'i'},
+        isDeleted:false,
+    }
+    const projection={};
+    const options={};
+    try {
+        const users = await User.find(query,projection,options)
+        res.render('customers', { users });
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 async function handleUserAdd(req, res) {
     try {
         const { name, email, password, contactNumber } = req.body;
+        const saltRounds = 10;
+        const hashedPassword= await bycrypt.hash(password, saltRounds);
+        // console.log(name,email,password,contactNumber,hashedPassword);
         await User.create({
             name,
             email,
-            password,
+            password:hashedPassword,
             contactNumber
         });
-        return res.render("customers");
+        return res.redirect("/admin/user");
     } catch (error) {
         console.log(error);
-        return res.render("addCustomers", { message: "Failed!!User already exists" });
+        return res.render("addCustomers", { message: "Failed!!User already exists!!" });
     }
 };
 
@@ -164,7 +203,7 @@ async function handleCustomerUnblock(req, res) {
 
 async function handleProductsView(req, res) {
     try {
-        const products = await Product.find({ isDeleted: false }).populate({
+        const products = await Product.find({ isDeleted: false }).sort({createdAt:-1}).populate({
             path: 'categoryId',
             select: 'category_name',
         });
@@ -172,7 +211,43 @@ async function handleProductsView(req, res) {
     } catch (error) {
         console.log(error);
     }
-}
+};
+
+async function handleProductsSort(req, res) {
+    const sortid=req.query.sort ||-1;
+    try {
+        const products = await Product.find({ isDeleted: false }).sort({price:sortid}).populate({
+            path: 'categoryId',
+            select: 'category_name',
+        });
+        res.render('products', { products });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+async function handleProductSearch(req, res) {
+    const searchKey=req.body.searchKey;
+
+    const query = { 
+        product_name: { $regex: searchKey, $options: 'i' }, 
+        isDeleted: false,
+    };
+    const projection = {}; // Optional fields to include/exclude
+    const options = {}; // Additional options (e.g., limit, sort)
+
+    try {
+        const products = await Product.find(query,projection,options).populate({
+            path: 'categoryId',
+            select: 'category_name',
+        });
+        res.render('products', { products });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+
 
 async function handleProductAdd(req, res) {
     try {
@@ -194,7 +269,7 @@ async function handleProductAdd(req, res) {
             stock,
             description,
         });
-        return res.redirect("/addProducts");
+        return res.redirect("/admin/products");
     } catch (error) {
         console.log(error);
         return res.render("addSuccess", { message: "Failed!!" });
@@ -274,14 +349,18 @@ async function handleImageDelete(req, res) {
 
 module.exports = {
     handleCategoryView,
+    handleCategorySearch,
     handleCategoryAdd,
     handleCategoryEdit,
     handleCategoryDelete,
     handleUserAdd,
     handleUserView,
+    handleUserSearch,
     handleCustomerEdit,
     handleCustomerDelete,
     handleProductsView,
+    handleProductSearch,
+    handleProductsSort,
     handleProductAdd,
     handleProductUpdate,
     handleProdcutDelete,
@@ -293,3 +372,4 @@ module.exports = {
     handleImageDelete,
 
 }; 
+

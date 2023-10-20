@@ -1,66 +1,139 @@
 <%- include('layout/headerAdmin') %>
-<%- include('layout/sidebarAdmin') %>
+    <%- include('layout/sidebarAdmin') %>
+
+        <div class="col py-3">
+
+
+            <div class="container">
+                <div class="mt-4">
+                    <h4 id="products-heading">Products View</h4>
+                    <div class="row my-4">
+                        <div class="col-lg-12"> <!-- Adjust the column width as needed -->
+                            <form action="/addProducts" class="ml-auto" method="get">
+                                <button class="btn btn-primary float-end">Add Products</button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Filter and Sort Controls -->
+                    <div class="filter-sort-options d-flex justify-content-between">
+                        <div class="form-inline">
+                            <label for="filterDate">Filter by Date:</label>
+                            <input type="date" id="filterDate">
+                        </div>
+                        <div class="form-inline">
+                            <label for="sortPrice">Sort by Price:</label>
+                            <select id="sortPrice" name="sortPrice">
+                                <option value="none">none</option>
+                                <option value="asc">Low to High</option>
+                                <option value="desc">High to Low</option>
+                            </select>
+                        </div>
+                        <form action="/admin/products-search" method="post" class="form-inline" style="display:flex">
+                            <input name="searchKey" class="form-control mr-sm-2" type="search" placeholder="Search"
+                                aria-label="Search">
+                            <button class="btn btn-outline-success my-0 my-sm-0" type="submit">Search</button>
+                        </form>
+                    </div>
+
+                    <div class="row my-4">
+                        <div class="col-lg-12">
+                            <div class="table-responsive">
+                                <% if (locals.products) { %>
+                                    <table class="table table-striped text-center">
+                                        <thead>
+                                            <tr class="table-dark">
+                                                <th>S/N</th>
+                                                <th>Product Name</th>
+                                                <th>Category</th>
+                                                <th>Brand</th>
+                                                <th>Image</th>
+                                                <th>Price</th>
+                                                <th>Description</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% products.forEach((product,index)=> { %>
+                                                <tr class="align-middle mt-5">
+                                                    <td>
+                                                        <%= index+1 %>
+                                                    </td>
+                                                    <td>
+                                                        <%= product.product_name %>
+                                                    </td>
+                                                    <td>
+                                                        <%= product.categoryId.category_name %>
+                                                    </td>
+                                                    <td>
+                                                        <%= product.brand %>
+                                                    </td>
+                                                    <td><img style="height: 40px;width: 60px;"
+                                                            src="http://localhost:5000/<%= product.imageUrl[0] %>"
+                                                            alt="Bike image"></td>
+                                                    <td>
+                                                        <%= product.price %>
+                                                    </td>
+                                                    <td>
+                                                        <%= product.description.slice(0,50) %>
+                                                    </td>
+                                                    <td>
+                                                        <a href="/editProducts/<%= product._id %>"
+                                                            class="text-success"><i
+                                                                class="fas fa-edit fa-lg mx-1"></i></a>
+                                                        <a href="/admin/deleteProducts/<%= product._id %>"
+                                                            class="text-danger"
+                                                            onclick="return confirm('Are you sure want to delete this product?')"><i
+                                                                class="fas fa-trash fa-lg mx-1"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+                                    </table>
+                                    <% } %>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+        </div>
+        </div>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const sortPriceSelect = document.getElementById("sortPrice");
+
+                // Get the current sorting method from the URL
+                const currentSort = new URLSearchParams(window.location.search).get("sort");
+
+                if (currentSort === "1") {
+                    sortPriceSelect.value = "asc";
+                } else if (currentSort === "-1") {
+                    sortPriceSelect.value = "desc";
+                } else {
+                    sortPriceSelect.value = "none";
+                }
+
+                sortPriceSelect.addEventListener("change", function () {
+                    const selectedSort = sortPriceSelect.value;
+                    // Perform routing based on selectedSort
+                    if (selectedSort === "asc") {
+                        window.location.href = "/admin/products-sort?sort=1"; // Route for ascending sort
+                    } else if (selectedSort === "desc") {
+                        window.location.href = "/admin/products-sort?sort=-1"; // Route for descending sort
+                    } else if (selectedSort === "none") {
+                        window.location.href = "/admin/products"; // Route for no sorting
+                    }
+                });
+            });
+
+        </script>
 
 
 
-
-<div class="container">
-    <div class="mt-4">
-      <h4>Products View</h4>
-        <form  action="/addProducts" method="get">
-            <button class="btn btn-primary">Add Products</button>
-        </form>
-      <div class="row my-4">
-          <div class="col-lg-10">
-              <div class="table-responsive">
-                  <% if (locals.products) { %>
-                  <table class="table table-striped text-center">
-                      <thead>
-                          <tr class="table-dark">
-                              <th>Sl No</th>
-                              <th>Product Name</th>
-                              <th>Category</th>
-                              <th>Brand</th>
-                              <th>Image</th>
-                              <th>Price</th>
-                              <th>Description</th>
-                              <th>Action</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <% products.forEach((product,index) => { %>
-                          <tr class="align-middle mt-5">
-                              <td><%= index+1 %></td>
-                              <td><%= product.product_name %></td>
-                              <td><%= product.categoryId.category_name %></td>
-                              <td><%= product.brand %></td>
-                              <td><img style="height: 40px;width: 60px;" src="http://localhost:5000/<%= product.imageUrl[0] %>" alt="Bike image"></td>
-                              <td><%= product.price %></td>
-                              <td><%= product.description.slice(0,50) %></td>
-                              <td>
-                                  <a href="/editProducts/<%= product._id %>" class="text-success"><i class="fas fa-edit fa-lg mx-1"></i></a>
-                                  <a href="/admin/deleteProducts/<%= product._id %>"class="text-danger" onclick="return confirm('Are you sure want to delete this product?')"><i class="fas fa-trash fa-lg mx-1"></i></a>
-                                  <!-- <form action="/admin/deleteProducts/<%= product._id %>" id="deleteProduct" method="get">
-                                    <button type="button" class="btn btn-danger" form="deleteProduct" onclick="checker()"><i class="fas fa-trash fa-lg mx-1"></i></a></button>
-                                </form> -->
-                              </td>
-                          </tr>
-                          <% }) %>
-                      </tbody>
-                  </table>
-                  <% } %>
-                   
-              </div>
-          </div>
-      </div>
-  </div>
-  
-  
-  </div>
-  </div>
-  </div>
-  
-
-
-
-<%- include('layout/footerAdmin') %>
+        <%- include('layout/footerAdmin') %>

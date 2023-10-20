@@ -22,7 +22,26 @@ function getAdmin(adminToken) {
     }
 }
 
+function setUser(user){
+    return jwt.sign({
+        _id:user._id,
+        email:user.email,
+    },
+    secret);
+}
+
+function getUser(adminToken) {
+    if(!userToken) return null;
+    try {
+        return jwt.verify(userToken,secret);
+    } catch (error) {
+        return null;
+    }
+}
+
 module.exports={
     getAdmin,
     setAdmin,
+    setUser,
+    getUser,
 }

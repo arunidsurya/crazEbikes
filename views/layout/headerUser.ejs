@@ -9,6 +9,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <title>Document</title>
 </head>
@@ -17,7 +18,7 @@
   <div class="container">
   <nav class="navbar navbar-expand-lg bg-light">
     <div class="container-fluid">
-      <img id="logoimg" src="<%= images.logo %>" alt="">
+      <img id="logoimg" src="<%= imgUri %><%= images.logo %>" alt="">
       <a class="navbar-brand" id="sitename" href="#"><span id="Bname1">craz</span><span id="Bname2">Ebikes</span><span
           id="Bname3">.com</span></a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll"
@@ -25,20 +26,22 @@
         <span class="navbar-toggler-icon"><i class='bx bx-menu'></i></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarScroll">
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+
+        <form action="user-search" method="post" class="d-flex" role="search">
+          <input name="search" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
           <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
+
         <ul class="navbar-nav ms-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/"><i class='bx bxs-home fs-5'></i>Home</a>
+            <a class="nav-link active" aria-current="page" href="/"><i class='bx bxs-home fs-3'></i>Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#"><i class='bx bx-cart fs-5'></i>Cart</a>
+            <a class="nav-link" href="#"><i class='bx bx-cart fs-3'></i>Cart</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class='bx bx-user fs-4'></i>
+              <i class='bx bx-user fs-3'></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" data-bs-boundary="viewport">
               <li><a class="dropdown-item" href="#">Manage My Account</a></li>
@@ -46,7 +49,8 @@
               <li>
                 <hr class="dropdown-divider">
               </li>
-              <li><a class="dropdown-item" href="#">Logout</a></li>
+              <li><a class="dropdown-item" id="signout-btn" style="display: none" href="user/logout">Sign out</a></li>
+              <li><a class="dropdown-item" id="signin-btn"  style="display: none" href="user-login">sign in</a></li>
             </ul>
           </li>
         </ul>
@@ -55,12 +59,12 @@
       </div>
     </div>
   </nav>
-
+  
   <div class="d-flex justify-content-around categories ">
-    <a href="#" class="top-selectors">EBIKES</a>
-    <a href="#" class="top-selectors">BICYCLES</a>
-    <a href="#" class="top-selectors">ACCESSORIES</a>
-    <a href="#" class="top-selectors">CLOTHING</a>
+    <a href="/ebikes_home?category=Ebike" class="top-selectors">EBIKES</a>
+    <a href="/ebikes_home?category=Bike" class="top-selectors">BICYCLES</a>
+    <a href="/ebikes_home?category=Accessories" class="top-selectors">ACCESSORIES</a>
+    <a href="/ebikes_home?category=Parts" class="top-selectors">PARTS</a>
     <a href="#" class="top-selectors">SERVICE</a>
     </div>
     

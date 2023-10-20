@@ -1,54 +1,82 @@
 <%- include('layout/headerAdmin') %>
-<%- include('layout/sidebarAdmin') %>
+    <%- include('layout/sidebarAdmin') %>
 
 
 
-<div>
+        <div class="col py-3">
 
-  <div>
-    <h4>Categories</h4>
-    <form  action="/addAdminCategories" method="get">
-        <button class="btn btn-primary">Add Category</button>
-    </form>
-    <div class="row my-4">
-        <div class="col-lg-10">
-            <div class="table-responsive">
-                <% if (locals.categories) { %>
-                <table class="table table-striped text-center">
-                    <thead>
-                        <tr class="table-dark">
-                            <th>Sl No</th>
-                            <th>Category Name</th>
-                            <th>Description</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% categories.forEach((category,index) => { %>
-                        <tr class="align-middle">
-                            <td><%= index+1 %></td>
-                            <td><%= category.category_name %></td>
-                            <td><%= category.description %></td>
-                            <td>
-                                <a href="/editCategories/<%= category._id %>" class="text-success"><i class="fas fa-edit fa-lg mx-1"></i></a>
-                                <a href="/admin/deleteCategories/<%= category._id %>"class="text-danger" onclick="return confirm('Are sure want to delete this category')"><i class="fas fa-trash fa-lg mx-1"></i></a>
-                            </td>
-                        </tr>
-                        <% }) %>
-                    </tbody>
-                </table>
-                <% } %>
-                 
+
+            <div class="container">
+                <div class="mt-4">
+                    <h4>Categories</h4>
+                    <div class="row my-4">
+                        <div class="col-lg-12"> <!-- Adjust the column width as needed -->
+                            <form action="/addAdminCategories" class="ml-auto" method="get">
+                                <button class="btn btn-primary float-end">Add Category</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="filter-sort-options d-flex justify-content-between">
+                        <form action="/admin/category-search" method="post" class="form-inline" style="display:flex">
+                            <input name="searchKey" class="form-control mr-sm-2" type="search" placeholder="Search"
+                                aria-label="Search">
+                            <button class="btn btn-outline-success my-0 my-sm-0" type="submit">Search</button>
+                        </form>
+                    </div>
+
+                    <div class="row my-4">
+                        <div class="col-lg-12">
+                            <div class="table-responsive">
+                                <% if (locals.categories) { %>
+                                    <table class="table table-striped text-center">
+                                        <thead>
+                                            <tr class="table-dark">
+                                                <th>Sl No</th>
+                                                <th>Category Name</th>
+                                                <th>Description</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% categories.forEach((category,index)=> { %>
+                                                <tr class="align-middle">
+                                                    <td>
+                                                        <%= index+1 %>
+                                                    </td>
+                                                    <td>
+                                                        <%= category.category_name %>
+                                                    </td>
+                                                    <td>
+                                                        <%= category.description %>
+                                                    </td>
+                                                    <td>
+                                                        <a href="/editCategories/<%= category._id %>"
+                                                            class="text-success"><i
+                                                                class="fas fa-edit fa-lg mx-1"></i></a>
+                                                        <a href="/admin/deleteCategories/<%= category._id %>"
+                                                            class="text-danger"
+                                                            onclick="return confirm('Are sure want to delete this category')"><i
+                                                                class="fas fa-trash fa-lg mx-1"></i></a>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+                                    </table>
+                                    <% } %>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
-    </div>
-</div>
 
-
-</div>
-</div>
-</div>
+        </div>
+        </div>
 
 
 
-<%- include('layout/footerAdmin') %>
+
+        <%- include('layout/footerAdmin') %>

@@ -1,71 +1,98 @@
 <%- include('layout/headerAdmin') %>
-<%- include('layout/sidebarAdmin') %>
+    <%- include('layout/sidebarAdmin') %>
+
+
+
+        <div class="col py-3">
+
+
+            <div class="container">
+                <div class="mt-4">
+                    <h4>Customers</h4>
+                    <div class="row my-4">
+                        <div class="col-lg-12"> <!-- Adjust the column width as needed -->
+                            <form action="/addCustomers" class="ml-auto" method="get">
+                                <button class="btn btn-primary float-end">Add Customers</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="filter-sort-options d-flex justify-content-between">
+                        <form action="/admin/customer-search" method="post" class="form-inline" style="display:flex">
+                            <input name="searchKey" class="form-control mr-sm-2" type="search" placeholder="Search"
+                                aria-label="Search">
+                            <button class="btn btn-outline-success my-0 my-sm-0" type="submit">Search</button>
+                        </form>
+                    </div>
+
+
+                    <div class="row my-4">
+                        <div class="col-lg-12">
+                            <div class="table-responsive">
+                                <% if (locals.users) { %>
+                                    <table class="table table-striped text-center">
+                                        <thead>
+                                            <tr class="table-dark">
+                                                <th>Sl No</th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Contact</th>
+                                                <th>Action</th>
+                                                <th>Block</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% users.forEach((user,index)=> { %>
+                                                <tr class="align-middle">
+                                                    <td>
+                                                        <%= index+1 %>
+                                                    </td>
+                                                    <td>
+                                                        <%= user.name %>
+                                                    </td>
+                                                    <td>
+                                                        <%= user.email %>
+                                                    </td>
+                                                    <td>
+                                                        <%= user.contactNumber %>
+                                                    </td>
+                                                    <td>
+                                                        <a href="/editCustomers/<%= user._id %>" class="text-success"><i
+                                                                class="fas fa-edit fa-lg mx-1"></i></a>
+                                                        <a href="/admin/deleteCustomers/<%= user._id %>"
+                                                            class="text-danger"
+                                                            onclick="return confirm('Are you sure want to delete this product?')"><i
+                                                                class="fas fa-trash fa-lg mx-1"></i></a>
+                                                    </td>
+                                                    <td>
+                                                        <% if (user.isBlocked) { %>
+                                                            <form action="/admin/unBlockCustomers/<%= user._id %>">
+                                                                <button
+                                                                    class="<%= user.isBlocked? 'btn btn-primary btn-sm' :'btn btn-danger btn-sm' %>">Unblock</button>
+                                                            </form>
+                                                            <% } else { %>
+                                                                <form action="/admin/blockCustomers/<%= user._id %>">
+                                                                    <button class="btn btn-danger btn-sm">Block</button>
+                                                                </form>
+                                                                <% } %>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+                                    </table>
+                                    <% } %>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        </div>
+        </div>
 
 
 
 
-<div>
-
-    <div>
-            <h4>Customers</h4>
-            <form  action="/addCustomers" method="get">
-                <button class="btn btn-primary">Add Customers</button>
-            </form>
- 
-      <div class="row my-4">
-          <div class="col-lg-10">
-              <div class="table-responsive">
-                  <% if (locals.users) { %>
-                  <table class="table table-striped text-center">
-                      <thead>
-                          <tr class="table-dark">
-                              <th>Sl No</th>
-                              <th>Name</th>
-                              <th>Email</th>
-                              <th>Contact</th>
-                              <th>Action</th>
-                              <th>Block</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <% users.forEach((user,index) => { %>
-                          <tr class="align-middle">
-                              <td><%= index+1 %></td>
-                              <td><%= user.name %></td>
-                              <td><%= user.email %></td>
-                              <td><%= user.contactNumber %></td>
-                              <td>
-                                  <a href="/editCustomers/<%= user._id %>" class="text-success"><i class="fas fa-edit fa-lg mx-1"></i></a>
-                                  <a href="/admin/deleteCustomers/<%= user._id %>"class="text-danger"><i class="fas fa-trash fa-lg mx-1"></i></a>
-                              </td>
-                              <td>
-                                <% if (user.isBlocked) { %>
-                                    <form action="/admin/unBlockCustomers/<%= user._id %>">
-                                        <button class="<%= user.isBlocked? 'btn btn-primary btn-sm' :'btn btn-danger btn-sm' %>">Unblock</button>
-                                    </form>
-                                  <% } else { %>
-                                    <form action="/admin/blockCustomers/<%= user._id %>">
-                                        <button class="btn btn-danger btn-sm">Block</button>
-                                    </form>
-                                    <% }  %> 
-                              </td>
-                          </tr>                 
-                          <% }) %>
-                      </tbody>
-                  </table>
-                  <% } %>
-                   
-              </div>
-          </div>
-      </div>
-  </div>
-  
-  
-  </div>
-  </div>
-  </div>
-  
-
-
-
-<%- include('layout/footerAdmin') %>
+        <%- include('layout/footerAdmin') %>

@@ -1,0 +1,41 @@
+
+<%- include('layout/headerUser') %>
+<%- include('layout/formatPrice') %>
+
+<form class="otp-verify" action="/user/verifyOTP?userid=<%= userid %>" method="post">
+    <div class="form-group ">
+      <h5>An OTP has been sent to your registered Email address.</h5>
+      <% if (locals.message) { %>
+       <p class="otp-success-message"><%= message %></p>
+       <p>click here to <span><a href="/user/login">Login</a></span></p>
+      <% } %>
+      <% if (locals.message_no_otp) { %>
+        <p class="otp-status-message"><%= message_no_otp %></p>
+       <% } %>
+       <% if (locals.message_no_record) { %>
+        <p class="otp-status-message"><%= message_no_record %></p>
+        <p>click here to <span><a href="/user/signup">Signup</a></span> or <span><a href="/user/login">Login</a></span></p>
+       <% } %>
+       <% if (locals.message_otp_expired) { %>
+        <p class="otp-status-message"><%= message_otp_expired %></p>
+       <% } %>
+       <% if (locals.message_inavlid_otp) { %>
+        <p class="otp-status-message"><%= message_inavlid_otp %></p>
+       <% } %>
+       <!-- <% if (locals.userid) { %>
+        <p><%= userid %></p>
+       <% } %> -->
+      <label for="exampleInputEmail1">Enter Your OTP</label>
+      <input type="text" name="otp" class="form-control otp-form" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter OTP">
+      <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+    </div>
+    <p>OTP not received!!</p>
+    <p><a href="/user/resendOTPVerificationCode">Click here</a> here to resend OTP <span></span></p>
+    <button type="submit" class="btn btn-primary">Verify</button>
+  </form>
+
+
+
+
+
+  <%- include('layout/footerUser') %>

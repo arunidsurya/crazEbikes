@@ -1,0 +1,128 @@
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+#products-heading {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header Styles */
+.navbar {
+    background-color: #343a40;
+    color: #fff;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+}
+.navbar-brand span {
+    margin-left: 10px; /* Adjust the margin as needed */
+    font-size: 30px;
+}
+
+.navbar-brand i {
+    margin-right: 5px;
+font-size: 32px;
+}
+
+.form-inline {
+    margin-left: 20px;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    background-color: #333;
+    color: #fff;
+    min-height: 100vh;
+}
+
+.nav-pills .nav-link {
+    color: #fff;
+    font-size: 18px;
+    padding-left: 20px;
+}
+
+.nav-pills .nav-link i {
+    margin-right: 10px;
+    font-size: 24px;
+}
+
+
+/* Main Content Styles */
+.col {
+    padding: 20px;
+}
+
+.table {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+}
+
+.table th {
+    background-color: #343a40;
+    color: #fff;
+}
+
+.table td {
+    padding: 10px;
+}
+
+/* Buttons */
+.btn {
+    margin-top: 10px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-outline-success {
+    border: 1px solid #28a745;
+    color: #28a745;
+}
+
+.btn-outline-success:hover {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.btn-outline-danger {
+    border: 1px solid #dc3545;
+    color: #dc3545;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* Icons */
+i.fas, i.far {
+    font-size: 20px;
+}
+
+/* Footer Styles */
+.footer {
+    background-color: #343a40;
+    color: #fff;
+    text-align: center;
+    padding: 10px 0;
+}
