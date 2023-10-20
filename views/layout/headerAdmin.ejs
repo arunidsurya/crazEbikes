@@ -24,7 +24,23 @@
     <a class="navbar-brand"><i class="fa-solid fa-toolbox"></i><span>Admin Panel</span></a>
 
 
-    <div class="dropdown">
+    <div class="admin-auth-control">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class='bx bx-user fs-2'></i>Admin
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" data-bs-boundary="viewport">
+          <li><a class="dropdown-item" href="#">Manage My Account</a></li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+          <li><a class="dropdown-item" id="signout-btn" style="display: none" href="/admin/logout">Sign out</a></li>
+          <li><a class="dropdown-item" id="signin-btn"  style="display: none" href="/adminLogin">sign in</a></li>
+        </ul>
+      </li>
+    </div>
+
+    <!-- <div class="dropdown">
       <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
           <img src="https://media.istockphoto.com/id/1283030328/photo/silhouette-of-businessman-holding-target-board-on-the-top-of-mountain-with-over-blue-sky-and.jpg?s=1024x1024&w=is&k=20&c=nIw4nWHsCAaI2vrCobW_9MN-r6FmPoOKAT-OaeR1vz8=" alt="Success" width="30" height="30" class="rounded-circle">
           <span class="d-none d-sm-inline mx-1">Admin</span>
@@ -38,7 +54,7 @@
               </form>
           </li>
       </ul>
-  </div>
+  </div> -->
     
   </nav>
 

@@ -58,6 +58,10 @@ font-size: 32px;
     font-size: 24px;
 }
 
+.admin-auth-control {
+    list-style: none;
+    text-decoration: none;
+  }
 
 /* Main Content Styles */
 .col {
