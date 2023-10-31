@@ -1,0 +1,155 @@
+<%- include('layout/headerUser') %>
+<%- include('layout/formatPrice') %>
+
+<header>
+
+    <div class="bg-primary">
+      <div class="container py-4">
+        <!-- Breadcrumb -->
+        <nav class="d-flex">
+          <h6 class="mb-0">
+            <a href="" class="text-white-50">Home</a>
+            <span class="text-white-50 mx-2"> > </span>
+            <a href="" class="text-white-50">2. Shopping cart</a>
+            <span class="text-white-50 mx-2"> > </span>
+            <a href="" class="text-white"><u>3. Order info</u></a>
+            <span class="text-white-50 mx-2"> > </span>
+            <a href="" class="text-white-50">4. Payment</a>
+          </h6>
+        </nav>
+        <!-- Breadcrumb -->
+      </div>
+    </div>
+    <!-- Heading -->
+  </header>
+
+
+
+
+  
+  <section class="bg-light py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-8 col-lg-8 mb-4">
+          <div class="card shadow-0 border">
+            <div class="p-4">
+
+              <h5 class="card-title mb-3">Shipping Address</h5>
+
+              <div id="addressList">
+                <label><input type="radio" name="selectedAddress" value="1"> 123 Main St, City1, State1, 12345, USA</label><br>
+                <label><input type="radio" name="selectedAddress" value="2"> 456 Elm St, City2, State2, 67890, USA</label><br>
+                <!-- Add more options for other saved addresses as needed -->
+            </div>
+
+            <button class="btn btn-primary" onclick="toggleNewAddress()">Add New Address</button>
+
+
+              <div class="row" id="new-address">
+                <div class="col-6 mb-3">
+                  <p class="mb-0">First name</p>
+                  <div class="form-outline">
+                    <input type="text" id="typeText" placeholder="Type here" class="form-control" />
+                  </div>
+                </div>
+  
+                <div class="col-6">
+                  <p class="mb-0">Last name</p>
+                  <div class="form-outline">
+                    <input type="text" id="typeText" placeholder="Type here" class="form-control" />
+                  </div>
+                </div>
+  
+                <div class="col-6 mb-3">
+                  <p class="mb-0">Phone</p>
+                  <div class="form-outline">
+                    <input type="tel" id="typePhone" value="+91 " class="form-control" />
+                  </div>
+                </div>
+  
+                <div class="col-6 mb-3">
+                  <p class="mb-0">Email</p>
+                  <div class="form-outline">
+                    <input type="email" id="typeEmail" placeholder="example@gmail.com" class="form-control" />
+                  </div>
+                </div>
+              </div>
+  
+
+  
+              <hr class="my-4" />
+  
+              <h5 class="card-title mb-3">Shipping info</h5>
+  
+              
+  
+  
+
+  
+              <div class="float-end">
+                <button class="btn btn-light border">Cancel</button>
+                <button class="btn btn-success shadow-0 border">Continue</button>
+              </div>
+            </div>
+          </div>
+          <!-- Checkout -->
+        </div>
+        <div class="col-xl-4 col-lg-4 d-flex justify-content-center justify-content-lg-end">
+          <div class="ms-lg-4 mt-4 mt-lg-0" style="max-width: 320px;">
+            <h6 class="mb-3">Summary</h6>
+            <div class="d-flex justify-content-between">
+              <p class="mb-2">Total price:</p>
+              <p class="mb-2">$195.90</p>
+            </div>
+            <div class="d-flex justify-content-between"> 
+              <p class="mb-2">Discount:</p>
+              <p class="mb-2 text-danger">- $60.00</p>
+            </div>
+            <div class="d-flex justify-content-between">
+              <p class="mb-2">Shipping cost:</p>
+              <p class="mb-2">+ $14.00</p>
+            </div>
+            <hr />
+            <div class="d-flex justify-content-between">
+              <p class="mb-2">Total price:</p>
+              <p class="mb-2 fw-bold">$149.90</p>
+            </div>
+  
+            <div class="input-group mt-3 mb-4">
+              <input type="text" class="form-control border" name="" placeholder="Promo code" />
+              <button class="btn btn-light text-primary border">Apply</button>
+            </div>
+  
+            <hr />
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <script>
+    // JavaScript to handle toggling the "new-address" section
+    function toggleNewAddress() {
+        const newAddressSection = document.getElementById('new-address');
+        newAddressSection.style.display = 'block'; // Display the new address section
+
+        // Clear the selection of radio buttons
+        const radioButtons = document.querySelectorAll('input[type="radio"][name="selectedAddress"]');
+        radioButtons.forEach(function(radioButton) {
+            radioButton.checked = false;
+        });
+    }
+
+    // Add event listeners to radio buttons for previously saved addresses
+    const radioButtons = document.querySelectorAll('input[type="radio"][name="selectedAddress"]');
+    radioButtons.forEach(function(radioButton) {
+        radioButton.addEventListener('change', function() {
+            const newAddressSection = document.getElementById('new-address');
+            newAddressSection.style.display = 'none'; // Hide the new address section
+        });
+    });
+</script>
+
+  <%- include('layout/footerUser') %>

@@ -5,43 +5,18 @@ const Admin = require('../models/admin');
 const { setAdmin } = require('../service/auth');
 const mongoose = require('mongoose');
 const bycrypt = require("bcrypt");
+const productValidator=require('../middleware/productValidator');
+const {check,validationResult} = require('express-validator');
 
 
-async function handleAdminSignup(req, res) {
-    const { name, email, password, contactNumber } = req.body;
-    const saltRounds = 10;
-    const hashedPassword= await bycrypt.hash(password, saltRounds);
-    await Admin.create({
-        name,
-        email,
-        password:hashedPassword,
-        contactNumber,
-    });
-    return res.redirect("/adminLogin");
-};
+async function handleHomePageView(req,res){
+    if(!req.admin&& req.admin==null) return res.redirect('/adminLogin');
+    res.render('adminHome');
+}
 
-async function handleAdminLogin(req, res) {
-    const { email, password } = req.body;
-
-    const admin = await Admin.findOne({ email});
-    const validPassword = await bycrypt.compare(password,admin.password);
-    if (!admin || !validPassword) return res.render("adminlogin", {
-        error: "Invalid email or password",
-    });
-
-    const adminToken = setAdmin(admin);
-    res.cookie("adminuid", adminToken);
-    return res.redirect("/adminHome");
-};
-
-async function handleAdminLogout(req, res) {
-
-    res.cookie("adminuid", " ");
-    req.admin = " ";
-    return res.redirect("/adminLogin");
-};
 
 async function handleCategoryView(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     try {
         const categories = await Category.find({ isDeleted: false })
         res.render('categories', { categories });
@@ -51,6 +26,7 @@ async function handleCategoryView(req, res) {
 }
 
 async function handleCategorySearch(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     const searchKey=req.body.searchKey;
     const query = { 
         category_name: { $regex: searchKey, $options: 'i' }, 
@@ -66,8 +42,13 @@ async function handleCategorySearch(req, res) {
         console.log(error);
     }
 }
+async function handleAddCategoryPageView(req,res){
+    if(!req.admin&& req.admin==null) return res.redirect('/adminLogin');
+    res.render('addCategories');
+}
 
 async function handleCategoryAdd(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     try {
         const { category_name, description } = req.body;
         await Category.create({
@@ -80,8 +61,18 @@ async function handleCategoryAdd(req, res) {
         return res.render("addCategories", { message: "Failed!!Category already exists" });
     }
 }
+async function handleEditCategoryPageView(req,res){
+    if(!req.admin&& req.admin==null) return res.redirect('/adminLogin');
+    // if(!req.admin) return res.redirect('/adminlogin');
+    let id = req.params.id;
+    const category = await Category.findOne({_id:id});
+    // if(!user && user==null) res.render("/categories");
+    res.render("editCategories",{category:category});
+    
+}
 
 async function handleCategoryEdit(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     let id = req.params.id;
     try {
         await Category.findByIdAndUpdate(id, {
@@ -96,6 +87,7 @@ async function handleCategoryEdit(req, res) {
 }
 
 async function handleCategoryDelete(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     let id = req.params.id;
     try {
         await Category.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
@@ -109,6 +101,8 @@ async function handleCategoryDelete(req, res) {
 
 
 async function handleUserView(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
+        if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     try {
         const users = await User.find({ isDeleted: false })
         res.render('customers', { users });
@@ -118,6 +112,7 @@ async function handleUserView(req, res) {
 }
 
 async function handleUserSearch(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     const searchKey = req.body.searchKey;
     const query ={
         name:{$regex:searchKey,$options:'i'},
@@ -133,7 +128,12 @@ async function handleUserSearch(req, res) {
     }
 }
 
+async function handleAddUserPageView(req,res){
+    res.render('addCustomers');
+}
+
 async function handleUserAdd(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     try {
         const { name, email, password, contactNumber } = req.body;
         const saltRounds = 10;
@@ -151,8 +151,17 @@ async function handleUserAdd(req, res) {
         return res.render("addCustomers", { message: "Failed!!User already exists!!" });
     }
 };
+async function handleEditCustomerPageView(req,res){
+    // if(!req.admin) return res.redirect('/adminlogin');
+    let id = req.params.id;
+    const customer = await User.findOne({_id:id});
+    // if(!user && user==null) res.render("/categories");
+    res.render("editCustomers",{customer:customer});
+    
+}
 
 async function handleCustomerEdit(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     let id = req.params.id;
     try {
         await User.findByIdAndUpdate(id, {
@@ -168,6 +177,7 @@ async function handleCustomerEdit(req, res) {
 };
 
 async function handleCustomerDelete(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     let id = req.params.id;
     try {
         await User.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
@@ -179,6 +189,7 @@ async function handleCustomerDelete(req, res) {
 
 };
 async function handleCustomerBlock(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     let id = req.params.id;
     try {
         await User.findByIdAndUpdate(id, { isBlocked: true }, { new: true });
@@ -190,6 +201,7 @@ async function handleCustomerBlock(req, res) {
 
 };
 async function handleCustomerUnblock(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     let id = req.params.id;
     try {
         await User.findByIdAndUpdate(id, { isBlocked: false });
@@ -202,6 +214,7 @@ async function handleCustomerUnblock(req, res) {
 };
 
 async function handleProductsView(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     try {
         const products = await Product.find({ isDeleted: false }).sort({createdAt:-1}).populate({
             path: 'categoryId',
@@ -214,6 +227,7 @@ async function handleProductsView(req, res) {
 };
 
 async function handleProductsSort(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     const sortid=req.query.sort ||-1;
     try {
         const products = await Product.find({ isDeleted: false }).sort({price:sortid}).populate({
@@ -227,6 +241,7 @@ async function handleProductsSort(req, res) {
 };
 
 async function handleProductSearch(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     const searchKey=req.body.searchKey;
 
     const query = { 
@@ -247,9 +262,22 @@ async function handleProductSearch(req, res) {
     }
 };
 
-
+async function handleAddProductPageView(req,res){
+    if(!req.admin&& req.admin==null) return res.redirect('/adminLogin');
+   const categories = await Category.find({},{category_name:1,_id:1});
+    res.render('addProducts',{categories:categories});
+}
 
 async function handleProductAdd(req, res) {
+    const errors=validationResult(req);
+    if(!errors.isEmpty()){
+        const categories = await Category.find({},{category_name:1,_id:1});
+        return res.render('addProducts',{
+            errors:errors.mapped(),
+            categories:categories,
+        });
+    }
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     try {
         const { product_name, categoryId, brand, color, price, stock, description } = req.body;
         const files = req.files;
@@ -276,7 +304,20 @@ async function handleProductAdd(req, res) {
     }
 };
 
+async function handleProductUpdatePageView(req,res){
+    if(!req.admin&& req.admin==null) return res.redirect('/adminLogin');
+    // if(!req.admin) return res.redirect('/adminlogin');
+    let id = req.params.id;
+    const product = await Product.findOne({_id:id});
+    
+    const categories = await Category.find({},{category_name:1,_id:1});
+    // if(!user && user==null) res.render("/categories");
+    res.render("editProducts",{product:product,categories:categories});
+    
+}
+
 async function handleProductUpdate(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     let id = req.params.id;
     const files = req.files;
     const product = await Product.findById(id);
@@ -307,6 +348,7 @@ async function handleProductUpdate(req, res) {
     }
 };
 async function handleProdcutDelete(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     let id = req.params.id;
     try {
         await Product.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
@@ -318,6 +360,7 @@ async function handleProdcutDelete(req, res) {
 
 };
 async function handleImageDelete(req, res) {
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     let index = req.query.index;
     let id = req.query.productid;
 
@@ -348,25 +391,29 @@ async function handleImageDelete(req, res) {
 
 
 module.exports = {
+    handleHomePageView,
     handleCategoryView,
     handleCategorySearch,
+    handleAddCategoryPageView,
     handleCategoryAdd,
+    handleEditCategoryPageView,
     handleCategoryEdit,
     handleCategoryDelete,
+    handleAddUserPageView,
     handleUserAdd,
     handleUserView,
     handleUserSearch,
+    handleEditCustomerPageView,
     handleCustomerEdit,
     handleCustomerDelete,
     handleProductsView,
     handleProductSearch,
     handleProductsSort,
+    handleAddProductPageView,
     handleProductAdd,
+    handleProductUpdatePageView,
     handleProductUpdate,
     handleProdcutDelete,
-    handleAdminLogin,
-    handleAdminSignup,
-    handleAdminLogout,
     handleCustomerBlock,
     handleCustomerUnblock,
     handleImageDelete,

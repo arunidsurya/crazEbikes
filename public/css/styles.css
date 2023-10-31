@@ -1,225 +1,323 @@
 * {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 /* Body and general text styles */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 15px;
-    line-height: 1.5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
 }
 
 /* Links */
 a {
-    color: red;
-    text-decoration: none;
+  color: red;
+  text-decoration: none;
 }
 
 /* Lists */
 ul {
-    list-style: none;
+  list-style: none;
 }
 
 /* Header styles */
 .navbar {
-    height: 100px; /* Adjust the height as needed */
-  }
+  height: 100px;
+  /* Adjust the height as needed */
+}
+
 #logoimg {
-    height: 70px;
-    width: 100px;
+  height: 70px;
+  width: 100px;
 }
 
 #Bname1 {
-    color: goldenrod;
-    font-size: 40px;
+  color: goldenrod;
+  font-size: 40px;
 }
 
 #Bname2 {
-    color: black;
-    font-size: 40px;
+  color: black;
+  font-size: 40px;
 }
 
 #Bname3 {
-    color: red;
-    font-size: 40px;
+  color: red;
+  font-size: 40px;
 }
 
 #sitename {
-    font-weight: 900;
-    font-size: 30px;
-    margin-left: 30px;
-    margin-right: 50px;
+  font-weight: 900;
+  font-size: 30px;
+  margin-left: 30px;
+  margin-right: 50px;
 }
 
 /* Cover image styles */
 .cover-image-container {
-    position: relative;
-    display: inline-block;
+  position: relative;
+  display: inline-block;
 }
 
 .text-over-image {
-    position: absolute;
-    top: 70%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    text-align: center;
-    font-size: 2vw;
-    font-weight: 700;
-    padding: 2vw;
-    max-width: 100%;
+  position: absolute;
+  top: 50%; /* Vertically center the text */
+  left: 50%; /* Horizontally center the text */
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  text-align: center;
+  font-size: 2vw;
+  font-weight: 700;
+  padding: 10px;
+  max-width: 100%;
+  font-family: 'Arial', sans-serif; /* Set your desired font family */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add a subtle text shadow */
+  border-radius: 5px;
 }
 
 #cover-image {
-    width: 100%;
-    height: auto;
+  width: 100%;
+  height: auto;
 }
 
 /* Navigation links */
 .top-selectors {
-    margin: 20px;
-    font-size: 20px;
-    color: grey;
-    font-weight: 800;
-    text-decoration: none;
+  margin: 20px;
+  font-size: 20px;
+  color: grey;
+  font-weight: 800;
+  text-decoration: none;
 
 }
 
+/* Change the color of Boxicons to black */
+.bx {
+  color: black;
+}
+
+/* Change the color of Bootstrap icons to black */
+.navbar-nav .nav-link i.bx {
+  color: black;
+}
+
+.navbar-nav .nav-link i.bx,
+.navbar-nav .nav-link {
+  color: black;
+}
 
 /* Dropdown menu styles */
 .dropdown-menu {
-    max-height: 70vh;
+  max-height: 70vh;
 }
 
 /* Custom button styles */
 .custom-button {
-    background-color: #111111;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    height: auto;
-    width: auto;
+  background-color: #111111;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  height: auto;
+  width: auto;
 }
 
 /* Styling for the product container */
 .product-container {
-    text-align: center; /* Center-align the heading */
-    margin: 50px 0 5px 0;
-  }
-  
-  /* Styling for the card rows */
-  .card-row {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    margin: 0 -10px; /* To remove left and right margins */
-  }
-  
-  /* Styling for each product card */
-  .product-card {
-    flex: 0 1 calc(25% - 20px); /* To ensure 4 cards per row with spacing */
-    margin: 10px; /* Add spacing between cards */
-    box-sizing: border-box;
-    text-align: center;
-    padding: 10px; /* Reduce padding */
-    border: 1px solid #e0e0e0;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Reduce shadow for a smaller card */
-  }
-  
-  /* Styling for product images */
-  .product-image {
-    max-width: 100%;
-    height: auto;
-    max-height: 100px; /* Set a maximum height for the images */
-  }
-  
-  /* Styling for product name and price */
-  .product-card h2, .product-card h4 {
-    margin: 5px 0; /* Reduce spacing above and below product name and price */
-    font-size: 18px; /* Reduce font size */
-    color: #333;
-  }
-  
+  text-align: center;
+  /* Center-align the heading */
+  margin: 50px 0 5px 0;
+}
+
+/* Styling for the card rows */
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin: 0 -10px;
+  /* To remove left and right margins */
+}
+
+/* Styling for each product card */
+.product-card {
+  flex: 0 1 calc(25% - 20px);
+  /* To ensure 4 cards per row with spacing */
+  margin: 10px;
+  /* Add spacing between cards */
+  box-sizing: border-box;
+  text-align: center;
+  text-decoration: none;
+  padding: 10px;
+  /* Reduce padding */
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Reduce shadow for a smaller card */
+}
+
+/* Styling for product images */
+.product-image {
+  max-width: 100%;
+  height: auto;
+  max-height: 100px;
+  /* Set a maximum height for the images */
+}
+
+/* Styling for product name and price */
+.product-card h2,
+.product-card h4 {
+  margin: 5px 0;
+  /* Reduce spacing above and below product name and price */
+  font-size: 18px;
+  /* Reduce font size */
+  color: #333;
+  text-decoration: none;
+}
+
+.product-card a {
+  text-decoration: none;
+  /* Remove underline */
+}
+
 /* Styling for the pagination container */
 .pagination {
-    margin: auto;
-    padding: 10px;
-    align-items: center;
-  }
-  
-  
-  /* Styling for pagination links */
-  .pagination a {
-    text-decoration: none;
-    margin: 0 5px;
-    color: #007BFF;
-  }
-  
-  /* Styling for the current page indicator */
-  .pagination span {
-    font-weight: bold;
-    margin: 0 5px;
-  }
-  
-  /* Style for the main footer element */
+  margin: auto;
+  padding: 10px;
+  align-items: center;
+}
+
+
+/* Sort section */
+/* Style for the select element */
+#sortPrice {
+  padding: 8px; /* Adjust padding as needed */
+  border: 1px solid #ccc; /* Add a border */
+  border-radius: 4px; /* Add rounded corners */
+  background-color: #fff; /* Background color */
+  font-size: 14px; /* Font size */
+  color: #333; /* Text color */
+  width: 150px; /* Set a specific width */
+}
+
+/* Style for the label */
+label[for="sortPrice"] {
+  font-weight: bold; /* Make the label text bold */
+  margin-right: 10px; /* Add some space to the right of the label */
+}
+
+/* Style for the options in the select */
+#sortPrice option {
+  background-color: #fff; /* Background color for options */
+  color: #333; /* Text color for options */
+}
+
+
+/* Style for the sort button when it's focused (selected) */
+#sortPrice:focus {
+  outline: none; /* Remove the default focus outline */
+  border-color: #007bff; /* Change border color when focused (adjust to your design) */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Add a subtle box shadow when focused */
+}
+
+
+
+/* Center-align the pagination container */
+.pagination {
+  margin: auto;
+  padding: 10px;
+  align-items: center;
+  display: flex;
+  justify-content: center; /* Center horizontally */
+}
+
+.pagination #pagination {
+  display: inline-block;
+}
+/* Style for the page numbers (optional) */
+.pagination a {
+  padding: 5px 10px; /* Adjust padding as needed */
+  text-decoration: none;
+  margin: 0 5px; /* Add spacing between page numbers */
+  border: 1px solid #ccc; /* Add a border */
+  border-radius: 4px; /* Add rounded corners */
+  background-color: #fff; /* Background color */
+  color: #333; /* Text color */
+  font-weight: bold;
+}
+
+/* Style for the current page (optional) */
+.pagination .current-page {
+  background-color: #007bff; /* Background color for the current page */
+  color: #fff; /* Text color for the current page */
+  border: 1px solid #007bff; /* Border color for the current page */
+}
+
+
+/* Style for the main footer element */
 .footer {
-    background-color: #f2f2f2;
-    color: #616161;
-    padding: 20px; /* Add padding to the footer for spacing */
-    margin: 50px 0 5px 0;
-    /* Center the text within the footer */
-    text-align: center;
+  background-color: #f2f2f2;
+  color: #616161;
+  padding: 20px;
+  /* Add padding to the footer for spacing */
+  margin: 50px 0 5px 0;
+  /* Center the text within the footer */
+  text-align: center;
 }
 
 /* Style for the services section */
 .services {
-    display: flex;
-    justify-content: space-between;
-    margin: 40px 0 70px 0 ;
+  display: flex;
+  justify-content: space-between;
+  margin: 40px 0 70px 0;
 }
 
 .services .item {
-    flex: 1;
-    margin: 0 10px;
+  flex: 1;
+  margin: 0 10px;
 }
 
 .services h4 {
-    color: #585757;; /* Text color for service headings */
-    font-weight: 800;
+  color: #585757;
+  ;
+  /* Text color for service headings */
+  font-weight: 800;
 }
 
 /* Style for the info section */
 .info a {
-    text-decoration: none; /* Remove underlines from links */
-    color: #585757; /* Text color for info section links */
-    margin: 0 10px;
+  text-decoration: none;
+  /* Remove underlines from links */
+  color: #585757;
+  /* Text color for info section links */
+  margin: 0 10px;
 }
 
 .info a:hover {
-    color: #0c0c0c; /* Change color on hover */
+  color: #0c0c0c;
+  /* Change color on hover */
 }
 
 /* Style for the trade section */
 .trade a {
-    text-decoration: none; /* Remove underlines from links */
-    color: #585757; /* Text color for the trade section link */
+  text-decoration: none;
+  /* Remove underlines from links */
+  color: #585757;
+  /* Text color for the trade section link */
 }
 
 .trade a:hover {
-    color: #0c0c0c; /* Change color on hover */
+  color: #0c0c0c;
+  /* Change color on hover */
 }
 
-#footer-img{
-    height: 30px;
-    width: 80px;
-    margin: 0 5px;
+#footer-img {
+  height: 30px;
+  width: 80px;
+  margin: 0 5px;
 }
 
 
@@ -227,33 +325,36 @@ ul {
 
 
 .thumbnail-item {
-    border: 2px solid #ccc;
-    margin-right: 10px;
-    cursor: pointer;
+  border: 2px solid #ccc;
+  margin-right: 10px;
+  cursor: pointer;
 }
 
 .thumbnail-item.active {
-    border-color: #007bff;
+  border-color: #007bff;
 }
-.product-description{
-    margin: 20px 0 20px 0;
-    text-align: center;
+
+.product-description {
+  margin: 20px 0 20px 0;
+  text-align: center;
 }
 
 /* OTP verification */
 
-.otp-verify{
-    margin: 50px 0;
+.otp-verify {
+  margin: 50px 0;
 }
 
 .otp-form {
-    width: 150px !important;
-  }
-.otp-status-message{
-    color:red;
+  width: 150px !important;
 }
-.otp-success-message{
-    color:green;
+
+.otp-status-message {
+  color: red;
+}
+
+.otp-success-message {
+  color: green;
 }
 
 
@@ -271,149 +372,113 @@ ul {
 /* This sidebar modified by seegatesite.com */
 
 #wrapper {
-    padding-left: 0;
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;
-  }
-  
-  #wrapper.toggled {
-    padding-left: 250px;
-  }
-  
-  #sidebar-wrapper {
-    z-index: 1000;
-    position: fixed;
-    left: 250px;
-    margin-left: -250px;
-    overflow-y: auto;
-    background: rgb(5, 73, 28);
-    -webkit-transition: all 0.5s ease;
-    -moz-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;
-    display: flex;
-    flex-direction: column; /* Make the sidebar a column flex container */
-    height: 100%; /* Set a minimum height of 100% */
+  padding-left: 0;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
 }
-  .navbar{
-    background: rgb(5, 73, 28);
-  }
-  
-  #wrapper.toggled #sidebar-wrapper {
-    width: 250px;
-  }
-  
-  #page-content-wrapper {
-    width: 100%;
-    position: absolute;
-    padding: 15px;
-  }
-  
-  #wrapper.toggled #sidebar-wrapper {
-    width: 250px;
-    height: auto; /* Let the height adapt to its content */
+
+#wrapper.toggled {
+  padding-left: 250px;
 }
-  
-  .fixed-brand {
-    width: auto;
-  }
-  /* Sidebar Styles */
-  
-  .sidebar-nav {
-    position: absolute;
-    top: 0;
-    width: 250px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    margin-top: 2px;
-  }
-  
-  .sidebar-nav li {
-    text-indent: 15px;
-    line-height: 40px;
-  }
-  
-  .sidebar-nav li a {
-    display: block;
-    text-decoration: none;
-    color: #FAFAFA;
-  }
-  
-  .sidebar-nav li a:hover {
-    text-decoration: none;
-    color: #fff;
-    background: rgba(255, 255, 255, 0.2);
-    border-left: red 2px solid;
-  }
-  
-  .sidebar-nav li a:active,
-  .sidebar-nav li a:focus {
-    text-decoration: none;
-  }
-  
-  .sidebar-nav > .sidebar-brand {
-    height: 65px;
-    font-size: 18px;
-    line-height: 60px;
-  }
-  
-  .sidebar-nav > .sidebar-brand a {
-    color: #999999;
-  }
-  
-  .sidebar-nav > .sidebar-brand a:hover {
-    color: #fff;
-    background: none;
-  }
-  
-  .no-margin {
-    margin: 0;
-  }
-  
-  @media(min-width:768px) {
-    #wrapper {
-      padding-left: 250px;
-    }
-    .fixed-brand {
-      width: 250px;
-    }
-    #wrapper.toggled {
-      padding-left: 0;
-    }
-    #sidebar-wrapper {
-      width: 250px;
-    }
-    #wrapper.toggled #sidebar-wrapper {
-      width: 250px;
-    }
-    #wrapper.toggled-2 #sidebar-wrapper {
-      width: 150px;
-    }
-    #wrapper.toggled-2 #sidebar-wrapper:hover {
-      width: 250px;
-    }
-    #page-content-wrapper {
-        width: 100%;
-        position: absolute;
-        padding: 15px;
-        display: flex;
-        flex-direction: column; /* Make the content wrapper a column flex container */
-    }
-    #wrapper.toggled #page-content-wrapper {
-      position: relative;
-      margin-right: 0;
-      padding-left: 250px;
-    }
-    #wrapper.toggled-2 #page-content-wrapper {
-      position: relative;
-      margin-right: 0;
-      margin-left: -200px;
-      -webkit-transition: all 0.5s ease;
-      -moz-transition: all 0.5s ease;
-      -o-transition: all 0.5s ease;
-      transition: all 0.5s ease;
-    }
-  }
+
+#sidebar-wrapper {
+  z-index: 1000;
+  position: fixed;
+  left: 250px;
+  margin-left: -250px;
+  overflow-y: auto;
+  background: rgb(5, 73, 28);
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+  display: flex;
+  flex-direction: column;
+  /* Make the sidebar a column flex container */
+  height: 100%;
+  /* Set a minimum height of 100% */
+}
+
+.navbar {
+  background: rgb(5, 73, 28);
+}
+
+#wrapper.toggled #sidebar-wrapper {
+  width: 250px;
+}
+
+#page-content-wrapper {
+  width: 100%;
+  position: absolute;
+  padding: 15px;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+  width: 250px;
+  height: auto;
+  /* Let the height adapt to its content */
+}
+
+.fixed-brand {
+  width: auto;
+}
+
+/* Sidebar Styles */
+
+.sidebar-nav {
+  position: absolute;
+  top: 0;
+  width: 250px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  margin-top: 2px;
+}
+
+.sidebar-nav li {
+  text-indent: 15px;
+  line-height: 40px;
+}
+
+.sidebar-nav li a {
+  display: block;
+  text-decoration: none;
+  color: #FAFAFA;
+}
+
+.sidebar-nav li a:hover {
+  text-decoration: none;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+  border-left: red 2px solid;
+}
+
+.sidebar-nav li a:active,
+.sidebar-nav li a:focus {
+  text-decoration: none;
+}
+
+.sidebar-nav>.sidebar-brand {
+  height: 65px;
+  font-size: 18px;
+  line-height: 60px;
+}
+
+.sidebar-nav>.sidebar-brand a {
+  color: #999999;
+}
+
+.sidebar-nav>.sidebar-brand a:hover {
+  color: #fff;
+  background: none;
+}
+
+.no-margin {
+  margin: 0;
+}
+/*/////////////////////////////////////////////*/
+
+/* responsive content */
+

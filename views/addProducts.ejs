@@ -19,6 +19,9 @@
               <label for="product_name" class="col-sm-2 col-form-label">Product Name:</label>
               <div class="col-sm-10">
                 <input type="text" name="product_name" class="form-control" id="category_name">
+                <% if (locals.errors && locals.errors.product_name) { %>
+                  <span class="text-danger"><%= errors.product_name.msg %></span>
+                 <% } %>
               </div>
               <label for="category_description" class="col-sm-2 col-form-label">Select category:</label>
               <div class="col-sm-10">
@@ -34,31 +37,50 @@
               <label for="brand" class="col-sm-2 col-form-label">Brand:</label>
               <div class="col-sm-10">
                 <input type="text" name="brand" class="form-control" id="brand">
+                <% if (locals.errors && locals.errors.brand) { %>
+                  <span class="text-danger"><%= errors.brand.msg %></span>
+                 <% } %>
               </div>
 
               <label for="color" class="col-sm-2 col-form-label">Color:</label>
               <div class="col-sm-10">
                 <input type="text" name="color" class="form-control" id="brand">
+                <% if (locals.errors && locals.errors.color) { %>
+                  <span class="text-danger"><%= errors.color.msg %></span>
+                 <% } %>
               </div>
+
 
               <label for="image" class="col-sm-2 col-form-label">Image:</label>
               <div class="col-sm-10">
-                <input type="file" multiple name="image" class="form-control" id="image">
+                <input type="file" multiple name="image" class="form-control" >
+                <% if (locals.errors && locals.errors.image) { %>
+                  <span class="text-danger"><%= errors.image.msg %></span>
+                 <% } %>
               </div>
 
               <label for="retail_price" class="col-sm-2 col-form-label">Price:</label>
               <div class="col-sm-10">
                 <input type="text" name="price" class="form-control" id="retailPrice">
+                <% if (locals.errors && locals.errors.price) { %>
+                  <span class="text-danger"><%= errors.price.msg %></span>
+                 <% } %>
               </div>
 
               <label for="discount" class="col-sm-2 col-form-label">Stock:</label>
               <div class="col-sm-10">
                 <input type="text" name="stock" class="form-control" id="stock">
+                <% if (locals.errors && locals.errors.stock) { %>
+                  <span class="text-danger"><%= errors.stock.msg %></span>
+                 <% } %>
               </div>
 
               <label for="product_description" class="col-sm-2 col-form-label">Description:</label>
               <div class="col-sm-10">
-                <input type="text" name="description" class="form-control id="description">
+                <input type="text" name="description" class="form-control id="description" >
+                <% if (locals.errors && locals.errors.description) { %>
+                  <span class="text-danger"><%= errors.description.msg %></span>
+                 <% } %>
               </div>
             </div>
             <center>
@@ -75,5 +97,10 @@
     </div>
 
 
+    <script>
+      function displayImage(event){
+        document.getElementById(viewImage).src=URL.createObjectURL(event.files[0]);
+      }
+    </script>
 
     <%- include('layout/footerAdmin') %>

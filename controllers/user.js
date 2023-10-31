@@ -1,251 +1,344 @@
-const express = require("express");
-const User = require('../models/User');
-const nodemailer = require("nodemailer");
-const{v4:uuidv4}= require('uuid');
-const bycrypt = require("bcrypt");
-const userOTPVerification = require("../models/userOTPVerification");
-const transpoter = require("../utils/nodeMailer");
-const { setUser } = require('../service/auth');
+const express = require('express');
+const Cart = require('../models/cart');
+const mongoose = require('mongoose');
 
-async function handleUserLogin(req, res) {
-    const images ={
-        cover:'resources/images/coverPhoto.jpg',
-        logo:'resources/images/logo.jpg',
-        amazon:'resources/images/amazon.jpg',
-        dhl:'resources/images/dhl.jpg',
-        fedex:'resources/images/fedex.jpg',
-        gPay:'resources/images/gPay.jpg',
-        master:'resources/images/master.jpg',
-        visa:'resources/images/visa.jpg',
-    };
-    const imgUri = process.env.IMGURI;
-    const { email, password } = req.body;
-    // console.log(email,login);
-    const user = await User.findOne({ email});
-    const validPassword = await bycrypt.compare(password,user.password);
-    if (!user || !validPassword) {
-    return res.render("userlogin", {
-        images:images,
-        imgUri:imgUri,
-        error: "Invalid email or password",
+
+
+const images = {
+    cover: 'resources/images/coverPhoto.jpg',
+    logo: 'resources/images/logo.jpg',
+    amazon: 'resources/images/amazon.jpg',
+    dhl: 'resources/images/dhl.jpg',
+    fedex: 'resources/images/fedex.jpg',
+    gPay: 'resources/images/gPay.jpg',
+    master: 'resources/images/master.jpg',
+    visa: 'resources/images/visa.jpg',
+};
+
+const imgUri = process.env.IMGURI;
+
+function formatPrice(price) {
+    return price.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
     });
-
-    }else if(user.isBlocked){
-        return res.render("userlogin", {
-            images:images,
-            imgUri:imgUri,
-            error: "This Account is bLocked!!! please contact Admin",
-        });
-    }
-
-    const userToken = setUser(user);
-    res.cookie("useruid", userToken);
-    return res.redirect("/");
 };
 
-async function handleUerLogout(req, res) {
-    req.user = " ";
-    return res.redirect("/");
-};
 
-async function handleUserSignup(req,res){
-    let{name,email,password,contactNumber}=req.body;
-    name = name.trim();
-    email= email.trim();
-    password= password.trim();
-    contactNumber= contactNumber.trim();
 
-    if(name ==""||email==""||password==""){
-        res.json({
-            status:"FAILED",
-            message:"Empty input fields!",
-        });
-    } else if(!/^[a-zA-z]*$/.test(name)){
-        res.json({
-            status:"FAILED",
-            message:"Invalid name entered!",
-        })
-    }else if(!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)){
-        res.json({
-            status:"FAILED",
-            message:"Invalid email entered!",
-        })
-    }else if(password.length < 8){
-        res.json({
-            status:"FAILED",
-            message:"Password is too short!",
-        })
-    }else{
-        const user = await User.find({email});
-        if(user!=""){
-            res.json({
-                status:"FAILED",
-                message:"User with provided email already exists!",
-            })      
-        }else{
-            const saltRounds = 10;
-            bycrypt
-            .hash(password, saltRounds)
-            .then((hashedPassword)=>{
-                const newUser = new User({
-                    name,
-                    email,
-                    password:hashedPassword,
-                    contactNumber,
-                    isVerified:false,
-                });
-                
-                newUser
-                .save()
-                .then((result)=>{
-                    sendVerificationEmail(result,res);
-                })
-                .catch((err)=>{
-                    console.log(err);
-                    res.json({
-                        status:"FAILED",
-                        message:"An error occured while saving user account!",
-                    });
-                });
-            })
-            .catch((err)=>{
-                res.json({
-                    status:"FAILED",
-                    message:"An error occured while hashing password!!",
-                });
-            });
+async function handleCartView(req, res){
+    const userId = req.session.userId;
+
+    try {
+        const cartDataResult = await Cart.aggregate([
+            {
+                $match: { userId: new mongoose.Types.ObjectId(userId) }
+            },
+            {
+                $unwind: '$cartItems'
+            },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'cartItems.product_id',
+                    foreignField: '_id',
+                    as: 'product'
+                }
+            },
+            {
+                $unwind: '$product'
+            },
+            {
+                $group: {
+                    _id: null,
+                    cartdata: {
+                        $push: {
+                            product: '$product',
+                            quantity: '$cartItems.quantity',
+                        }
+                    },
+                    cartTotal: {
+                        $sum: {
+                            $multiply: [
+                                '$cartItems.quantity',
+                                '$product.price'
+                            ]
+                        }
+                    },
+                    totalQuantity: { $sum: '$cartItems.quantity' }
+                }
+            },
+        ]);
+
+        if (cartDataResult.length === 0) {
+            return res.render('cart', { imgUri, images, message: "0 items in the cart" });
         }
+
+        const { cartdata, cartTotal } = cartDataResult[0]; // Remove userId and totalQuantity here
+
+        res.render('cart', { cartdata, cartTotal, userId, totalQuantity: cartDataResult[0].totalQuantity, imgUri, images, formatPrice });
+    } catch (err) {
+        console.error('Error:', err);
+        return res.render('cart', { imgUri, images, message: "0 items in the cart" });
     }
-}
 
-const sendVerificationEmail = async({_id,email},res)=>{
+    // if (!userId && userId == undefined) {
+//     res.render('userlogin', { imgUri, images })
+// } else {
+
+//     const cartdata = await Cart.findOne({ userId: userId }).populate({
+//         path: 'cartItems.product_id',
+//         model: 'product'
+//     });
+
+
+//     // console.log(cartdata);
+//     let cartTotal = 0;
+//     let totalQunatity = 0;
+
+//     for (let i = 0; i < cartdata.cartItems.length; i++) {
+//         const item = cartdata.cartItems[i];
+//         const itemPrice = item.product_id.price;
+//         const itemQuantity = item.quantity;
+//         totalQunatity += item.quantity;
+//         cartTotal += itemPrice * itemQuantity;
+//     }
+//     res.render('cart', { cartdata, cartTotal, totalQunatity, imgUri, images, formatPrice });
+// }
+
+};
+
+async function handleAddToCart(req, res){
+
     try {
-        const otp= `${Math.floor(1000 + Math.random() * 9000)}`;
+        const product_id = req.query.product_id;
+        const quantity = req.body.quantity;
+        const userId = req.session.userId;
+        
+        // Check if the user's cart exists; if not, create a new one
+        let cart = await Cart.findOne({ userId: userId });
+        if (!cart) {
+            cart = new Cart({ userId: userId, cartItems: [] });
+        }
 
-        //mail options
-        const mailOptions ={
-            from: process.env.AUTH_EMAIL,
-            to:email,
-            subject: "Verify Your Email",
-            html:`<p> Enter <b>${otp}</b> in the app to verify your email address.</p>
-            <p>This code will <b> Expires in one hour</b></P> `
-        };
-    // hash the otp
-    const saltRounds = 10;
-    const hashedOTP = await bycrypt.hash(otp,saltRounds);
-      const newOTPVerification = await new userOTPVerification({
-            userId:_id,
-            otp: hashedOTP,
-            createdAt:Date.now(),
-            expiresAt:Date.now() + 3600000,
-        });
-        // save otp record
-        await newOTPVerification.save();
-        transpoter.sendMail(mailOptions);
-        res.render('userOtpVerify',{ message:"Verification otp email sent", userid:_id,})
-  
-    } catch (error) {
-        res.json({
-            status:"FAILED",
-            message:error.message,
-        });
-    }
-}
+        // Check if the product already exists in the cart
+        const existingCartItemIndex = cart.cartItems.findIndex(item => item.product_id.toString() === product_id);
+
+        if (existingCartItemIndex !== -1) {
+            // If the product is already in the cart, update the quantity
+            cart.cartItems[existingCartItemIndex].quantity = quantity;
+        } else {
+            // If the product is not in the cart, add it
+            cart.cartItems.push({ product_id, quantity });
+        }
+
+        // Save the updated cart
+        await cart.save();
+
+        try {
+            const cartDataResult = await Cart.aggregate([
+                {
+                    $match: { userId: new mongoose.Types.ObjectId(userId) }
+                },
+                {
+                    $unwind: '$cartItems'
+                },
+                {
+                    $lookup: {
+                        from: 'products',
+                        localField: 'cartItems.product_id',
+                        foreignField: '_id',
+                        as: 'product'
+                    }
+                },
+                {
+                    $unwind: '$product'
+                },
+                {
+                    $group: {
+                        _id: null,
+                        cartdata: {
+                            $push: {
+                                product: '$product',
+                                quantity: '$cartItems.quantity' // Include quantity from cartItems
+                            }
+                        },
+                        cartTotal: {
+                            $sum: {
+                                $multiply: [
+                                    '$cartItems.quantity',
+                                    '$product.price'
+                                ]
+                            }
+                        },
+                        totalQuantity: { $sum: '$cartItems.quantity' }
+                    }
+                },
+
+            ]);
 
 
-async function handleUserOtpVerification(req,res){
-    try {
-        let otp= req.body.otp;
-        let userId = req.query.userid;
-        console.log(otp,userId);
-        if(!userId || !otp){
-            res.render('userOtpVerify',{
-                userid:userId,
-                status:"FAILED",
-                message_no_otp:`Empty otp details are not allowed.`,
-               })
-            // throw Error("Empty otp details are not allowed");
-        }else{
-          const userOTPVerificationRecords = await userOTPVerification.find({
-            userId,
-          });
-          if(userOTPVerification.length <=0){
-            //no records found
-            res.render('userOtpVerify',{
-                userid:userId,
-                status:"FAILED",
-                message_no_record:`Account record dosen't exist or has been verified already.Please signup or login.`,
-               })
-            // throw new Error(
-            //     "Account record dosen't exist or has been verified already.Please signup or login."
-            // );
-          }else{
-            const {expiresAt} = userOTPVerificationRecords[0];
-            const hashedOTP = userOTPVerificationRecords[0].otp;
-
-            if(expiresAt < Date.now()){
-               await userOTPVerification.deleteMany({userId});
-               res.render('userOtpVerify',{
-                userid:userId,
-                status:"FAILED",
-                message_otp_expired:`Code has expired. Please request again.`,
-               })
-            //    throw new Error("Code has expired. Please request again.");
-            }else{
-               const validOTP = await bycrypt.compare(otp,hashedOTP);
-
-               if(!validOTP){
-                // throw new Error("Invalid code passed. Check  your inbox");
-                res.render('userOtpVerify',{
-                    userid:userId,
-                    status:"VERIFIED",
-                    message_inavlid_otp:`Invalid code passed. Check  your inbox.`,
-                   });
-               }else {
-               await User.updateOne({_id:userId},{isVerified:true});
-               await userOTPVerification.deleteMany({userId});
-               res.render('userOtpVerify',{
-                userid:userId,
-                status:"VERIFIED",
-                message:`User email verified successfully.`,
-               })
-               }
+            if (cartDataResult.length === 0) {
+                // No records found
+                return res.status(404).json("No records found");
             }
-          }
+
+            const { cartdata, cartTotal, totalQuantity } = cartDataResult[0];
+            // console.log(cartdata)
+
+            res.render('cart', { cartdata, cartTotal, userId, totalQuantity, imgUri, images, formatPrice });
+        } catch (err) {
+            console.error('Error:', err);
+            res.status(500).send('An error occurred while fetching the cart data.');
         }
     } catch (error) {
-        res.json({
-            status:"FAILED",
-            message:error.message,
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while adding the item to the cart' });
+    }
+};
+
+
+
+async function handleUpdateCartQuantity(req, res){
+
+    function formatPrice(price) {
+        return price.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
         });
-    }
-}
+    };
 
-
-async function handleResendOtp(req,res){
     try {
-        let{userId,email}= req.body;
+        const userId = req.session.userId;
+        const itemId = req.body.itemId;
+        const newQuantity = req.body.newQuantity;
 
-        if(!userId|| !email){
-            throw Error("Empty user details are not allowed");
-        }else{
-            await UserOTPVerification.deleteMany({userId});
-            sendVerificationEmail({_id:userId,email},res);
+        // Find the user's cart
+        const cart = await Cart.findOne({ userId: userId });
+
+        if (!cart) {
+            return res.json({ success: false, message: 'Cart not found.' });
+        }
+
+        // Find the item in the cart
+        const cartItem = cart.cartItems.find(item => item.product_id.toString() === itemId);
+
+        if (!cartItem) {
+            return res.json({ success: false, message: 'Item not found in the cart.' });
+        } else {
+            // Update the item's quantity
+            cartItem.quantity = newQuantity;
+
+            // Save the updated cart
+            await cart.save();
+
+            try {
+                const cartDataResult = await Cart.aggregate([
+                    {
+                        $match: { userId: new mongoose.Types.ObjectId(userId) }
+                    },
+                    {
+                        $unwind: '$cartItems'
+                    },
+                    {
+                        $lookup: {
+                            from: 'products',
+                            localField: 'cartItems.product_id',
+                            foreignField: '_id',
+                            as: 'product'
+                        }
+                    },
+                    {
+                        $unwind: '$product'
+                    },
+                    {
+                        $group: {
+                            _id: null,
+                            cartdata: {
+                                $push: {
+                                    product: '$product',
+                                    quantity: '$cartItems.quantity',
+                                }
+                            },
+                            cartTotal: {
+                                $sum: {
+                                    $multiply: [
+                                        '$cartItems.quantity',
+                                        '$product.price'
+                                    ]
+                                }
+                            },
+                            totalQuantity: { $sum: '$cartItems.quantity' }
+                        }
+                    },
+                ]);
+
+                if (cartDataResult.length === 0) {
+                    return res.render('cart', { imgUri, images, message: "0 items in the cart" });
+                }
+
+                const { cartTotal, totalQuantity } = cartDataResult[0];
+                res.json({ success: true, cartTotal, totalQuantity });
+            } catch (err) {
+                console.error('Error:', err);
+                return res.render('cart', { imgUri, images, message: "0 items in the cart" });
+            }
+
+            // const cartdata = await Cart.findOne({ userId: userId }).populate({
+            //     path: 'cartItems.product_id',
+            //     model: 'product'
+            // });
+
+
+            // let cartTotal = 0;
+            // let totalQunatity = 0;
+
+            // for (let i = 0; i < cartdata.cartItems.length; i++) {
+            //     const item = cartdata.cartItems[i];
+            //     const itemPrice = item.product_id.price;
+            //     const itemQuantity = item.quantity;
+            //     totalQunatity += item.quantity;
+            //     cartTotal += itemPrice * itemQuantity;
+            // }
+
+            // res.json({ success: true, cartTotal, totalQunatity });
+
+            // // res.json({ success: true });
         }
     } catch (error) {
-        res.json({
-            status:"FAILED",
-            message: error.message,
-        })
+        console.error('Error updating cart quantity:', error);
+        res.status(500).json({ success: false, message: 'An error occurred while updating the cart.' });
     }
-}
+};
+
+
+async function handleDeleteCartItem(req, res){
+    const userId = req.query.userid;
+    const product_id = req.query.productid;
+
+    try {
+        const cart = await Cart.updateOne(
+            { userId: userId },
+            {
+                $pull: { cartItems: { product_id: product_id } }
+            }
+        );
+
+        if (cart) {
+            res.redirect('cart-view');
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+
 
 
 
 module.exports={
-    handleUserSignup,
-    handleUserOtpVerification,
-    handleResendOtp,
-    handleUserLogin,
-    handleUerLogout,
+    handleCartView,
+    handleAddToCart,
+    handleUpdateCartQuantity,
+    handleDeleteCartItem,
 }

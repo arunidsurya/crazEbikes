@@ -19,9 +19,9 @@ const UserSchema= new mongoose.Schema({
         required:true,
         unique:true,
     },
-    address:{
+    address:[{
         type:String,
-    },
+    }],
     isDeleted:{
         type:Boolean,
         default:false,

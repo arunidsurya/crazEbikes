@@ -30,7 +30,7 @@ function setUser(user){
     secret);
 }
 
-function getUser(adminToken) {
+function getUser(userToken) {
     if(!userToken) return null;
     try {
         return jwt.verify(userToken,secret);

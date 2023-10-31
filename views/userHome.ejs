@@ -2,6 +2,7 @@
 <%- include('layout/headerUser') %>
 <%- include('layout/formatPrice') %>
 
+<div class="main-container">
 <div class="cover-image-container">
   <img id="cover-image" src="<%= images.cover %>" alt="Your Image">
   <div class="text-over-image">
@@ -14,9 +15,9 @@
   <h1 class="product-heading">Top Products</h1>
 
   <!-- Filter and Sort Controls -->
-  <div class="filter-sort-options">
-    <label for="filterDate">Filter by Date:</label>
-    <input type="date" id="filterDate">
+  <div class="sort-options">
+    <!-- <label for="filterDate">Filter by Date:</label>
+    <input type="date" id="filterDate"> -->
     <label for="sortPrice">Sort by Price:</label>
     <select id="sortPrice" name="sortPrice">
         <option value="none">none</option>
@@ -40,118 +41,108 @@
 </div>
 
 <div class="pagination">
-  <% if (page > 1) { %>
-    <a href="?page=1">First</a>
-    <a href="?page=<%= page - 1 %>">Previous</a>
-  <% } %>
-
-  <span>Page <%= page %> of <%= pageCount %></span>
-
-  <% if (page < pageCount) { %>
-      <a href="?page=<%= page + 1 %>">Next</a>
-    <a href="?page=<%= pageCount %>">Last</a>
-  <% } %>
+  <a href="?page=1">First</a>
+  <a href="?page=<%= page - 1 %>">Previous</a>
+  <span id="pagination"></span>
+  <a href="?page=<%= page + 1 %>">Next</a>
+  <a href="?page=<%= pageCount %>">Last</a>
 </div>
 
+</div>
 
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const sortPriceSelect = document.getElementById("sortPrice");
+document.addEventListener("DOMContentLoaded", function () {
+  const paginationContainer = document.getElementById("pagination");
+  const totalPages = <%= pageCount %>;
+  const currentPage = <%= page %>;
   
-    // Get the current sorting method from the URL
-    const currentSort = new URLSearchParams(window.location.search).get("sort");
-  
-    if (currentSort === "1") {
-      sortPriceSelect.value = "asc";
-    } else if (currentSort === "-1") {
-      sortPriceSelect.value = "desc";
-    } else {
-      sortPriceSelect.value = "none";
+  // Define how many page numbers you want to show
+  const maxPageNumbers = 8;
+  const halfMaxPageNumbers = Math.floor(maxPageNumbers / 2);
+
+  let startPage = Math.max(1, currentPage - halfMaxPageNumbers);
+  let endPage = Math.min(totalPages, startPage + maxPageNumbers - 1);
+
+  if (endPage - startPage + 1 < maxPageNumbers) {
+    startPage = Math.max(1, endPage - maxPageNumbers + 1);
+  }
+
+  for (let i = startPage; i <= endPage; i++) {
+    const pageLink = document.createElement("a");
+    pageLink.href = `?page=${i}`;
+    pageLink.textContent = i;
+    if (i === currentPage) {
+      pageLink.classList.add("current-page");
     }
-  
-    sortPriceSelect.addEventListener("change", function () {
-      const selectedSort = sortPriceSelect.value;
-      // Perform routing based on selectedSort
-      if (selectedSort === "asc") {
-        window.location.href = "/?sort=1"; // Route for ascending sort
-      } else if (selectedSort === "desc") {
-        window.location.href = "/?sort=-1"; // Route for descending sort
-      } else if (selectedSort === "none") {
-        window.location.href = "/"; // Route for no sorting
-      }
+    paginationContainer.appendChild(pageLink);
+  }
+
+  // Add click event listeners to handle page navigation
+  const pageLinks = paginationContainer.querySelectorAll("a");
+  pageLinks.forEach((link) => {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+      window.location.href = link.href;
     });
   });
+});
+
   
   </script>
 
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const sortDropdown = document.getElementById("sortPrice");
 
+    // Get the value of the 'sort' query parameter from the URL
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const sortParam = urlSearchParams.get("sort");
 
+    // Set the selected option in the dropdown based on the 'sort' parameter
+    if (sortParam === "1") {
+      sortDropdown.value = "asc"; // Low to High
+    } else if (sortParam === "-1") {
+      sortDropdown.value = "desc"; // High to Low
+    } else {
+      sortDropdown.value = "none"; // Default or None
+    }
 
-<%- include('layout/footerUser') %>
+    sortDropdown.addEventListener("change", function () {
+      const selectedValue = sortDropdown.value;
+      let sortingParameter;
 
+      if (selectedValue === "asc") {
+        sortingParameter = 1; // Low to High
+      } else if (selectedValue === "desc") {
+        sortingParameter = -1; // High to Low
+      } else {
+        sortingParameter = null; // None (or any other default value)
+      }
 
+      // Redirect to the root URL with the sorting parameter as a query parameter
+      if(sortingParameter==null){
+        window.location.href = `/`;
+      }else{
+        window.location.href = `/?sort=${sortingParameter}`;
+      }
+      
+    });
+  });
+</script>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- 
-<%- include('layout/headerUser') %>
-<%- include('layout/formatPrice') %>
-
-
-<div class="cover-image-container">
-    <img id="cover-image" src="<%= images.cover %>" alt="Your Image">
-    <div class="text-over-image">
-        Off to the weekend Unforgettable short trips by bike
-    </div>
-</div>
-
-<div class="product-container">
-  <h1 class="product-heading">Top Products</h1>
-  <div class="card-row">
-    <% products.forEach(product => { %>
-      <div class="product-card">
-        <a href="/product-description?productid=<%= product.id %>">
-          <img class="product-image" src="<%= imgUri %><%= product.imageUrl[0] %>" alt="">
-          <h2><%= product.product_name %></h2>
-          <h4>$<%= formatPrice(product.price) %></h4>
-          <a href="/user/addToWishList"><i class='bx bx-heart'></i></a>
-        </a>
-      </div>
-    <% }); %>
-  </div>
-</div>
-<div class="pagination">
-  <% if (page > 1) { %>
-    <a href="?page=1">First</a>
-    <a href="?page=<%= page - 1 %>">Previous</a>
-  <% } %>
-
-  <span>Page <%= page %> of <%= pageCount %></span>
-
-  <% if (page < pageCount) { %>
-      <a href="?page=<%= page + 1 %>">Next</a>
-    <a href="?page=<%= pageCount %>">Last</a>
-  <% } %>
-</div>
 
 
 
 
 
 <%- include('layout/footerUser') %>
- -->
+
+
+
+
+
+
+
+
+

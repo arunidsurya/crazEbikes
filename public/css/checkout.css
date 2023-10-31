@@ -1,0 +1,70 @@
+
+
+
+/* Header Styles */
+header {
+    background-color: #007BFF;
+    color: white;
+  }
+  
+  /* Breadcrumb Styles */
+  nav {
+    margin-top: 10px;
+  }
+  
+  nav a {
+    color: #fff;
+  }
+  
+  /* Card Styles */
+  .card {
+    border: 1px solid #ddd;
+  }
+  
+  /* Checkout Button Styles */
+  .btn-outline-primary {
+    background-color: #fff;
+    color: #007BFF;
+  }
+  
+  /* Summary Styles */
+  h6 {
+    font-size: 20px;
+  }
+  
+  /* Footer Styles */
+  footer {
+    background-color: #007BFF;
+    color: white;
+    padding: 20px 0;
+  }
+  
+  /* Footer Link Styles */
+  .text-white {
+    color: white !important;
+  }
+  
+  /* Payment Icons Styles */
+  .fa-cc-visa, .fa-cc-amex, .fa-cc-mastercard, .fa-cc-paypal {
+    font-size: 24px;
+    margin-right: 10px;
+  }
+  
+  /* Language Selector Styles */
+  .dropdown {
+    display: inline-block;
+  }
+  
+  .flag {
+    margin-right: 5px;
+  }
+  
+  /* Apply Button Styles */
+  .btn-light {
+    background-color: #fff;
+    color: #007BFF;
+  }
+  
+  #new-address{
+    display:none;
+  }

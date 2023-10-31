@@ -1,0 +1,100 @@
+<%- include('layout/headerUser') %>
+<%- include('layout/formatPrice') %>
+
+<header>
+    <h1>Your Shopping Cart</h1>
+</header>
+<% if (locals.message) { %>
+ <div class="no-tem-cart"><h3><%= message %></h3></div>
+<% }  else { %>
+    
+<div class="cart">
+    <div class="cart-item-container">
+        <h2>Cart Items</h2>
+
+        <% cartdata.forEach(item => { %>
+            <div class="cart-item">
+                <img src="<%= imgUri+item.product.imageUrl[0] %>" alt="Product Image">
+                <div class="cart-item-info">
+                   <a class="item-title" href="/product-description?productid=<%= item.product._id %>"><div class="cart-item-title"><%= item.product_name %></div></a> 
+                    <div class="cart-item-price">$<%= formatPrice(item.product.price) %></div>
+                    <div class="cart-item-quantity">
+                        Quantity:
+                        <input type="number" class="quantity-input" value="<%= item.quantity %>"
+                            data-item-id="<%= item.product._id %>" onchange="updateCart(this)" min="1">
+                    </div>
+                </div>
+                <form action="/user/detele-cart-item?userid=<%=userId %>&productid=<%= item.product._id  %>" method="post">
+                    <button class="delete-button" type="submit">Delete</button>
+                </form>
+
+                
+            </div>
+        <% }); %>
+        <div class="sub-total"><span id="cartTotalQuantity">(<%= totalQuantity %> item)</span>: $<span id="cartTotal"><%= formatPrice(cartTotal) %></span></div>
+    </div>
+
+    <div class="cart-details">
+        <div class="cart-total">subtotal <span id="cartSubTotalQuantity">(<%= totalQuantity %> item)</span>: $<span id="cartTotalValue"><%= formatPrice(cartTotal) %></span></div>
+        <input type="text" class="coupon-input" placeholder="Apply Coupon">
+        <button class="checkout-button">Proceed to Checkout</button>
+    </div>
+</div>
+
+<%}%>
+
+<%- include('layout/footerUser') %>
+
+<script>
+   function updateCart(inputElement) {
+    console.log('updateCart function called');
+    const itemId = inputElement.getAttribute('data-item-id');
+    const newQuantity = inputElement.value;
+
+    fetch('/user/updateCartQuantity', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ itemId, newQuantity }),
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Network response was not ok.');
+            }
+        })
+        .then(data => {
+            console.log('Data received:', data);
+            // Handle successful JSON response here
+            // You can update the UI with the new data if needed
+            // Assuming data contains the updated cartTotal and totalQunatity values
+            const cartTotalSpan = document.getElementById('cartTotal');
+            const cartTotalValueSpan = document.getElementById('cartTotalValue');
+            const cartTotalQuantitySpan = document.getElementById('cartTotalQuantity');
+            const cartSubTotalQuantitySpan = document.getElementById('cartSubTotalQuantity');
+
+            if (cartTotalSpan && cartTotalValueSpan) {
+                cartTotalSpan.innerHTML = formatPrice(data.cartTotal);
+                cartTotalValueSpan.innerHTML = formatPrice(data.cartTotal);
+                cartTotalQuantitySpan.innerHTML= "(" + data.totalQuantity +" "+"item"+")";
+                cartSubTotalQuantitySpan.innerHTML= "(" +data.totalQuantity+" "+"item"+")";
+            }
+        })
+        .catch(error => {
+            console.error('Error updating quantity:', error);
+            // Handle the error here (e.g., display an error message to the user)
+        });
+}
+
+</script>
+<script>
+    function formatPrice(price) {
+        return price.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+    }
+</script>
+
