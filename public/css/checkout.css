@@ -3,9 +3,10 @@
 
 /* Header Styles */
 header {
-    background-color: #007BFF;
-    color: white;
-  }
+  background-color: #007BFF;
+  color: white;
+  padding: 10px;
+}
   
   /* Breadcrumb Styles */
   nav {
@@ -14,17 +15,19 @@ header {
   
   nav a {
     color: #fff;
+    text-decoration: none;
   }
   
   /* Card Styles */
   .card {
     border: 1px solid #ddd;
+    padding: 20px;
   }
   
   /* Checkout Button Styles */
   .btn-outline-primary {
-    background-color: #fff;
-    color: #007BFF;
+    background-color: #007BFF;
+    color: #fff;
   }
   
   /* Summary Styles */
@@ -68,3 +71,107 @@ header {
   #new-address{
     display:none;
   }
+
+  #Order-sumary{
+    display:none;
+  }
+
+  #change-address{
+    display:none;
+  }
+  #payment-section{
+    font-size: 20px;
+    display: none;
+  }
+
+
+  /* Apply Button Styles */
+.btn-light {
+  background-color: #fff;
+  color: #007BFF;
+}
+
+/* Address Field Styles */
+#addressList {
+  margin-top: 20px;
+  font-size: 18px; /* Increase the font size */
+}
+
+#addressList label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+#new-address {
+  display: none;
+  margin-top: 20px;
+  font-size: 16px; /* Increase the font size */
+}
+
+#new-address .col-6 {
+  width: 50%;
+}
+
+#new-address p {
+  margin: 5px 0;
+}
+
+/* Radio Button Styles */
+input[type="radio"][name="selectedAddress"] {
+  margin-right: 10px;
+}
+
+/* Floating Buttons Styles */
+.float-end {
+  float: right;
+}
+
+/* Order Summary Styles */
+#Order-sumary {
+  display: none;
+  margin-top: 20px;
+}
+
+/* Payment Options Styles */
+#payment-section label {
+  display: block;
+  margin-top: 10px;
+}
+
+/* Additional Button Styles */
+.btn-success {
+  background-color: #28a745;
+  color: #fff;
+  margin-right: 10px;
+}
+
+.btn-light.border {
+  background-color: #fff;
+  border: 1px solid #007BFF;
+  color: #007BFF;
+}
+
+.address-container{
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 20px;
+}
+#edit-button{
+  margin-left: 10px;
+  display:none;
+}
+.name-mobile {
+  display: inline-block;
+  margin-right: 10px; 
+}
+.contactNumber{
+  display: inline-block;
+  margin-left: 50px;
+}
+.address-details{
+  margin-left: 25px;
+}
+
+#edit-address-div{
+  display: none;
+}

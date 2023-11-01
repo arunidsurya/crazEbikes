@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+
+
 const UserSchema= new mongoose.Schema({
     name:{
         type:String,
@@ -19,8 +21,25 @@ const UserSchema= new mongoose.Schema({
         required:true,
         unique:true,
     },
-    address:[{
-        type:String,
+    delivery:[{
+        name:{
+            type:String,
+        },
+        contactNumber:{
+            type:String
+        },
+        pincode:{
+            type:String
+        },
+        address:{
+            type:String
+        },
+        city:{
+            type:String
+        },
+        state:{
+            type:String
+        }
     }],
     isDeleted:{
         type:Boolean,

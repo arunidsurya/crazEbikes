@@ -1,155 +1,416 @@
 <%- include('layout/headerUser') %>
-<%- include('layout/formatPrice') %>
+  <%- include('layout/formatPrice') %>
 
-<header>
+    <header class="col-lg-12">
 
-    <div class="bg-primary">
-      <div class="container py-4">
-        <!-- Breadcrumb -->
-        <nav class="d-flex">
-          <h6 class="mb-0">
-            <a href="" class="text-white-50">Home</a>
-            <span class="text-white-50 mx-2"> > </span>
-            <a href="" class="text-white-50">2. Shopping cart</a>
-            <span class="text-white-50 mx-2"> > </span>
-            <a href="" class="text-white"><u>3. Order info</u></a>
-            <span class="text-white-50 mx-2"> > </span>
-            <a href="" class="text-white-50">4. Payment</a>
-          </h6>
-        </nav>
-        <!-- Breadcrumb -->
-      </div>
-    </div>
-    <!-- Heading -->
-  </header>
-
-
-
-
-  
-  <section class="bg-light py-5">
-    <div class="container">
-      <div class="row">
-        <div class="col-xl-8 col-lg-8 mb-4">
-          <div class="card shadow-0 border">
-            <div class="p-4">
-
-              <h5 class="card-title mb-3">Shipping Address</h5>
-
-              <div id="addressList">
-                <label><input type="radio" name="selectedAddress" value="1"> 123 Main St, City1, State1, 12345, USA</label><br>
-                <label><input type="radio" name="selectedAddress" value="2"> 456 Elm St, City2, State2, 67890, USA</label><br>
-                <!-- Add more options for other saved addresses as needed -->
-            </div>
-
-            <button class="btn btn-primary" onclick="toggleNewAddress()">Add New Address</button>
-
-
-              <div class="row" id="new-address">
-                <div class="col-6 mb-3">
-                  <p class="mb-0">First name</p>
-                  <div class="form-outline">
-                    <input type="text" id="typeText" placeholder="Type here" class="form-control" />
-                  </div>
-                </div>
-  
-                <div class="col-6">
-                  <p class="mb-0">Last name</p>
-                  <div class="form-outline">
-                    <input type="text" id="typeText" placeholder="Type here" class="form-control" />
-                  </div>
-                </div>
-  
-                <div class="col-6 mb-3">
-                  <p class="mb-0">Phone</p>
-                  <div class="form-outline">
-                    <input type="tel" id="typePhone" value="+91 " class="form-control" />
-                  </div>
-                </div>
-  
-                <div class="col-6 mb-3">
-                  <p class="mb-0">Email</p>
-                  <div class="form-outline">
-                    <input type="email" id="typeEmail" placeholder="example@gmail.com" class="form-control" />
-                  </div>
-                </div>
-              </div>
-  
-
-  
-              <hr class="my-4" />
-  
-              <h5 class="card-title mb-3">Shipping info</h5>
-  
-              
-  
-  
-
-  
-              <div class="float-end">
-                <button class="btn btn-light border">Cancel</button>
-                <button class="btn btn-success shadow-0 border">Continue</button>
-              </div>
-            </div>
-          </div>
-          <!-- Checkout -->
-        </div>
-        <div class="col-xl-4 col-lg-4 d-flex justify-content-center justify-content-lg-end">
-          <div class="ms-lg-4 mt-4 mt-lg-0" style="max-width: 320px;">
-            <h6 class="mb-3">Summary</h6>
-            <div class="d-flex justify-content-between">
-              <p class="mb-2">Total price:</p>
-              <p class="mb-2">$195.90</p>
-            </div>
-            <div class="d-flex justify-content-between"> 
-              <p class="mb-2">Discount:</p>
-              <p class="mb-2 text-danger">- $60.00</p>
-            </div>
-            <div class="d-flex justify-content-between">
-              <p class="mb-2">Shipping cost:</p>
-              <p class="mb-2">+ $14.00</p>
-            </div>
-            <hr />
-            <div class="d-flex justify-content-between">
-              <p class="mb-2">Total price:</p>
-              <p class="mb-2 fw-bold">$149.90</p>
-            </div>
-  
-            <div class="input-group mt-3 mb-4">
-              <input type="text" class="form-control border" name="" placeholder="Promo code" />
-              <button class="btn btn-light text-primary border">Apply</button>
-            </div>
-  
-            <hr />
-
-            </div>
-          </div>
+      <div class="bg-primary">
+        <div class="container py-4">
+          <!-- Breadcrumb -->
+          <nav class="d-flex">
+            <h6 class="mb-0">
+              <a href="" class="text-white-50">Home</a>
+              <span class="text-white-50 mx-2"> > </span>
+              <a href="" class="text-white-50">2. Shopping cart</a>
+              <span class="text-white-50 mx-2"> > </span>
+              <a href="" class="text-white"><u>3. Order info</u></a>
+              <span class="text-white-50 mx-2"> > </span>
+              <a href="" class="text-white-50">4. Payment</a>
+            </h6>
+          </nav>
+          <!-- Breadcrumb -->
         </div>
       </div>
-    </div>
-  </section>
-  
-  <script>
-    // JavaScript to handle toggling the "new-address" section
-    function toggleNewAddress() {
+      <!-- Heading -->
+    </header>
+
+
+
+
+
+    <section class="bg-light py-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-xl-8 col-lg-8 mb-4">
+            <form id="parent-form" action="/user/place-order" method="post">
+              <div class="card shadow-0 border">
+                <div class="p-4">
+
+                  <header class="col-lg-12 mt-0">
+                    <div class="bg-primary">
+                      <div class="container py-2">
+                        <!-- Breadcrumb -->
+                        <nav class="d-flex">
+                          <h6 class="mb-0">
+                            Shipping Address
+                          </h6>
+                        </nav>
+                        <!-- Breadcrumb -->
+                      </div>
+                    </div>
+                    <!-- Heading -->
+                  </header>
+                  <div id="shipping-address">
+                    <h5 class="card-title mb-3"></h5>
+
+                    <div id="addressList">
+                      <% userAddress.delivery.forEach(address=> { %>
+                        <div class="address-container">
+                          <label>
+                            <input type="radio" name="selectedAddress"
+                              value="<%= address._id %>"
+                              onclick="toggleEditButton(this)">
+            
+                            <div class="name-mobile">
+                              <strong>
+                                <%= address.name %>
+                              </strong>
+                              <div class="contactNumber">
+                                <strong>Mob: <%= address.contactNumber %></strong>
+                              </div>
+
+                            </div>
+                            <div class="address-details">
+                              <%= address.address %>, <%= address.city %>, <%= address.pincode %>
+                            </div>
+                          </label>
+                          <a href="/user/edit-address?id=<%= address._id %>&userId=<%= userId %>"><input class="btn btn-link" type="text" value="Edit"/>
+                          </a>
+
+                        </div>
+                        <% }) %>
+                    </div>
+
+                   <a href="/user/add-new-address"><input class="btn btn-primary" onclick="toggleNewAddress()" value="Add new address"></a> 
+
+
+                    <div class="float-end">
+                      <button class="btn btn-success shadow-0 border" type="button"
+                        onclick="displayOrders()">next</button>
+                    </div>
+                  </div>
+
+
+
+                  <div class="float-end" id="change-address">
+                    <button class="btn btn-success shadow-0 border" type="button"
+                      onclick="displayAddress()">Change</button>
+                  </div>
+                  <hr class="my-4" />
+
+                  <!-- Order Summary -->
+
+                  <header class="col-lg-12 mt-0">
+                    <div class="bg-primary">
+                      <div class="container py-2">
+                        <!-- Breadcrumb -->
+                        <nav class="d-flex">
+                          <h6 class="mb-0">
+                            Order Summary
+                          </h6>
+                        </nav>
+                        <!-- Breadcrumb -->
+                      </div>
+                    </div>
+                    <!-- Heading -->
+                  </header>
+
+
+                  <div id="Order-sumary">
+                    <div class="order-details">
+                      <% cartdata.forEach(item=> { %>
+                        <div class="cart-item">
+                          <img src="<%= imgUri+item.product.imageUrl[0] %>" alt="Product Image">
+                          <div class="cart-item-info">
+                            <h5>
+                              <%= item.product.product_name.slice(0,30) %>
+                            </h5>
+                            <p>Brand:<%= item.product.brand %>
+                            </p>
+                            <p>Color:<%= item.product.color %>
+                            </p>
+                          </div>
+                          <div class="cart-item-info">
+                            <a class="item-title" href="/product-description?productid=<%= item.product._id %>">
+                              <div class="cart-item-title">
+                                <%= item.product_name %>
+                              </div>
+                            </a>
+                            <div class="cart-item-price">$<%= formatPrice(item.product.price) %>
+                            </div>
+                            <div class="cart-item-quantity">
+                              Quantity:
+                              <input type="number" class="quantity-input" value="<%= item.quantity %>"
+                                data-item-id="<%= item.product._id %>" onchange="updateCart(this)" min="1">
+                            </div>
+                          </div>
+                          <form action="/user/detele-cart-item?userid=<%=userId %>&productid=<%= item.product._id  %>"
+                            method="post">
+                            <button class="delete-button" type="submit">Delete</button>
+                          </form>
+
+
+                        </div>
+                        <% }); %>
+                    </div>
+
+
+                    <div class="float-end">
+                      <button class="btn btn-success shadow-0 border" type="button" onclick="hideOrders()">next</button>
+                    </div>
+
+                  </div>
+
+                  <div class="float-end" id="view-order-summary">
+                    <button class="btn btn-success shadow-0 border" type="button"
+                      onclick="displayOrders()">View</button>
+                  </div>
+                  <hr class="my-4" />
+                  <!-- Order Summary -->
+
+                  <!-- Payment Options -->
+                  <header class="col-lg-12 mt-0">
+                    <div class="bg-primary">
+                      <div class="container py-2">
+                        <!-- Breadcrumb -->
+                        <nav class="d-flex">
+                          <h6 class="mb-0">
+                            Payment Method
+                          </h6>
+                        </nav>
+                        <!-- Breadcrumb -->
+                      </div>
+                    </div>
+                    <!-- Heading -->
+                  </header>
+
+                  <div id="payment-section">
+                    <label class="'radio-inline">
+                      <input type="radio" name="paymentMethod" value="COD" checked> COD
+                    </label>
+                    <label class="'radio-inline">
+                      <input type="radio" name="paymentMethod" value="ONLINE"> Online Payment
+                    </label>
+
+                    <input type="text" name="userId" value="<%= userId %>" hidden>
+                    <input type="text" name="totalPrice" value="<%= cartTotal+10 %>" hidden>
+
+                    <div class="float-end">
+                      <button class="btn btn-light border">Cancel</button>
+                      <button class="btn btn-success shadow-0 border" type="submit" >Place
+                        Order</button>
+
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </form>
+            <!-- Payment Options -->
+
+            <!-- Checkout -->
+          </div>
+          <div class="col-xl-4 col-lg-4 d-flex justify-content-center justify-content-lg-end">
+            <div class="ms-lg-4 mt-4 mt-lg-0" style="max-width: 320px;">
+              <h6 class="mb-3">Summary</h6>
+              <div class="d-flex justify-content-between">
+                <p class="mb-2">Cart Total price:</p>
+                <p class="mb-2">$<span id="CartTotalPrice">
+                    <%= formatPrice(cartTotal) %>
+                  </span></p>
+              </div>
+              <div class="d-flex justify-content-between">
+                <p class="mb-2">Shipping cost:</p>
+                <p class="mb-2">+ $10.00</p> <!-- You can change this value as needed -->
+              </div>
+              <hr />
+              <div class="d-flex justify-content-between">
+                <p class="mb-2">Total price:</p>
+                <p class="mb-2 fw-bold" id="totalPrice">$<span id="TotalPrice">
+                    <%= formatPrice(cartTotal+10)%>
+                  </span></p>
+              </div>
+
+
+              <div class="input-group mt-3 mb-4">
+                <input type="text" class="form-control border" name="" placeholder="Promo code" />
+                <button class="btn btn-light text-primary border">Apply</button>
+              </div>
+
+              <hr />
+
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+
+    <script>
+      // JavaScript to handle toggling the "new-address" section
+      function toggleNewAddress() {
         const newAddressSection = document.getElementById('new-address');
         newAddressSection.style.display = 'block'; // Display the new address section
 
         // Clear the selection of radio buttons
         const radioButtons = document.querySelectorAll('input[type="radio"][name="selectedAddress"]');
-        radioButtons.forEach(function(radioButton) {
-            radioButton.checked = false;
+        radioButtons.forEach(function (radioButton) {
+          radioButton.checked = false;
         });
-    }
+      }
 
-    // Add event listeners to radio buttons for previously saved addresses
-    const radioButtons = document.querySelectorAll('input[type="radio"][name="selectedAddress"]');
-    radioButtons.forEach(function(radioButton) {
-        radioButton.addEventListener('change', function() {
-            const newAddressSection = document.getElementById('new-address');
-            newAddressSection.style.display = 'none'; // Hide the new address section
+      // Add event listeners to radio buttons for previously saved addresses
+      const radioButtons = document.querySelectorAll('input[type="radio"][name="selectedAddress"]');
+      radioButtons.forEach(function (radioButton) {
+        radioButton.addEventListener('change', function () {
+          const newAddressSection = document.getElementById('new-address');
+          newAddressSection.style.display = 'none'; // Hide the new address section
         });
-    });
-</script>
+      });
 
-  <%- include('layout/footerUser') %>
+
+      function displayOrders() {
+        const OderSummarySection = document.getElementById('Order-sumary');
+        const shippingAddressSection = document.getElementById('shipping-address');
+        const changeOrderButton = document.getElementById('change-address')
+        const viewOrderSummaryButton = document.getElementById('view-order-summary');
+        const paymentSection = document.getElementById('payment-section');
+        OderSummarySection.style.display = 'block';
+        shippingAddressSection.style.display = 'none';
+        changeOrderButton.style.display = 'block';
+        viewOrderSummaryButton.style.display = 'none';
+        paymentSection.style.display = 'none';
+      }
+
+      function hideOrders() {
+        const OderSummarySection = document.getElementById('Order-sumary');
+        const paymentSection = document.getElementById('payment-section');
+        const viewOrderSummaryButton = document.getElementById('view-order-summary');
+        OderSummarySection.style.display = 'none';
+        paymentSection.style.display = 'block';
+        viewOrderSummaryButton.style.display = 'inline-block';
+      }
+
+      function displayAddress() {
+        const shippingAddressSection = document.getElementById('shipping-address');
+        const changeOrderButton = document.getElementById('change-address');
+        const OderSummarySection = document.getElementById('Order-sumary');
+        const paymentSection = document.getElementById('payment-section');
+        const viewOrderSummaryButton = document.getElementById('view-order-summary');
+        shippingAddressSection.style.display = 'block';
+        changeOrderButton.style.display = 'none';
+        OderSummarySection.style.display = 'none';
+        paymentSection.style.display = 'none';
+        viewOrderSummaryButton.style.display = 'block';
+      }
+
+
+      function editAddress(address) {
+        // Implement the logic to edit the selected address here.
+      }
+
+    </script>
+
+    <script>
+      function updateCart(inputElement) {
+        console.log('updateCart function called');
+        const itemId = inputElement.getAttribute('data-item-id');
+        const newQuantity = inputElement.value;
+
+        function formatPrice(price) {
+          // You can implement your price formatting logic here
+          // For example, you can round the price to 2 decimal places and add a currency symbol
+          return `${price.toFixed(2)}`;
+        }
+
+        fetch('/user/updateCartQuantity', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ itemId, newQuantity }),
+        })
+          .then(response => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error('Network response was not ok.');
+            }
+          })
+          .then(data => {
+            console.log('Data received:', data);
+            // Handle successful JSON response here
+            // You can update the UI with the new data if needed
+            // Assuming data contains the updated cartTotal and totalQunatity values
+            const cartTotalSpan = document.getElementById('CartTotalPrice');
+            const TotalPriceSpan = document.getElementById('TotalPrice');
+
+            cartTotalSpan.innerHTML = formatPrice(data.cartTotal);
+            TotalPriceSpan.innerHTML = formatPrice(data.cartTotal + 10);
+
+
+          })
+          .catch(error => {
+            console.error('Error updating quantity:', error);
+            // Handle the error here (e.g., display an error message to the user)
+          });
+      }
+    </script>
+    <script>
+      function updateTotalPrice() {
+        // Get the cart total and shipping cost elements
+        const cartTotalElement = document.getElementById('cartTotalPrice');
+        const shippingCostElement = document.querySelector('.d-flex:contains("Shipping cost")');
+
+        if (cartTotalElement && shippingCostElement) {
+          // Extract and parse the cart total and shipping cost values
+          const cartTotal = parseFloat(cartTotalElement.textContent.replace('$', ''));
+          const shippingCost = parseFloat(shippingCostElement.textContent.match(/\d+\.\d+/)[0]);
+
+          // Calculate the total price
+          const totalPrice = cartTotal + shippingCost;
+
+          // Update the total price element
+          const totalPriceElement = document.getElementById('totalPrice');
+          if (totalPriceElement) {
+            totalPriceElement.textContent = `$${totalPrice.toFixed(2)}`;
+          }
+        }
+      }
+
+      // Call the updateTotalPrice function whenever needed
+      updateTotalPrice();
+
+    </script>
+    <script>
+      function editAddress(id, name, contactNumber, pincode, address, city, state) {
+        const shippingAddressSection = document.getElementById('shipping-address');
+        const editAddressFromSection = document.getElementById('edit-address-div');
+
+
+        document.getElementById('name').value = name;
+        document.getElementById('contactNumber').value = contactNumber;
+        document.getElementById('pincode').value = pincode;
+        document.getElementById('address').value = address;
+        document.getElementById('city').value = city;
+        document.getElementById('state').value = state;
+        document.getElementById('id').value = id;
+
+        shippingAddressSection.style.display = 'none';
+        editAddressFromSection.style.display = 'block';
+      }
+
+    </script>
+
+    <script>
+async function submitEditAddressForm() {
+  const editAddressForm = await document.getElementById('editAddressFrom');
+  if (editAddressForm) {
+    editAddressForm.submit();
+  } else {
+    console.error('Form element with ID "editAddressFrom" not found.');
+  }
+}
+    </script>
+
+    <%- include('layout/footerUser') %>

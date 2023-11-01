@@ -1,0 +1,51 @@
+<%- include('layout/headerUser') %>
+  <%- include('layout/formatPrice') %>
+
+<div>
+<form action="/user/edit-address" method="post">
+  <div class="col-6 mb-3">
+    <p class="mb-0">First name</p>
+    <div class="form-outline">
+      <input type="text" name="name" id="name" value="<%= deliveryAddress.name %>" placeholder="Type here" class="form-control" />
+    </div>
+  </div>
+  <div class="col-6">
+    <p class="mb-0">Contact Number</p>
+    <div class="form-outline">
+      <input type="text" name="contactNumber" id="contactNumber" value="<%= deliveryAddress.contactNumber %>" placeholder="Type here"
+        class="form-control" />
+    </div>
+  </div>
+  <div class="col-6 mb-3">
+    <p class="mb-0">Pincode</p>
+    <div class="form-outline">
+      <input type="text" name="pincode" id="pincode" value="<%= deliveryAddress.pincode %>" placeholder="Type here" class="form-control" />
+    </div>
+  </div>
+  <div class="col-6 mb-3">
+    <p class="mb-0">Address</p>
+    <div class="form-outline">
+      <input type="text" name="address" id="address" value="<%= deliveryAddress.address %>" placeholder="Type here" class="form-control" />
+    </div>
+  </div>
+  <div class="col-6 mb-3">
+    <p class="mb-0">City</p>
+    <div class="form-outline">
+      <input type="text" name="city" id="city" value="<%= deliveryAddress.city %>" placeholder="Type here" class="form-control" />
+    </div>
+  </div>
+  <div class="col-6 mb-3">
+    <p class="mb-0">State</p>
+    <div class="form-outline">
+      <input type="text" name="state" id="state" value="<%= deliveryAddress.state %>" placeholder="Type here" class="form-control" />
+    </div>
+  </div>
+  <input type="text" name="userId" value="<%= userId %>" hidden>
+  <input type="text" name="id" value="<%= deliveryAddress._id %>" hidden>
+
+
+  <button class="btn btn-success shadow-0 border" type="submit">Save Changes</button>
+</form>
+</div>
+
+<%- include('layout/footerUser') %>

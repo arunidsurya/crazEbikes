@@ -74,6 +74,10 @@ app.get('/checkout',(req,res)=>{
     res.render('checkout',{imgUri,images});
 })
 
+app.get('/address',(req,res)=>{
+    res.render('addAddress',{imgUri,images});
+})
+
 
 
 app.listen(PORT,()=>{console.log(`server is running at port ${PORT}`)});
