@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 const{handleCartView,handleAddToCart,handleUpdateCartQuantity,handleDeleteCartItem,
     handleCheckoutView,handleEditAddress,handleAddNewAddress,handlePlaceOrder,
-    handleAddAddressView,handleEditAddressView}=require('../controllers/user')
+    handleAddAddressView,handleEditAddressView,handleOrdersView}=require('../controllers/user')
 
 
 const router = express.Router();
@@ -36,6 +36,7 @@ router.post('/addNewAddress',handleAddNewAddress);
 
 router.post('/place-order',handlePlaceOrder);
 
+router.get('/view-orders', handleOrdersView);
 
 
 

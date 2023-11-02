@@ -5,7 +5,7 @@ const { Schema, ObjectId } = mongoose;
 const OrdersSchema = new Schema({
     total_price: { type: Number },
     Order_date: { type: Date, default: Date.now }, // Set a default value using Date.now()
-    User_id: { type: Schema.Types.ObjectId },
+    User_id: { type: Schema.Types.ObjectId, ref:'user' },
     TimeStamp: { type: Date, default: Date.now }, // Set a default value using Date.now()
     isDeleted: { type: Boolean, default:false },
     delivery_address: [{
@@ -18,15 +18,27 @@ const OrdersSchema = new Schema({
     }],
     IsCancelled: { type: Boolean, default:false },
     Items: [{
-        product_id:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'product',
+        product_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'product',
         },
-        quantity:{
-            type:Number,
+        quantity: {
+            type: Number,
+        },
+        product_name: {
+            type: String,
+        },
+        imageUrl: {
+            type: String,
+        },
+        price: {
+            type: Number,
+        },
+        color: {
+            type: String,
         }
-       
-    }],
+    }]
+    ,
     Status: { type: String },
 });
 

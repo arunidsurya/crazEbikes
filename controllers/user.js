@@ -111,11 +111,11 @@ async function handleCartView(req, res) {
 };
 
 async function handleAddToCart(req, res) {
-
+    const userId = req.session.userId;
+    if(userId){
     try {
         const product_id = req.query.product_id;
         const quantity = req.body.quantity;
-        const userId = req.session.userId;
 
         // Check if the user's cart exists; if not, create a new one
         let cart = await Cart.findOne({ userId: userId });
@@ -197,6 +197,9 @@ async function handleAddToCart(req, res) {
         console.error(error);
         res.status(500).json({ error: 'An error occurred while adding the item to the cart' });
     }
+}else{
+    res.render('userlogin', { images, imgUri })
+}
 };
 
 
@@ -467,66 +470,244 @@ async function handleAddNewAddress(req, res) {
 }
 
 async function handlePlaceOrder(req, res) {
-    const { selectedAddress, paymentMethod, userId, totalPrice } = (req.body);
+    const { selectedAddress, paymentMethod, userId, totalPrice } = req.body;
     if (userId) {
-        try {
-
-            const status = paymentMethod === 'COD' ? 'placed' : 'pending';
-
-        const user = await User.findById({ _id: userId });
-        const address=[];
+      try {
+        const status = paymentMethod === 'COD' ? 'placed' : 'pending';
+  
+        const user = await User.findById(userId);
+        const address = [];
         const selectedAddressObj = user.delivery.find((deliveryAddress) =>
-        deliveryAddress._id.equals(selectedAddress) // Use the `equals` method to compare ObjectId
-      );
-        
-      if (selectedAddressObj) {
-        const cleanedAddress = {
-          Address: selectedAddressObj.address,
-          City: selectedAddressObj.city,
-          ContactNumber: selectedAddressObj.contactNumber,
-          Name: selectedAddressObj.name,
-          Pincode: selectedAddressObj.pincode,
-          State: selectedAddressObj.state,
-        };
-      
-        address.push(cleanedAddress);
-      }
-
-        const cart = await Cart.find({ userId: userId });
-
-        const items = [];
-
-        // Iterate through each cart and extract cartItems
-        for (const cartItem of cart) {
-            // Assuming cartItems is an array in the cart document
-            const cartItems = cartItem.cartItems;
-            // Add cartItems to the Items array
-            items.push(...cartItems);
+          deliveryAddress._id.equals(selectedAddress) // Use the `equals` method to compare ObjectId
+        );
+  
+        if (selectedAddressObj) {
+          const cleanedAddress = {
+            Address: selectedAddressObj.address,
+            City: selectedAddressObj.city,
+            ContactNumber: selectedAddressObj.contactNumber,
+            Name: selectedAddressObj.name,
+            Pincode: selectedAddressObj.pincode,
+            State: selectedAddressObj.state,
+          };
+  
+          address.push(cleanedAddress);
         }
-
-        if(status,address,items){
+  
+        const cart = await Cart.findOne({ userId: userId })
+          .populate('cartItems.product_id')
+          .exec();
+  
+        if (cart) {
+          // Step 2: Loop through the cart items and extract product details.
+          const orderItems = cart.cartItems.map(cartItem => {
+            const product = cartItem.product_id;
+            return {
+              product_id: product._id,
+              quantity: cartItem.quantity,
+              product_name: product.product_name,
+              imageUrl: product.imageUrl[0],
+              price: product.price,
+              color: product.color,
+            };
+          });
+  
+          if (status && address && orderItems) {
             const newOrder = new Orders({
-                total_price: totalPrice,
-                User_id: user._id,
-                delivery_address: address,
-                Items: items,
-                Status: status,
+              total_price: totalPrice,
+              User_id: user._id,
+              delivery_address: address,
+              Items: orderItems,
+              Status: status,
             });
-
+  
             await newOrder.save();
             await Cart.deleteMany({ userId: user._id });
 
+            res.redirect('/user/view-orders')
+  
+            // res.status(200).json({ message: 'Order placed successfully' });
+          }
+        } else {
+          res.status(404).json({ error: 'Cart not found' });
         }
-            
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: 'Internal server error' });
-        }     
-
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
     } else {
         res.render('userlogin', { images, imgUri })
     }
+  }
+  
+
+// async function handlePlaceOrder(req, res) {
+//     const { selectedAddress, paymentMethod, userId, totalPrice } = (req.body);
+//     if (userId) {
+//         try {
+
+//             const status = paymentMethod === 'COD' ? 'placed' : 'pending';
+
+//         const user = await User.findById({ _id: userId });
+//         const address=[];
+//         const selectedAddressObj = user.delivery.find((deliveryAddress) =>
+//         deliveryAddress._id.equals(selectedAddress) // Use the `equals` method to compare ObjectId
+//       );
+        
+//       if (selectedAddressObj) {
+//         const cleanedAddress = {
+//           Address: selectedAddressObj.address,
+//           City: selectedAddressObj.city,
+//           ContactNumber: selectedAddressObj.contactNumber,
+//           Name: selectedAddressObj.name,
+//           Pincode: selectedAddressObj.pincode,
+//           State: selectedAddressObj.state,
+//         };
+      
+//         address.push(cleanedAddress);
+//       }
+
+//         const cart = await Cart.find({ userId: userId });
+
+//         const items = [];
+
+//         // Iterate through each cart and extract cartItems
+//         for (const cartItem of cart) {
+//             // Assuming cartItems is an array in the cart document
+//             const cartItems = cartItem.cartItems;
+//             // Add cartItems to the Items array
+//             items.push(...cartItems);
+//         }
+
+//         if(status,address,items){
+//             const newOrder = new Orders({
+//                 total_price: totalPrice,
+//                 User_id: user._id,
+//                 delivery_address: address,
+//                 Items: items,
+//                 Status: status,
+//             });
+
+//             await newOrder.save();
+//             await Cart.deleteMany({ userId: user._id });
+
+//         }
+            
+//         } catch (error) {
+//             console.error(error);
+//             res.status(500).json({ error: 'Internal server error' });
+//         }     
+
+//     } else {
+//         res.render('userlogin', { images, imgUri })
+//     }
+// };
+
+
+
+async function handleOrdersView(req, res) {
+    const userId = req.session.userId;
+
+    try {
+        // Find all orders for the given user ID
+        const userOrders = await Orders.find({ User_id: userId });
+
+    
+        // Create an array to accumulate orders' data
+        const ordersData = userOrders.map(order => {
+          return {
+            total_price: order.total_price,
+            Status: order.Status,
+            OrderDate: `${order.Order_date.getFullYear()}-${order.Order_date.getMonth()+1}-${order.Order_date.getDate()}`,
+            TimeStamp: `${order.TimeStamp.getFullYear()}-${order.TimeStamp.getMonth()+1}-${order.TimeStamp.getDate()}`,
+            // Extract and transform items
+            productsArray: order.Items.map(item => ({
+              product_id: item.product_id,
+              quantity: item.quantity,
+              product_name: item.product_name,
+              imageUrl: item.imageUrl,
+              price: item.price,
+              color: item.color,
+            })),
+            address: order.delivery_address[0], // Assuming there's only one address in an order
+            totalPrice: order.total_price,
+            isCancelled: order.IsCancelled,
+            collectionId: order._id,
+          };
+        });
+
+        // console.log(ordersData)
+        // Now, after processing all orders, render the view and send the accumulated data
+        res.render('manageOrders', { imgUri, images, ordersData, formatPrice });
+    
+      } catch (error) {
+        console.error(error);
+        throw error; // Handle the error as needed
+      }
 }
+
+
+
+// async function handleOrdersView(req, res) {
+//     const userId = req.session.userId;
+
+
+//     try {
+//         const ordersResult = await Orders.aggregate([
+//             {
+//                 $match: { User_id: new mongoose.Types.ObjectId(userId) }
+//             },
+//             {
+//                 $unwind: '$Items'
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'products',
+//                     localField: 'Items.product_id',
+//                     foreignField: '_id',
+//                     as: 'product'
+//                 }
+//             },
+//             {
+//                 $group: {
+//                     _id: '$_id',
+//                     total_price: { $first: '$total_price' },
+//                     User_id: { $first: '$User_id' },
+//                     isDeleted: { $first: '$isDeleted' },
+//                     delivery_address: { $first: '$delivery_address' },
+//                     IsCancelled: { $first: '$IsCancelled' },
+//                     Status: { $first: '$Status' },
+//                     Order_date: { $first: '$Order_date' },
+//                     TimeStamp: { $first: '$TimeStamp' },
+//                     Items: { $push: '$Items' },
+//                     product: { $push: { $arrayElemAt: ['$product', 0] } }
+//                 }
+//             }
+//         ]);
+
+//         // Separate array for 'products'
+//         const productsArray = ordersResult.map(order => order.product).flat(); // Use flat() to flatten the array
+
+//         // Extract total_price and collection object _id
+//        const totalPrice = ordersResult[0].total_price;
+//         const collectionId = ordersResult[0]._id;
+
+//         // Remove 'product' field from the 'ordersResult' objects
+//         ordersResult.forEach(order => delete order.product);
+
+//         // You now have totalPrices and collectionIds as separate arrays with the desired values
+
+//         // console.log("Orders Result:", ordersResult);
+
+//         res.render('manageOrders', { imgUri, images, ordersResult, productsArray,totalPrice,collectionId,formatPrice });
+//     } catch (err) {
+//         console.error('Error:', err);
+//     }
+// }
+
+  
+
+
 
 
 module.exports = {
@@ -540,4 +721,5 @@ module.exports = {
     handlePlaceOrder,
     handleAddAddressView,
     handleEditAddressView,
+    handleOrdersView
 }

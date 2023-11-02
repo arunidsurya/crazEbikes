@@ -70,13 +70,6 @@ app.use("/user-auth",userAuthRouter);
 app.use('/user',userRouter);
 
 
-app.get('/checkout',(req,res)=>{
-    res.render('checkout',{imgUri,images});
-})
-
-app.get('/address',(req,res)=>{
-    res.render('addAddress',{imgUri,images});
-})
 
 
 
