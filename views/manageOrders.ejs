@@ -6,11 +6,14 @@
         </header>
 
         <main>
-            
-            <% ordersData.forEach(order=> { %> <!-- Iterate over ordersData -->
+            <% if (ordersData) { %>
+             
+           
+            <% ordersData.forEach((order,index)=> { %> <!-- Iterate over ordersData -->
 
                 <div class="order-container">
-                    <h4>#Order Number : <%= order.collectionId %></h4>
+                    <h5>#Order Number : <%= index+1 %></h5>
+                    <p><%= order._id %></p>
                 <div class="order-outline">
                     <div class="deliver-address">
                         <h4>Delivery Address</h4>
@@ -34,12 +37,13 @@
                         <h4>Order Status</h4>
                         <p>Order :<%= order.Status %></p>
                         <p>Order date :<%= order.OrderDate %> </p>
+                        <p>Payment method  :<%= order.payment_method %> </p>
                     </div>
                     <div class="order-cancel-button-container">
                         <% if (order.isCancelled) { %> <!-- Use order.isCancelled here -->
                             <p>Order Cancelled</p>
                             <% } else { %>
-                                <a href=""><input  type="text" class="btn btn-danger order-cancel-button" value="Cancel Order"></a>
+                                <a href="/user/cancel-order?orderId=<%=order.collectionId %>"><input  type="text" class="btn btn-danger order-cancel-button" value="Cancel Order"></a>
                                 <% } %>
                     </div>
                 </div>
@@ -67,7 +71,7 @@
                             </p>
                         </div>
                         <div>
-                            <p>Price: $<%= product.price %>
+                            <p>Price: $<%= formatPrice(product.price)%>
                             </p>
                         </div>
 
@@ -79,7 +83,10 @@
                         </section>
                     </div>
                         <% }) %>
-                   
+              
+                        <% }else {%>
+                        <h4>No orders yet</h4>
+                        <%}%>
         </main>
 
         <%- include('layout/footerUser') %>

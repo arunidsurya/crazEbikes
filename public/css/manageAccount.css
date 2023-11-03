@@ -1,0 +1,98 @@
+        /* Main container styling */
+        .manage-account-main-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+            margin: 50px;
+        }
+
+        .manage-account-container {
+            background-color: #fff;
+            margin-bottom: 50px;
+            padding: 20px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            width: 400px;
+        }
+
+        .personal-info {
+            margin-bottom: 50px;
+        }
+
+        personal-info h4 {
+            margin: 0;
+        }
+
+        .name-display,
+        .name-change {
+            text-align: center;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            font-size: 16px;
+        }
+
+        .personal_info_heading {
+            display: flex;
+            align-items: center;
+        }
+
+        .personal-info .name-change-cancel {
+            display: none;
+        }
+
+        .name-change {
+            text-align: center;
+            width: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            font-size: 16px;
+        }
+
+        .name-change-form {
+            display: none;
+        }
+
+        .otp-verify {
+            display: none;
+        }
+
+        .change-password-btn {
+            margin-bottom: 20px;
+        }
+
+        .change-password {
+            display: none;
+            margin-bottom: 50px;
+
+        }
+
+        .header-orders {
+            background-color: #343a40;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header-orders h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        /* Edit and Cancel button styling */
+        .name-edit-button,
+        .name-change-cancel,
+        .btn-danger,
+        .btn-primary,
+        .btn-link {
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .change-password-btn {
+            text-align: center;
+        }

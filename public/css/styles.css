@@ -10,6 +10,10 @@ body {
   font-size: 15px;
   line-height: 1.5;
 }
+.container-one{
+  width: 95vw;
+  margin: auto;
+}
 
 /* Links */
 a {
@@ -24,7 +28,7 @@ ul {
 
 /* Header styles */
 .navbar {
-  height: 100px;
+  height: 125px;
   /* Adjust the height as needed */
 }
 

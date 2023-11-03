@@ -1,8 +1,13 @@
-const express = require('express');
+const express = require("express");
 const Cart = require('../models/cart');
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const Orders  = require('../models/Order');
+const nodemailer = require("nodemailer");
+const{v4:uuidv4}= require('uuid');
+const bycrypt = require("bcrypt");
+const userOTPVerification = require("../models/userOTPVerification");
+const transpoter = require("../utils/nodeMailer");
 
 
 
@@ -519,6 +524,7 @@ async function handlePlaceOrder(req, res) {
               delivery_address: address,
               Items: orderItems,
               Status: status,
+              payment_method:paymentMethod,
             });
   
             await newOrder.save();
@@ -608,42 +614,48 @@ async function handlePlaceOrder(req, res) {
 async function handleOrdersView(req, res) {
     const userId = req.session.userId;
 
-    try {
-        // Find all orders for the given user ID
-        const userOrders = await Orders.find({ User_id: userId });
-
+    if(userId){
+        try {
+            // Find all orders for the given user ID
+            const userOrders = await Orders.find({ User_id: userId ,isDeleted:false});
     
-        // Create an array to accumulate orders' data
-        const ordersData = userOrders.map(order => {
-          return {
-            total_price: order.total_price,
-            Status: order.Status,
-            OrderDate: `${order.Order_date.getFullYear()}-${order.Order_date.getMonth()+1}-${order.Order_date.getDate()}`,
-            TimeStamp: `${order.TimeStamp.getFullYear()}-${order.TimeStamp.getMonth()+1}-${order.TimeStamp.getDate()}`,
-            // Extract and transform items
-            productsArray: order.Items.map(item => ({
-              product_id: item.product_id,
-              quantity: item.quantity,
-              product_name: item.product_name,
-              imageUrl: item.imageUrl,
-              price: item.price,
-              color: item.color,
-            })),
-            address: order.delivery_address[0], // Assuming there's only one address in an order
-            totalPrice: order.total_price,
-            isCancelled: order.IsCancelled,
-            collectionId: order._id,
-          };
-        });
-
-        // console.log(ordersData)
-        // Now, after processing all orders, render the view and send the accumulated data
-        res.render('manageOrders', { imgUri, images, ordersData, formatPrice });
+        
+            // Create an array to accumulate orders' data
+            const ordersData = userOrders.map(order => {
+              return {
+                total_price: order.total_price,
+                Status: order.Status,
+                OrderDate: `${order.Order_date.getFullYear()}-${order.Order_date.getMonth()+1}-${order.Order_date.getDate()}`,
+                TimeStamp: `${order.TimeStamp.getFullYear()}-${order.TimeStamp.getMonth()+1}-${order.TimeStamp.getDate()}`,
+                // Extract and transform items
+                productsArray: order.Items.map(item => ({
+                  product_id: item.product_id,
+                  quantity: item.quantity,
+                  product_name: item.product_name,
+                  imageUrl: item.imageUrl,
+                  price: item.price,
+                  color: item.color,
+                })),
+                address: order.delivery_address[0], // Assuming there's only one address in an order
+                totalPrice: order.total_price,
+                isCancelled: order.IsCancelled,
+                collectionId: order._id,
+                payment_method:order.payment_method,
+              };
+            });
     
-      } catch (error) {
-        console.error(error);
-        throw error; // Handle the error as needed
-      }
+    
+            // Now, after processing all orders, render the view and send the accumulated data
+            res.render('manageOrders', { imgUri, images, ordersData, formatPrice });
+        
+          } catch (error) {
+            console.error(error);
+            throw error; // Handle the error as needed
+          }
+    }else{
+        res.render('userlogin', { images, imgUri })
+    }
+   
 }
 
 
@@ -705,7 +717,209 @@ async function handleOrdersView(req, res) {
 //     }
 // }
 
+async function handleCancelOrder(req,res){
+    const orderId=req.query.orderId;
+    const userId= req.session.userId;
+
+    if(userId){
+        try {
+            const order= await Orders.findByIdAndUpdate({_id:orderId},
+                {
+                    $set:{IsCancelled:true, Status:'Cancelled'}
+                }
+                );
+            res.redirect('/user/view-orders');
+        } catch (error) {
+            console.log(error)
+        }
+
+    }else{
+        res.render('userlogin', { images, imgUri })
+    }
+
+};
+
+async function handleManageAccountView(req,res){
+    const userId= req.session.userId;
+
+    if(userId){
+        try {
+            
+         const user= await User.findById({_id:userId});
+
+         res.render('manageAccount',{user,images,imgUri});
+
+        } catch (error) {
+            console.log(error)
+        }
+    }else{
+        res.render('userlogin', { images, imgUri })
+    }
+
+}
+
+async function handleChangeName(req,res){
+    const userId= req.session.userId;
+    const name= req.body.name;
+
+
+    if(userId){
+        try {
+            
+         const user= await User.findOneAndUpdate({_id:userId},{
+            $set:{
+                name:name
+            }
+         });
+
+         res.json({success:true});
+
+        } catch (error) {
+            console.log(error)
+        }
+    }else{
+        res.render('userlogin', { images, imgUri })
+    }
+
+}
+
+async function handleChangeNumber(req,res){
+    const userId= req.session.userId;
+    const contactNumber= req.body.contactNumber;
+
+
+    if(userId){
+        try {
+            
+         const user= await User.findOneAndUpdate({_id:userId},{
+            $set:{
+                contactNumber:contactNumber
+            }
+         });
+
+         if(user){
+            res.json({success:true});
+         }else{
+            console.log("no user found")
+         }
+
+        } catch (error) {
+            console.log(error)
+        }
+    }else{
+        res.render('userlogin', { images, imgUri })
+    }
+
+}
+
+
+async function handleChangeEmail(req,res){
+    const email = req.body.email;
+    const id= req.session.userId;
+
+
+    try {
+        const otp= `${Math.floor(1000 + Math.random() * 9000)}`;
+
+        //mail options
+        const mailOptions ={
+            from: process.env.AUTH_EMAIL,
+            to:email,
+            subject: "Verify Your Email",
+            html:`<p> Enter <b>${otp}</b> in the app to verify your email address.</p>
+            <p>This code will <b> Expires in one hour</b></P> `
+        };
+    // hash the otp
+    const saltRounds = 10;
+    const hashedOTP = await bycrypt.hash(otp,saltRounds);
+      const newOTPVerification = await new userOTPVerification({
+            userId:id,
+            otp: hashedOTP,
+            createdAt:Date.now(),
+            expiresAt:Date.now() + 3600000,
+        });
+        // save otp record
+        await newOTPVerification.save();
+        transpoter.sendMail(mailOptions,(error,res)=>{
+            if(error){
+                console.log(error);
+            }
+    
+        });
+        res.json({success:true,email})
   
+    } catch (error) {
+        res.json({
+            status:"FAILED",
+            message:error.message,
+        });
+    }
+
+}
+
+async function handleVerifyOtp(req, res) {
+    const email = req.body.newEmail;
+    const otp = req.body.otp;
+    const userId = req.session.userId;
+
+    try {
+        if (userId && otp) {
+            const userOTPVerificationRecords = await userOTPVerification.find({
+                userId,
+            });
+
+            const { expiresAt } = userOTPVerificationRecords[0];
+            const hashedOTP = userOTPVerificationRecords[0].otp;
+
+            const validOTP = await bycrypt.compare(otp, hashedOTP);
+            
+
+            if (validOTP) {
+                await User.updateOne({ _id: userId }, { isVerified: true, email: email });
+            }
+
+            await userOTPVerification.deleteMany({ userId });
+           
+
+            res.json({ success: true, email, message:"completed" });
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function handleChangePassword(req,res){
+    const oldPassword = req.body.oldPassword;
+    const newPassword = req.body.newPassword;
+    const userId = req.session.userId;
+
+    try {
+
+        const user = await User.findOne({_id:userId});
+        if(user){
+            const validPassword = await bycrypt.compare(oldPassword,user.password);
+            
+            if (validPassword) {
+                const saltRounds = 10;
+              const hashedPassword= await bycrypt.hash(newPassword, saltRounds);
+    
+              await User.updateOne({ _id: userId }, { password: hashedPassword });
+
+                res.json({staus:true,message:"password updated successfully"});
+        }else{
+            res.json({staus:false,message:"wrong password entered!!!s"});
+        }
+    }
+        
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+
+
+
 
 
 
@@ -721,5 +935,12 @@ module.exports = {
     handlePlaceOrder,
     handleAddAddressView,
     handleEditAddressView,
-    handleOrdersView
+    handleOrdersView,
+    handleCancelOrder,
+    handleManageAccountView,
+    handleChangeName,
+    handleChangeNumber,
+    handleChangeEmail,
+    handleVerifyOtp,
+    handleChangePassword,
 }

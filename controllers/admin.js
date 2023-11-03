@@ -7,6 +7,15 @@ const mongoose = require('mongoose');
 const bycrypt = require("bcrypt");
 const productValidator=require('../middleware/productValidator');
 const {check,validationResult} = require('express-validator');
+const Orders = require('../models/Order');
+
+function formatPrice(price) {
+    return price.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+};
+const imgUri = process.env.IMGURI;
 
 
 async function handleHomePageView(req,res){
@@ -389,6 +398,79 @@ async function handleImageDelete(req, res) {
 
 };
 
+async function handleOrdersView(req,res){
+    const orders= await Orders.find({}).sort({Order_date:-1});
+
+    res.render('orders',{orders,formatPrice})
+
+}
+
+async function handleOrderDetailedView(req,res){
+    const orderId= req.query.orderId;
+
+
+    if(orderId){
+        try {
+            // Find all orders for the given user ID
+            const userOrders = await Orders.find({ _id: orderId });
+    
+        
+            // Create an array to accumulate orders' data
+            const ordersData = userOrders.map(order => {
+              return {
+                total_price: order.total_price,
+                Status: order.Status,
+                OrderDate: `${order.Order_date.getFullYear()}-${order.Order_date.getMonth()+1}-${order.Order_date.getDate()}`,
+                TimeStamp: `${order.TimeStamp.getFullYear()}-${order.TimeStamp.getMonth()+1}-${order.TimeStamp.getDate()}`,
+                // Extract and transform items
+                productsArray: order.Items.map(item => ({
+                  product_id: item.product_id,
+                  quantity: item.quantity,
+                  product_name: item.product_name,
+                  imageUrl: item.imageUrl,
+                  price: item.price,
+                  color: item.color,
+                })),
+                address: order.delivery_address[0], // Assuming there's only one address in an order
+                totalPrice: order.total_price,
+                isCancelled: order.IsCancelled,
+                collectionId: order._id,
+                payment_method:order.payment_method,
+              };
+            });
+    
+    
+            // Now, after processing all orders, render the view and send the accumulated data
+            res.render('adminOrderDetview', { ordersData,imgUri, formatPrice });
+        
+          } catch (error) {
+            console.error(error);
+            throw error; // Handle the error as needed
+          }
+    }
+
+}
+
+async function handleCancelOrder(req,res){
+    const orderId=req.query.orderId;
+
+
+    if(orderId){
+        try {
+            const order= await Orders.findByIdAndUpdate({_id:orderId},
+                {
+                    $set:{IsCancelled:true, Status:'Cancelled'}
+                }
+                );
+            res.redirect('/admin/orders-view');
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
+}
+
+
 
 module.exports = {
     handleHomePageView,
@@ -417,6 +499,9 @@ module.exports = {
     handleCustomerBlock,
     handleCustomerUnblock,
     handleImageDelete,
+    handleOrdersView,
+    handleOrderDetailedView,
+    handleCancelOrder,
 
 }; 
 

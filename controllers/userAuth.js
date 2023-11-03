@@ -34,26 +34,36 @@ async function handleUserLogin(req, res) {
 
     const { email, password } = req.body;
     const user = await User.findOne({ email});
-    const validPassword = await bycrypt.compare(password,user.password);
-    if (!user || !validPassword) {
-    return res.render("userlogin", {
-        images:images,
-        imgUri:imgUri,
-        error: "Invalid email or password",
-    });
-
-    }else if(user.isBlocked){
+    if(user){
+        const validPassword = await bycrypt.compare(password,user.password);
+        if (!validPassword) {
+            return res.render("userlogin", {
+                images:images,
+                imgUri:imgUri,
+                error: "Invalid email or password",
+            });
+        
+            }else if(user.isBlocked){
+                return res.render("userlogin", {
+                    images:images,
+                    imgUri:imgUri,
+                    error: "This Account is bLocked!!! please contact Admin",
+                });
+            }
+        
+            const userToken = setUser(user);
+            res.cookie("useruid", userToken);
+            req.session.userId=user._id;
+            return res.redirect("/");
+    }else{
         return res.render("userlogin", {
             images:images,
             imgUri:imgUri,
-            error: "This Account is bLocked!!! please contact Admin",
+            error: "No user found",
         });
     }
+    
 
-    const userToken = setUser(user);
-    res.cookie("useruid", userToken);
-    req.session.userId=user._id;
-    return res.redirect("/");
 };
 
 async function handleUerLogout(req, res) {

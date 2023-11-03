@@ -1,0 +1,98 @@
+<%- include('layout/headerAdmin') %>
+<%- include('layout/sidebarAdmin') %>
+
+<div class="col py-3">
+
+    <% ordersData.forEach((order,index)=> { %> <!-- Iterate over ordersData -->
+
+        <div class="order-container">
+            <h5>Order Details</h5>
+
+        <div class="order-outline">
+            <div class="deliver-address">
+                <h4>Delivery Address</h4>
+                <h6>
+                    <%= order.address.Name %>
+                </h6>
+                <p><span>
+                        <%= order.address.Address %>,
+                    </span><span>
+                        <%= order.address.City %>-
+                    </span><span>
+                        <%= order.address.Pincode %>
+                    </span></p>
+                <p>
+                    <%=order.address.State %>
+                </p>
+                <p>Phone Number :<%= order.address.ContactNumber %>
+                </p>
+            </div>
+            <div>
+                <h4>Order Status</h4>
+                <p>Order :<%= order.Status %></p>
+                <p>Order date :<%= order.OrderDate %> </p>
+                <p>Payment method  :<%= order.payment_method %> </p>
+            </div>
+            <div class="order-cancel-button-container">
+                <% if (order.isCancelled) { %> <!-- Use order.isCancelled here -->
+                    <a href="/admin/undo-cancel-order?orderId=<%=order.collectionId %>"><input  type="text" class="btn btn-danger order-cancel-button" value="Undo Cancel"></a>
+                    <% } else { %>
+                        <a href="/admin/cancel-order?orderId=<%=order.collectionId %>"><input  type="text" class="btn btn-danger order-cancel-button" value="Cancel Order"></a>
+                        <% } %>
+
+                        <% if (order.isDeleted) { %> <!-- Use order.isCancelled here -->
+                            <a href="/admin/undo-delete-order?orderId=<%=order.collectionId %>"><input  type="text" class="btn btn-danger order-cancel-button" value="Undo Delete"></a>
+                            <% } else { %>
+                                <a href="/admin/delete-order?orderId=<%=order.collectionId %>"><input  type="text" class="btn btn-danger order-cancel-button" value="Delete Order"></a>
+                                <% } %>
+        
+            </div>
+        </div>
+        <% order.productsArray.forEach(product=> { %>
+            <section class="order">
+
+                <div>
+                    <img class="order-image" src="<%= imgUri + product.imageUrl %>" alt="Image">
+                    
+                </div>
+                <div>
+                    <p>
+                        <%= product.product_name.slice(0,20) %>
+                    </p>
+                </div>
+                <div>
+                    <p>
+                       color: <%= product.color %>
+                    </p>
+                </div>
+
+                <div>
+                    <p>
+                        <%= product.quantity %> No
+                    </p>
+                </div>
+                <div>
+                    <p>Price: $<%= formatPrice(product.price)%>
+                    </p>
+                </div>
+
+            </section>
+            <% }) %>
+                <section class="order-total">
+                    <p>Total Order price: <span class="order-total-price">$ <%= formatPrice(order.totalPrice) %>
+                                </span></p>
+                </section>
+            </div>
+                <% }) %>
+      
+
+            <a href="/admin/orders-view"><input type="button" class="btn btn-link" value="Back to orders View"></a>
+
+
+
+</div>
+
+    
+</div>
+</div>
+</div>

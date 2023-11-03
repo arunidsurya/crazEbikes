@@ -4,7 +4,9 @@ const mongoose = require('mongoose');
 
 const{handleCartView,handleAddToCart,handleUpdateCartQuantity,handleDeleteCartItem,
     handleCheckoutView,handleEditAddress,handleAddNewAddress,handlePlaceOrder,
-    handleAddAddressView,handleEditAddressView,handleOrdersView}=require('../controllers/user')
+    handleAddAddressView,handleEditAddressView,handleOrdersView,handleCancelOrder,
+    handleManageAccountView,handleChangeName,handleChangeNumber,handleChangeEmail,
+    handleVerifyOtp,handleChangePassword}=require('../controllers/user')
 
 
 const router = express.Router();
@@ -38,6 +40,19 @@ router.post('/place-order',handlePlaceOrder);
 
 router.get('/view-orders', handleOrdersView);
 
+router.get('/cancel-order',handleCancelOrder)
+
+router.get('/manage-account',handleManageAccountView) 
+
+router.post('/change-name',handleChangeName)
+
+router.post('/change-contact-number',handleChangeNumber)
+
+router.post('/change-email',handleChangeEmail)
+
+router.post('/verify-otp',handleVerifyOtp)
+
+router.post('/change-password',handleChangePassword)
 
 
 module.exports = router;

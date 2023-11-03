@@ -2,19 +2,19 @@
 <%- include('layout/headerUser') %>
 <%- include('layout/formatPrice') %>
 
-<form class="otp-verify" action="/user/verifyOTP?userid=<%= userid %>" method="post">
+<form class="otp-verify" action="/user-auth/verifyOTP?userid=<%= userid %>" method="post">
     <div class="form-group ">
       <h5>An OTP has been sent to your registered Email address.</h5>
       <% if (locals.message) { %>
        <p class="otp-success-message"><%= message %></p>
-       <p>click here to <span><a href="/user/login">Login</a></span></p>
+       <p>click here to <span><a href="/user-login">Login</a></span></p>
       <% } %>
       <% if (locals.message_no_otp) { %>
         <p class="otp-status-message"><%= message_no_otp %></p>
        <% } %>
        <% if (locals.message_no_record) { %>
         <p class="otp-status-message"><%= message_no_record %></p>
-        <p>click here to <span><a href="/user/signup">Signup</a></span> or <span><a href="/user-login">Login</a></span></p>
+        <p>click here to <span><a href="/user-signup">Signup</a></span> or <span><a href="/user-login">Login</a></span></p>
        <% } %>
        <% if (locals.message_otp_expired) { %>
         <p class="otp-status-message"><%= message_otp_expired %></p>
@@ -30,7 +30,7 @@
       <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
     </div>
     <p>OTP not received!!</p>
-    <p><a href="/user/resendOTPVerificationCode">Click here</a> here to resend OTP <span></span></p>
+    <p><a href="/user-auth/resendOTPVerificationCode">Click here</a> here to resend OTP <span></span></p>
     <button type="submit" class="btn btn-primary">Verify</button>
   </form>
 
