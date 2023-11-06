@@ -5,10 +5,10 @@
             <div class="row">
                 <div class="col-md-6">
                     <div id="productCarousel" class="carousel slide" data-ride="carousel">
-                        <div class="carousel-inner">
+                        <div class="carousel-inner zoom">
 
                             <% for (let i=0; i < products.imageUrl.length; i++) { %>
-                                <div class="carousel-item <%= i === 0 ? 'active' : '' %>" id="img-container">
+                                <div class="carousel-item <%= i === 0 ? 'active' : '' %> ">
                                     <img style="height: 500px;" src="<%= imgUri %><%= products.imageUrl[i] %>"
                                         class="d-block w-75" alt="Product Image <%= i + 1 %>"
                                         data-lightbox="product-gallery">
@@ -82,7 +82,7 @@
                 $('#productCarousel').carousel(index);
             });
         </script>
-        <script>
+        <!-- <script>
             var options = {
                 width: 400,
                 zoomWidth: 400,
@@ -90,6 +90,6 @@
             };
             new ImageZoom(document.getElementById("img-container"), options);
 
-        </script>
+        </script> -->
 
         <%- include('layout/footerUser') %>

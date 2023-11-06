@@ -122,6 +122,7 @@ async function handleAddToCart(req, res) {
         const product_id = req.query.product_id;
         const quantity = req.body.quantity;
 
+
         // Check if the user's cart exists; if not, create a new one
         let cart = await Cart.findOne({ userId: userId });
         if (!cart) {
@@ -131,9 +132,10 @@ async function handleAddToCart(req, res) {
         // Check if the product already exists in the cart
         const existingCartItemIndex = cart.cartItems.findIndex(item => item.product_id.toString() === product_id);
 
+        const quantityToAdd = parseInt(quantity, 10);
         if (existingCartItemIndex !== -1) {
             // If the product is already in the cart, update the quantity
-            cart.cartItems[existingCartItemIndex].quantity = quantity;
+            cart.cartItems[existingCartItemIndex].quantity += quantityToAdd;
         } else {
             // If the product is not in the cart, add it
             cart.cartItems.push({ product_id, quantity });
@@ -617,7 +619,7 @@ async function handleOrdersView(req, res) {
     if(userId){
         try {
             // Find all orders for the given user ID
-            const userOrders = await Orders.find({ User_id: userId ,isDeleted:false});
+            const userOrders = await Orders.find({ User_id: userId ,isDeleted:false}).sort({Order_date:-1});
     
         
             // Create an array to accumulate orders' data

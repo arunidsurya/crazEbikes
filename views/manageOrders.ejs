@@ -43,7 +43,7 @@
                         <% if (order.isCancelled) { %> <!-- Use order.isCancelled here -->
                             <p>Order Cancelled</p>
                             <% } else { %>
-                                <a href="/user/cancel-order?orderId=<%=order.collectionId %>"><input  type="text" class="btn btn-danger order-cancel-button" value="Cancel Order"></a>
+                                <a href="/user/cancel-order?orderId=<%=order.collectionId %>" onclick="return confirm('Are you sure you want to cancel this order?');"><input  type="text" class="btn btn-danger order-cancel-button" value="Cancel Order"></a>
                                 <% } %>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                     </section>
                     <% }) %>
                         <section class="order-total">
-                            <p>Total Order price: <span class="order-total-price">$ <%= formatPrice(order.totalPrice) %>
+                            <p>Total Order price(including delivery charge): <span class="order-total-price">$ <%= formatPrice(order.totalPrice) %>
                                         </span></p>
                         </section>
                     </div>

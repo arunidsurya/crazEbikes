@@ -5,8 +5,7 @@ const {handleHomePageView, handleCategoryView,handleAddCategoryPageView, handleC
     handleCustomerDelete, handleProductAdd, handleProductsView,handleProductUpdatePageView, handleProductUpdate,
     handleProdcutDelete, handleCustomerBlock, handleCustomerUnblock, handleImageDelete,
     handleProductSearch, handleProductsSort, handleCategorySearch, handleUserSearch,
-    handleAddProductPageView,handleOrdersView,handleOrderDetailedView,
-    handleCancelOrder} = require('../controllers/admin');
+    handleAddProductPageView,handleOrdersView,handleOrderDetailedView,handleChangeOrderStatus} = require('../controllers/admin');
 const productValidator =require('../middleware/productValidator');
 
 const router = express.Router();
@@ -45,7 +44,7 @@ router.get("/deleteImages", handleImageDelete);
 
 router.get("/orders-view", handleOrdersView);
 router.get('/orders-detailed-view',handleOrderDetailedView);
-router.get('/cancel-order',handleCancelOrder);
+router.post('/change-order-status',handleChangeOrderStatus);
 
 
 

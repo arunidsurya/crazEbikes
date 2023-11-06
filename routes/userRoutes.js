@@ -19,12 +19,9 @@ router.get('/checkout', handleCheckoutView);
 
 router.get('/add-new-address', handleAddAddressView);
 
-
 router.post('/addToCart', handleAddToCart);
 
-
 router.post('/updateCartQuantity', handleUpdateCartQuantity);
-
 
 router.post('/detele-cart-item', handleDeleteCartItem );
 
@@ -40,19 +37,19 @@ router.post('/place-order',handlePlaceOrder);
 
 router.get('/view-orders', handleOrdersView);
 
-router.get('/cancel-order',handleCancelOrder)
+router.get('/cancel-order',handleCancelOrder);
 
-router.get('/manage-account',handleManageAccountView) 
+router.get('/manage-account',handleManageAccountView); 
 
-router.post('/change-name',handleChangeName)
+router.post('/change-name',handleChangeName);
 
-router.post('/change-contact-number',handleChangeNumber)
+router.post('/change-contact-number',handleChangeNumber);
 
-router.post('/change-email',handleChangeEmail)
+router.post('/change-email',handleChangeEmail);
 
-router.post('/verify-otp',handleVerifyOtp)
+router.post('/verify-otp',handleVerifyOtp);
 
-router.post('/change-password',handleChangePassword)
+router.post('/change-password',handleChangePassword);
 
 
 module.exports = router;

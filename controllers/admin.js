@@ -434,6 +434,7 @@ async function handleOrderDetailedView(req,res){
                 address: order.delivery_address[0], // Assuming there's only one address in an order
                 totalPrice: order.total_price,
                 isCancelled: order.IsCancelled,
+                isDeleted: order.isDeleted,
                 collectionId: order._id,
                 payment_method:order.payment_method,
               };
@@ -451,25 +452,43 @@ async function handleOrderDetailedView(req,res){
 
 }
 
-async function handleCancelOrder(req,res){
-    const orderId=req.query.orderId;
 
+async function handleChangeOrderStatus(req,res){
+    const status= req.body.selectedOption;
+    const orderId=req.body.orderId;
 
     if(orderId){
         try {
-            const order= await Orders.findByIdAndUpdate({_id:orderId},
-                {
-                    $set:{IsCancelled:true, Status:'Cancelled'}
-                }
-                );
-            res.redirect('/admin/orders-view');
+            if(status=='Cancelled'){
+                const order= await Orders.findByIdAndUpdate({_id:orderId},
+                    {
+                        $set:{IsCancelled:true, Status:status}
+                    }
+                    );
+                    res.redirect('/admin/orders-view');
+            }else if(status=='Deleted'){
+                const order= await Orders.findByIdAndUpdate({_id:orderId},
+                    {
+                        $set:{isDeleted:true, Status:status}
+                    }
+                    );
+                    res.redirect('/admin/orders-view');
+            }else{
+                const order= await Orders.findByIdAndUpdate({_id:orderId},
+                    {
+                        $set:{isDeleted:false, IsCancelled:false, Status:status}
+                    }
+                    );
+                    res.redirect('/admin/orders-view');
+
+            }
+
         } catch (error) {
             console.log(error)
         }
 
     }
 }
-
 
 
 module.exports = {
@@ -501,7 +520,7 @@ module.exports = {
     handleImageDelete,
     handleOrdersView,
     handleOrderDetailedView,
-    handleCancelOrder,
+    handleChangeOrderStatus,
 
 }; 
 
