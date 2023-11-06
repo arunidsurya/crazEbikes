@@ -1,4 +1,3 @@
-
 .header-orders {
     background-color: #246c1c;
     color: #fff;
@@ -10,7 +9,8 @@ main {
     margin: 0 auto;
     padding: 20px;
 }
-.order-container{
+
+.order-container {
     background-color: #fff;
     margin-bottom: 50px;
     padding: 20px;
@@ -23,10 +23,9 @@ main {
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     display: flex;
+    flex-wrap: wrap; /* Wrap order items on smaller screens */
     justify-content: space-between;
-    height: 120px;
     align-items: center;
-
 }
 
 .order h2 {
@@ -48,35 +47,34 @@ main {
     background-color: #fff;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     display: flex;
-    justify-content:right; /* Horizontally center the content */
+    justify-content: flex-end; /* Horizontally align the content to the right */
     align-items: center; /* Vertically center the content */
     height: 80px;
     font-size: 20px;
     font-weight: bold;
 }
-.order-total-price{
 
+.order-total-price {
     padding: 20px;
 }
 
-
-.order .order-image{
+.order .order-image {
     height: 80px;
     width: 100px;
 }
 
-.order-outline{
+.order-outline {
     background-color: #fff;
     margin-bottom: 20px;
     padding: 20px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     display: flex;
+    flex-wrap: wrap; /* Wrap outline items on smaller screens */
     justify-content: space-between;
-    height: 200px;
-
+    align-items: center;
 }
 
-.order-cancel-button-container{
+.order-cancel-button-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -84,6 +82,27 @@ main {
     height: 100%;
 }
 
-.order-status{
-    display: inline-block
+.order-status {
+    display: inline-block;
+}
+
+/* Media query for screens below 900px wide */
+@media (max-width: 900px) {
+    .order {
+        flex-direction: column; /* Stack order items in a column for smaller screens */
+    }
+
+    .order-outline,
+    .order-container {
+        padding: 10px; /* Reduce padding on smaller screens */
+    }
+
+    .order h2 {
+        font-size: 20px; /* Adjust font size for smaller screens */
+    }
+
+    .order-total {
+        height: auto; /* Allow the total section to grow in height for smaller screens */
+        font-size: 18px; /* Adjust font size for smaller screens */
+    }
 }

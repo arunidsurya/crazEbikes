@@ -1,3 +1,5 @@
+
+
 * {
   padding: 0;
   margin: 0;
@@ -97,6 +99,7 @@ ul {
 
 }
 
+
 /* Change the color of Boxicons to black */
 .bx {
   color: black;
@@ -132,7 +135,6 @@ ul {
 /* Styling for the product container */
 .product-container {
   text-align: center;
-  /* Center-align the heading */
   margin: 50px 0 5px 0;
 }
 
@@ -485,4 +487,95 @@ label[for="sortPrice"] {
 /*/////////////////////////////////////////////*/
 
 /* responsive content */
+
+
+/* For screens up to 768px wide (mobile devices) */
+@media (max-width: 768px) {
+  .container-one {
+    width: 100%; /* Adjust as needed for full-width on smaller screens */
+  }
+
+  .navbar {
+    height: auto; /* Adjust the height as needed for mobile devices */
+  }
+
+  #logoimg {
+    width: 80px; /* Adjust logo size for smaller screens */
+    height: auto; /* Adjust logo size for smaller screens */
+  }
+
+  #Bname1,
+  #Bname2,
+  #Bname3 {
+    font-size: 20px; /* Adjust font size for smaller screens */
+  }
+
+  #sitename {
+    font-size: 24px; /* Adjust font size for smaller screens */
+  }
+
+  .top-selectors {
+    font-size: 16px; /* Adjust font size for smaller screens */
+  }
+
+  .product-card {
+    flex: 0 1 calc(50% - 20px); /* Adjust card size for smaller screens */
+  }
+
+  .product-image {
+    max-width: 100%;
+    max-height: 80px; /* Adjust image size for smaller screens */
+  }
+
+  .product-card h2,
+  .product-card h4 {
+    font-size: 16px; /* Adjust font size for smaller screens */
+  }
+
+  .pagination {
+    margin: auto;
+    padding: 10px;
+    align-items: center;
+  }
+
+  #sortPrice {
+    width: 120px; /* Adjust select width for smaller screens */
+  }
+
+  .categories {
+    overflow: hidden; /* Hide the overflow content */
+    max-height: 0; /* Initially hide the content */
+    transition: max-height 0.3s ease; /* Add a transition for smooth sliding */
+  }
+
+  .categories.active {
+    max-height: 1000px; /* Show the content when the categories are active */
+    transition: max-height 0.3s ease; /* Add a transition for smooth sliding */
+  }
+
+  .categories a {
+    display: block;
+    padding: 10px; /* Add padding to each category item */
+  }
+  
+}
+
+/* For screens between 768px and 1200px wide (tablets) */
+@media (min-width: 769px) and (max-width: 1200px) {
+  .container-one {
+    width: 90%; /* Adjust as needed for content width on tablets */
+  }
+
+  .product-card {
+    flex: 0 1 calc(33.33% - 20px); /* Adjust card size for tablets */
+  }
+}
+
+/* For screens wider than 1200px (desktops) */
+@media (min-width: 1201px) {
+  .container-one {
+    width: 95%; /* Adjust as needed for content width on desktops */
+  }
+}
+
 
