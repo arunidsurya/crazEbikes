@@ -70,6 +70,9 @@ app.use("/user-auth",userAuthRouter);
 app.use('/user',userRouter);
 
 
+app.post('/add-coupons', (req, res) => {
+    console.log(req.body);
+});
 
 
 

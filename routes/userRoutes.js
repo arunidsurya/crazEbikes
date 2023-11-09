@@ -6,7 +6,7 @@ const{handleCartView,handleAddToCart,handleUpdateCartQuantity,handleDeleteCartIt
     handleCheckoutView,handleEditAddress,handleAddNewAddress,handlePlaceOrder,
     handleAddAddressView,handleEditAddressView,handleOrdersView,handleCancelOrder,
     handleManageAccountView,handleChangeName,handleChangeNumber,handleChangeEmail,
-    handleVerifyOtp,handleChangePassword}=require('../controllers/user')
+    handleVerifyOtp,handleChangePassword,handleVerifyPayment}=require('../controllers/user')
 
 
 const router = express.Router();
@@ -50,6 +50,8 @@ router.post('/change-email',handleChangeEmail);
 router.post('/verify-otp',handleVerifyOtp);
 
 router.post('/change-password',handleChangePassword);
+
+router.post('/verify-payment',handleVerifyPayment);
 
 
 module.exports = router;

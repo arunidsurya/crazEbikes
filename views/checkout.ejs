@@ -56,10 +56,9 @@
                       <% userAddress.delivery.forEach(address=> { %>
                         <div class="address-container">
                           <label>
-                            <input type="radio" name="selectedAddress"
-                              value="<%= address._id %>"
-                              onclick="toggleEditButton(this)">
-            
+                            <input type="radio" name="selectedAddress" value="<%= address._id %>"
+                              onclick="deliverAddress('<%= address._id %>')">
+
                             <div class="name-mobile">
                               <strong>
                                 <%= address.name %>
@@ -73,14 +72,16 @@
                               <%= address.address %>, <%= address.city %>, <%= address.pincode %>
                             </div>
                           </label>
-                          <a href="/user/edit-address?id=<%= address._id %>&userId=<%= userId %>"><input class="btn btn-link" type="text" value="Edit"/>
+                          <a href="/user/edit-address?id=<%= address._id %>&userId=<%= userId %>"><input
+                              class="btn btn-link" type="text" value="Edit" />
                           </a>
 
                         </div>
                         <% }) %>
                     </div>
 
-                   <a href="/user/add-new-address"><input class="btn btn-primary" onclick="toggleNewAddress()" value="Add new address"></a> 
+                    <a href="/user/add-new-address"><input class="btn btn-primary" onclick="toggleNewAddress()"
+                        value="Add new address"></a>
 
 
                     <div class="float-end">
@@ -184,19 +185,22 @@
                   </header>
 
                   <div id="payment-section">
-                    <label class="'radio-inline">
-                      <input type="radio" name="paymentMethod" value="COD" checked> COD
+                    <label for="codOption" class="radio-inline">
+                      <input type="radio" id="codOption" name="paymentMethod" value="COD"
+                        onchange="getSelectedPaymentMethod(this)"> COD
                     </label>
-                    <label class="'radio-inline">
-                      <input type="radio" name="paymentMethod" value="ONLINE"> Online Payment
+                    <label for="onlineOption" class="radio-inline">
+                      <input type="radio" id="onlineOption" name="paymentMethod" value="ONLINE"
+                        onchange="getSelectedPaymentMethod(this)"> Online Payment
                     </label>
 
-                    <input type="text" name="userId" value="<%= userId %>" hidden>
-                    <input type="text" name="totalPrice" value="<%= cartTotal+10 %>" hidden>
+                    <P id="payment-error"></P>
+                    <input type="text" name="userId" id="userId" value="<%= userId %>" hidden>
+                    <input type="text" name="totalPrice" id="totalPrice" value="<%= cartTotal+10 %>" hidden>
 
                     <div class="float-end">
                       <button class="btn btn-light border">Cancel</button>
-                      <button class="btn btn-success shadow-0 border" type="submit" >Place
+                      <button class="btn btn-success shadow-0 border" type="button" onclick="placeOrder()">Place
                         Order</button>
 
                     </div>
@@ -403,14 +407,113 @@
     </script>
 
     <script>
-async function submitEditAddressForm() {
-  const editAddressForm = await document.getElementById('editAddressFrom');
-  if (editAddressForm) {
-    editAddressForm.submit();
-  } else {
-    console.error('Form element with ID "editAddressFrom" not found.');
-  }
-}
+      async function submitEditAddressForm() {
+        const editAddressForm = await document.getElementById('editAddressFrom');
+        if (editAddressForm) {
+          editAddressForm.submit();
+        } else {
+          console.error('Form element with ID "editAddressFrom" not found.');
+        }
+      }
+    </script>
+
+
+
+    <script>
+
+      var selectedAddressId;
+      var paymentMethod;
+      const userId = document.getElementById('userId').value;
+      const totalPrice = document.getElementById('totalPrice').value
+
+      function deliverAddress(addressId) {
+        selectedAddressId = addressId;
+      }
+
+
+      function getSelectedPaymentMethod() {
+        paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+      }
+
+      function placeOrder() {
+        if (selectedAddressId && paymentMethod) {
+
+          fetch('/user/place-order', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ selectedAddressId, paymentMethod, userId, totalPrice }),
+          })
+            .then(response => response.json()) // Parse the JSON response
+            .then(data => {
+              if (data.CODpayment) {
+                window.location.href = '/user/view-orders';
+              } else {
+                const order = data.order;
+                const KEY_ID = data.KEY_ID;
+                // console.log(KEY_ID);
+                // console.log(order); // Access the 'order' property from the response
+                razorpayPayment(order, KEY_ID);
+              }
+            })
+        } else {
+          document.getElementById('payment-error').innerHTML = "All fields are manadatory!!";
+        }
+      }
+
+      function razorpayPayment(order, KEY_ID) {
+        
+        var options = {
+          "key": KEY_ID,
+          "amount": order.amount,
+          "currency": "INR",
+          "name": "crazEbikes",
+          "description": "Test Transaction",
+          "image": "https://example.com/your_logo",
+          "order_id": order.id,
+          "handler": function (response) {
+            // alert(response.razorpay_payment_id);
+            // alert(response.razorpay_order_id);
+            // alert(response.razorpay_signature);
+
+            // Call verifyPayment with the response and order
+            verifyPayment(response, order);
+          },
+          "prefill": {
+            "name": "Gaurav Kumar",
+            "email": "gaurav.kumar@example.com",
+            "contact": "9000090000"
+          },
+          "notes": {
+            "address": "Razorpay Corporate Office"
+          },
+          "theme": {
+            "color": "#3399cc"
+          }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+
+      }
+
+
+      function verifyPayment(response, order) {
+        fetch('/user/verify-payment',{
+          method:'POST',
+          headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order, response}),
+        })
+        .then(response=>{
+          if(response.ok){
+            window.location.href = '/user/view-orders';
+          }else{
+            console.log("response not ok")
+          }
+        })
+      }
     </script>
 
     <%- include('layout/footerUser') %>

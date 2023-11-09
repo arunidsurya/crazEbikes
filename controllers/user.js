@@ -8,8 +8,9 @@ const{v4:uuidv4}= require('uuid');
 const bycrypt = require("bcrypt");
 const userOTPVerification = require("../models/userOTPVerification");
 const transpoter = require("../utils/nodeMailer");
+const Razorpay = require('razorpay');
 
-
+var instance = new Razorpay({ key_id: process.env.RZP_KEY_ID, key_secret: process.env.RZP_SECRET_KEY })
 
 const images = {
     cover: 'resources/images/coverPhoto.jpg',
@@ -477,7 +478,7 @@ async function handleAddNewAddress(req, res) {
 }
 
 async function handlePlaceOrder(req, res) {
-    const { selectedAddress, paymentMethod, userId, totalPrice } = req.body;
+    const { selectedAddressId, paymentMethod, userId, totalPrice } = req.body;
     if (userId) {
       try {
         const status = paymentMethod === 'COD' ? 'placed' : 'pending';
@@ -485,7 +486,7 @@ async function handlePlaceOrder(req, res) {
         const user = await User.findById(userId);
         const address = [];
         const selectedAddressObj = user.delivery.find((deliveryAddress) =>
-          deliveryAddress._id.equals(selectedAddress) // Use the `equals` method to compare ObjectId
+          deliveryAddress._id.equals(selectedAddressId) // Use the `equals` method to compare ObjectId
         );
   
         if (selectedAddressObj) {
@@ -529,10 +530,29 @@ async function handlePlaceOrder(req, res) {
               payment_method:paymentMethod,
             });
   
-            await newOrder.save();
+            const saveOrder=await newOrder.save();
             await Cart.deleteMany({ userId: user._id });
 
-            res.redirect('/user/view-orders')
+            if(req.body.paymentMethod==='COD'){
+                res.json({CODpayment:true});
+            }else{
+                const amount = (parseInt(totalPrice,10))*100;
+                const orderId= saveOrder._id;
+                console.log(amount);
+                var options ={
+                    amount:amount,
+                    currency:"INR",
+                    receipt:orderId,
+                };
+                instance.orders.create(options,function(err,order){
+                    const order_det=order;
+                    // console.log("new Order:",order_det);
+                    res.json({order:order_det,KEY_ID:process.env.RZP_KEY_ID});
+                })
+            }
+            
+
+            // res.redirect('/user/view-orders');
   
             // res.status(200).json({ message: 'Order placed successfully' });
           }
@@ -920,6 +940,30 @@ async function handleChangePassword(req,res){
 }
 
 
+async function handleVerifyPayment(req,res){
+    const razorpay_payment_id =req.body.response.razorpay_payment_id;
+    const razorpay_order_id=req.body.response.razorpay_order_id;
+    const razorpay_signature =req.body.response.razorpay_signature;
+    const orderId= req.body.order.receipt;
+
+
+    const crypto= require('crypto');
+    let hmac = crypto.createHmac('sha256',process.env.RZP_SECRET_KEY);
+
+    hmac.update(razorpay_order_id + '|' +razorpay_payment_id);
+    hmac=hmac.digest('hex'); // converting to hexa code
+
+    if(hmac==razorpay_signature){
+        const updateStatus= await Orders.findByIdAndUpdate({_id:orderId},
+            {
+                $set:{Status:"Placed",payment_status:"Completed"}
+            }
+            )
+
+            res.json({success:true});
+    }
+}
+
 
 
 
@@ -945,4 +989,5 @@ module.exports = {
     handleChangeEmail,
     handleVerifyOtp,
     handleChangePassword,
+    handleVerifyPayment,
 }

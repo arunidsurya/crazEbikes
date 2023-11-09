@@ -30,30 +30,56 @@
                         <div>
                             <h4>Order Status</h4>
                             <div id="order-status">
-                                <p style="display: inline-block;">Order is <%= order.Status %></p>
+                                <p style="display: inline-block;">Order : <%= order.Status %>
+                                </p>
                             </div>
-                            
+
 
 
                             <p>Order date :<%= order.OrderDate %>
                             </p>
                             <p>Payment method :<%= order.payment_method %>
                             </p>
+                            <div id="payment-status">
+                                <p style="display: inline-block;">Payment :<%= order.payment_status %>
+                                </p>
+                            </div>
                         </div>
                         <div class="order-cancel-button-container">
-                            <h4>Change Order Status</h4>
+                            <h6>Order Status</h6>
                             <div style="display: inline-block;">
                                 <select id="orderStatus" data-order-id="<%= order.collectionId %>">
-                                <option value="pending" <%= order.Status === "Placed" ? "selected" : "" %>>Placed</option>
-                                <option value="delivered" <%= order.Status === "Pending" ? "selected" : "" %>>Pending</option>
-                                <option value="delivered" <%= order.Status === "Delivered" ? "selected" : "" %>>Delivered</option>
-                                <option value="delivered" <%= order.Status === "Cancelled" ? "selected" : "" %>>Cancelled</option>
-                                <option value="delivered" <%= order.Status === "Deleted" ? "selected" : "" %>>Deleted</option>
-                            </select>
-                            <p id="selectedStatus"></p>
+                                    <option value="pending" <%=order.Status==="Placed" ? "selected" : "" %>>Placed
+                                    </option>
+                                    <option value="delivered" <%=order.Status==="Pending" ? "selected" : "" %>>Pending
+                                    </option>
+                                    <option value="delivered" <%=order.Status==="Delivered" ? "selected" : "" %>
+                                        >Delivered</option>
+                                    <option value="delivered" <%=order.Status==="Cancelled" ? "selected" : "" %>
+                                        >Cancelled</option>
+                                    <option value="delivered" <%=order.Status==="Deleted" ? "selected" : "" %>>Deleted
+                                    </option>
+                                </select>
+
+                            </div>
                         </div>
 
+                        <div class="order-cancel-button-container">
+                            <h6>Payment Status</h6>
+                            <div style="display: inline-block;">
+                                <select id="paymentStatus" data-order-id="<%= order.collectionId %>">
+                                    <option value="pending" <%=order.payment_status==="Completed" ? "selected" : "" %>
+                                        >Completed</option>
+                                    <option value="delivered" <%=order.payment_status==="Pending" ? "selected" : "" %>
+                                        >Pending</option>
+                                    <option value="delivered" <%=order.payment_status==="Refund" ? "selected" : "" %>
+                                        >Refund</option>
+
+                                </select>
+
+                            </div>
                         </div>
+
                     </div>
                     <% order.productsArray.forEach(product=> { %>
                         <section class="order">
@@ -104,34 +130,58 @@
         <script>
             // Get a reference to the select element
             var orderStatusSelect = document.getElementById("orderStatus");
-          
+            var paymentStatusSelect =document.getElementById('paymentStatus');
+
             var orderId = orderStatusSelect.getAttribute("data-order-id");
 
             // Add an event listener to log the selected option to the console
-            orderStatusSelect.addEventListener("change", function() {
-              var selectedOption = orderStatusSelect.options[orderStatusSelect.selectedIndex].text;
-              var orderId = orderStatusSelect.getAttribute("data-order-id");
-              var orderStatus= document.getElementById('order-status');
-              if (confirm("Are you sure you want to change the order status to '" + selectedOption + "'?")) {
-            fetch('/admin/change-order-status',{
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ selectedOption,orderId }),
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            console.log("Status changed Sucessfully");
-                            orderStatus.innerHTML='Order is'+" " +selectedOption;
-
-                        } else {
-                            throw new Error('Network response was not ok.');
-                        }
+            orderStatusSelect.addEventListener("change", function () {
+                var selectedOption = orderStatusSelect.options[orderStatusSelect.selectedIndex].text;
+                var orderStatus = document.getElementById('order-status');
+                if (confirm("Are you sure you want to change the order status to '" + selectedOption + "'?")) {
+                    fetch('/admin/change-order-status', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ selectedOption, orderId }),
                     })
+                        .then(response => {
+                            if (response.ok) {
+                                console.log("Status changed Sucessfully");
+                                orderStatus.innerHTML = 'Order is' + " " + selectedOption;
+
+                            } else {
+                                throw new Error('Network response was not ok.');
+                            }
+                        })
                 }
             });
-          </script>
+
+            // Add an event listener to log the selected option to the console
+            paymentStatusSelect.addEventListener("change", function () {
+                var selectedPaymentOption = paymentStatusSelect.options[paymentStatusSelect.selectedIndex].text;
+                var paymentStatus = document.getElementById('payment-status');
+                if (confirm("Are you sure you want to change the order status to '" + selectedPaymentOption + "'?")) {
+                    fetch('/admin/change-payment-status', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ selectedPaymentOption, orderId }),
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                console.log("Status changed Sucessfully");
+                                paymentStatus.innerHTML = 'Payment  :' + " " + selectedPaymentOption;
+
+                            } else {
+                                throw new Error('Network response was not ok.');
+                            }
+                        })
+                }
+            });
+        </script>
 
 
         </div>

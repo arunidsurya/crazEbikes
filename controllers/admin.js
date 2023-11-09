@@ -8,6 +8,7 @@ const bycrypt = require("bcrypt");
 const productValidator=require('../middleware/productValidator');
 const {check,validationResult} = require('express-validator');
 const Orders = require('../models/Order');
+const Coupon = require('../models/coupon');
 
 function formatPrice(price) {
     return price.toLocaleString(undefined, {
@@ -437,6 +438,7 @@ async function handleOrderDetailedView(req,res){
                 isDeleted: order.isDeleted,
                 collectionId: order._id,
                 payment_method:order.payment_method,
+                payment_status:order.payment_status,
               };
             });
     
@@ -491,6 +493,62 @@ async function handleChangeOrderStatus(req,res){
 }
 
 
+async function handleChangePaymentStatus(req,res){
+    const status= req.body.selectedPaymentOption;
+    const orderId=req.body.orderId;
+
+    if(orderId){
+        try {
+
+                const order= await Orders.findByIdAndUpdate({_id:orderId},
+                    {
+                        $set:{payment_status:status}
+                    }
+                    );
+                    res.redirect('/admin/orders-view');
+
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
+}
+
+async function handleAddCouponView(req,res){
+    res.render('addCoupon');
+}
+
+async function handleAddCoupon(req,res){
+    const{name,amount,maxUsage,expiresAt,description}=req.body;
+    const selectedDate = new Date(expiresAt);
+    const utcDate = new Date(selectedDate.toISOString());
+    utcDate.setMinutes(utcDate.getMinutes() - utcDate.getTimezoneOffset()); // to make time zone offset to zero to avoid wrong date saving
+
+    try {
+        const coupon = Coupon.create({
+            name,
+            amount,
+            maxUsage,
+            expiresAt:utcDate,
+            description,
+        })
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+async function handleCouponsView(req,res){
+
+    try {
+        const coupons = await Coupon.find({});
+        res.render('couponsViews',{coupons});
+    } catch (error) {
+        
+    }
+}
+
+
 module.exports = {
     handleHomePageView,
     handleCategoryView,
@@ -521,6 +579,10 @@ module.exports = {
     handleOrdersView,
     handleOrderDetailedView,
     handleChangeOrderStatus,
+    handleChangePaymentStatus,
+    handleAddCoupon,
+    handleAddCouponView,
+    handleCouponsView,
 
 }; 
 

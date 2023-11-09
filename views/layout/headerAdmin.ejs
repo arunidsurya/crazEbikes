@@ -1,27 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/adminHeader.css">
-    <link rel="stylesheet" href="/css/adminOrderDetView.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.2/css/bootstrap.min.css" integrity="sha512-b2QcS5SsA8tZodcDtGRELiGv5SaKSk1vDHDaQRda0htPYWZ6046lr3kJ5bAAQdpV2mmA/4v0wQF9MyU6/pDIAg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script>function checker(){
-      if(window.confirm("Are you sure want to delete this product")){
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/adminHeader.css">
+  <link rel="stylesheet" href="/css/adminOrderDetView.css">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.2/css/bootstrap.min.css"
+    integrity="sha512-b2QcS5SsA8tZodcDtGRELiGv5SaKSk1vDHDaQRda0htPYWZ6046lr3kJ5bAAQdpV2mmA/4v0wQF9MyU6/pDIAg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Add these to your head section -->
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+  <script>function checker() {
+      if (window.confirm("Are you sure want to delete this product")) {
         document.getElementById("deleteProduct").submit();
       } else {
         return;
       };
 
     }</script>
-    <title>Document</title>
+  <title>Document</title>
 </head>
+
 <body>
-    
-  <nav class="navbar navbar-dark bg-dark justify-content-between ml-4" >
+
+  <nav class="navbar navbar-dark bg-dark justify-content-between ml-4">
     <a class="navbar-brand"><i class="fa-solid fa-toolbox"></i><span>Admin Panel</span></a>
 
 
@@ -35,8 +49,9 @@
           <li>
             <hr class="dropdown-divider">
           </li>
-          <li><a class="dropdown-item" id="signout-btn" style="display: none" href="/admin-auth/logout">Sign out</a></li>
-          <li><a class="dropdown-item" id="signin-btn"  style="display: none" href="/adminLogin">sign in</a></li>
+          <li><a class="dropdown-item" id="signout-btn" style="display: none" href="/admin-auth/logout">Sign out</a>
+          </li>
+          <li><a class="dropdown-item" id="signin-btn" style="display: none" href="/adminLogin">sign in</a></li>
         </ul>
       </li>
     </div>
@@ -56,7 +71,5 @@
           </li>
       </ul>
   </div> -->
-    
+
   </nav>
-
-

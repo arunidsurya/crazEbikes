@@ -41,6 +41,7 @@ const OrdersSchema = new Schema({
     ,
     Status: { type: String },
     payment_method: { type: String },
+    payment_status: { type: String ,default:"Pending"},
 });
 
 const Orders = mongoose.model('Orders', OrdersSchema);

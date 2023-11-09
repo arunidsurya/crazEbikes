@@ -86,6 +86,10 @@ main {
     display: inline-block;
 }
 
+#payment-error{
+    color: red;
+}
+
 /* Media query for screens below 900px wide */
 @media (max-width: 900px) {
     .order {
