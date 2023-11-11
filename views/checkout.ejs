@@ -196,7 +196,7 @@
 
                     <P id="payment-error"></P>
                     <input type="text" name="userId" id="userId" value="<%= userId %>" hidden>
-                    <input type="text" name="totalPrice" id="totalPrice" value="<%= cartTotal+10 %>" hidden>
+                    <input type="text" name="totalPrice" id="total-price" value="<%= cartTotal+10 %>" hidden>
 
                     <div class="float-end">
                       <button class="btn btn-light border">Cancel</button>
@@ -226,6 +226,10 @@
                 <p class="mb-2">Shipping cost:</p>
                 <p class="mb-2">+ $10.00</p> <!-- You can change this value as needed -->
               </div>
+              <div class="d-flex justify-content-between">
+                <p class="mb-2">Discount:</p>
+                <p class="mb-2" id="coupon-discount">$ 0 </p> <!-- You can change this value as needed -->
+              </div>
               <hr />
               <div class="d-flex justify-content-between">
                 <p class="mb-2">Total price:</p>
@@ -236,10 +240,11 @@
 
 
               <div class="input-group mt-3 mb-4">
-                <input type="text" class="form-control border" name="" placeholder="Promo code" />
-                <button class="btn btn-light text-primary border">Apply</button>
+                <input type="text" class="form-control border" id="coupon-code" name="" placeholder="Promo code" />
+                <button class="btn btn-light text-primary border" onclick="applCoupon()">Apply</button>
+                
               </div>
-
+              <p id="coupon-message"></p>
               <hr />
 
             </div>
@@ -360,7 +365,7 @@
           });
       }
     </script>
-    <script>
+    <!-- <script>
       function updateTotalPrice() {
         // Get the cart total and shipping cost elements
         const cartTotalElement = document.getElementById('cartTotalPrice');
@@ -385,7 +390,7 @@
       // Call the updateTotalPrice function whenever needed
       updateTotalPrice();
 
-    </script>
+    </script> -->
     <script>
       function editAddress(id, name, contactNumber, pincode, address, city, state) {
         const shippingAddressSection = document.getElementById('shipping-address');
@@ -424,7 +429,9 @@
       var selectedAddressId;
       var paymentMethod;
       const userId = document.getElementById('userId').value;
-      const totalPrice = document.getElementById('totalPrice').value
+      var totalPrice = document.getElementById('total-price').value
+      var coupon_name;
+      var coupon_amount;
 
       function deliverAddress(addressId) {
         selectedAddressId = addressId;
@@ -436,6 +443,7 @@
       }
 
       function placeOrder() {
+        // console.log(Price );
         if (selectedAddressId && paymentMethod) {
 
           fetch('/user/place-order', {
@@ -443,7 +451,7 @@
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ selectedAddressId, paymentMethod, userId, totalPrice }),
+            body: JSON.stringify({ selectedAddressId, paymentMethod, userId, totalPrice, coupon_name, coupon_amount }),
           })
             .then(response => response.json()) // Parse the JSON response
             .then(data => {
@@ -463,7 +471,7 @@
       }
 
       function razorpayPayment(order, KEY_ID) {
-        
+
         var options = {
           "key": KEY_ID,
           "amount": order.amount,
@@ -499,20 +507,65 @@
 
 
       function verifyPayment(response, order) {
-        fetch('/user/verify-payment',{
-          method:'POST',
+        fetch('/user/verify-payment', {
+          method: 'POST',
           headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ order, response}),
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ order, response }),
         })
-        .then(response=>{
-          if(response.ok){
-            window.location.href = '/user/view-orders';
-          }else{
-            console.log("response not ok")
-          }
+          .then(response => {
+            if (response.ok) {
+              window.location.href = '/user/view-orders';
+            } else {
+              console.log("response not ok")
+            }
+          })
+      }
+    </script>
+    <script>
+      function applCoupon() {
+        const couponName = document.getElementById('coupon-code').value;
+        const cartTotal = document.getElementById('TotalPrice');
+        const totalInput = document.getElementById('total-price');
+        const couponMessage = document.getElementById('coupon-message');
+        const couponDiscount = document.getElementById('coupon-discount');
+        // cartTotal.textContent=`${(totalPrice-50).toFixed(2)}`;
+        // totalInput.value=totalPrice-50;
+        // totalPrice=totalPrice-50;
+
+        fetch('/user/applyCoupon', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ couponName }),
         })
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error('Network response was not ok.');
+            }
+          })
+          .then((data) => {
+            if (data.success) {
+              // Coupon applied successfully, update UI and display a success message
+              coupon_amount=data.couponAmount;
+              coupon_name = data.couponName;
+              cartTotal.textContent=`${(totalPrice-data.couponAmount).toFixed(2)}`;
+              totalInput.value=`${(totalPrice-data.couponAmount).toFixed(2)}`;
+              totalPrice=totalPrice-data.couponAmount;
+              couponMessage.textContent = `Coupon "${data.couponName}" applied successfully!`;
+              couponDiscount.innerHTML= `$${(data.couponAmount).toFixed(2)}`;
+            } else {
+              couponMessage.textContent = data.message;
+            }
+          })
+          .catch((error) => {
+            console.error('Error applying coupon:', error);
+            // Handle the error here (e.g., display a generic error message to the user)
+          });
       }
     </script>
 

@@ -3,11 +3,10 @@ const {handleHomePageView, handleCategoryView,handleAddCategoryPageView, handleC
     handleEditCategoryPageView,handleCategoryEdit,
     handleCategoryDelete,handleAddUserPageView, handleUserAdd, handleUserView, handleEditCustomerPageView,handleCustomerEdit,
     handleCustomerDelete, handleProductAdd, handleProductsView,handleProductUpdatePageView, handleProductUpdate,
-    handleProdcutDelete, handleCustomerBlock, handleCustomerUnblock, handleImageDelete,
-    handleProductSearch, handleProductsSort, handleCategorySearch, handleUserSearch,
-    handleAddProductPageView,handleOrdersView,handleOrderDetailedView,
-    handleChangeOrderStatus,handleChangePaymentStatus,handleAddCoupon,
-    handleAddCouponView,handleCouponsView} = require('../controllers/admin');
+    handleProdcutDelete, handleCustomerBlock, handleCustomerUnblock, handleImageDelete,handleProductSearch, 
+    handleProductsSort, handleCategorySearch, handleUserSearch,handleAddProductPageView,handleOrdersView,
+    handleOrderDetailedView,handleChangeOrderStatus,handleChangePaymentStatus,handleAddCoupon,handleAddCouponView,
+    handleCouponsView,handleEditCouponPageView,handleEditCoupon,handleDeleteCoupon,handleDashBoardView} = require('../controllers/admin');
     
 const productValidator =require('../middleware/productValidator');
 
@@ -54,9 +53,12 @@ router.post('/change-payment-status',handleChangePaymentStatus);
 router.get("/coupons-view", handleCouponsView);
 router.get("/addCoupon-view", handleAddCouponView);
 router.post('/add-coupons',handleAddCoupon);
+router.get('/view-edit-coupon-page/:id',handleEditCouponPageView);
+router.post('/editCoupon/:id',handleEditCoupon);
+router.get('/deleteCoupon/:id',handleDeleteCoupon);
 
 
-
+router.get('/dash-board',handleDashBoardView);
 
 
 

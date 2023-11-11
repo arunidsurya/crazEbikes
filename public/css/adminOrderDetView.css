@@ -122,3 +122,28 @@ main {
   .delete-button {
     margin-left: 10px;
   }
+
+  .order-total {
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column; /* Arrange items in a column */
+    justify-content: flex-end; /* Horizontally align the content to the right */
+    align-items: flex-end; /* Align items to the right */
+    height: 80px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.order-total p {
+    margin-bottom: 10px; /* Add margin between paragraphs */
+}
+
+.order-total-price {
+    padding: 20px;
+}
+
+.discount-paragraph {
+    font-size: 18px; /* Set a smaller font size */
+    font-weight: normal; /* Remove bold styling */
+}

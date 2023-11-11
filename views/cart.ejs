@@ -36,7 +36,7 @@
 
     <div class="cart-details">
         <div class="cart-total">subtotal <span id="cartSubTotalQuantity">(<%= totalQuantity %> item)</span>: $<span id="cartTotalValue"><%= formatPrice(cartTotal) %></span></div>
-        <input type="text" class="coupon-input" placeholder="Apply Coupon">
+        <!-- <input type="text" class="coupon-input" placeholder="Apply Coupon"> -->
         <form action="/user/checkout" method="get">
         <button class="checkout-button" type="submit">Proceed to Checkout</button>
     </form>

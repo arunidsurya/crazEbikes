@@ -439,6 +439,8 @@ async function handleOrderDetailedView(req,res){
                 collectionId: order._id,
                 payment_method:order.payment_method,
                 payment_status:order.payment_status,
+                coupon_amount:order.coupon_discount ||0,
+                coupon_name:order.coupon_code ||null,
               };
             });
     
@@ -541,13 +543,122 @@ async function handleAddCoupon(req,res){
 async function handleCouponsView(req,res){
 
     try {
-        const coupons = await Coupon.find({});
+        const coupons = await Coupon.find({isDeleted:false});
         res.render('couponsViews',{coupons});
     } catch (error) {
         
     }
 }
 
+async function handleEditCouponPageView(req,res){
+    const couponId= req.params.id;
+    
+    try {
+
+        const coupon= await Coupon.findById({_id:couponId});
+        res.render('editCoupons',{coupon});
+        
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function handleEditCoupon(req,res){
+    const couponId= req.params.id;
+
+
+
+    try {
+        
+        const coupon = await Coupon.findByIdAndUpdate({_id:couponId},
+            {
+                name:req.body.name,
+                amount:req.body.amount,
+                maxUsage:req.body.maxUsage,
+                expiresAt:req.body.expiresAt,
+                description:req.body.description,
+            }
+            
+            )
+
+            res.redirect('/admin/coupons-view');
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+async function handleDeleteCoupon(req,res){
+    const coupenId=req.params.id;
+
+    try {
+        
+        await Coupon.findByIdAndUpdate({_id:coupenId},{isDeleted:true});
+        res.redirect('/admin/coupons-view');
+    } catch (error) {
+        
+    }
+}
+
+async function handleDashBoardView(req,res){
+    const monthlyTotals = await Orders.aggregate([
+        {
+          $group: {
+            _id: {
+              year: { $year: "$Order_date" }, // Group by year
+              month: { $month: "$Order_date" }, // Group by month
+            },
+            totalOrderPrice: { $sum: "$total_price" }, // Sum total_price for each group
+          },
+        },
+        {
+          $project: {
+            year: "$_id.year",
+            month: "$_id.month",
+            totalOrderPrice: 1,
+            _id: 0,
+          },
+        },
+      ]);
+    
+      const orders = await Orders.find({});
+      const totalOrderPrice = orders.reduce((sum, order) => sum + order.total_price, 0);
+      
+       // Flatten the Items arrays from all orders into a single array of products
+       const allProducts = orders.reduce((products, order) => {
+        return products.concat(order.Items.map(item => item.product_id.toString()));
+      }, []);
+    
+      // Count the occurrences of each product ID
+      const productCount = allProducts.reduce((count, productId) => {
+        count[productId] = (count[productId] || 0) + 1;
+        return count;
+      }, {});
+    
+      // Sort productCount object by count in descending order
+      const sortedProductCount = Object.entries(productCount).sort((a, b) => b[1] - a[1]);
+    
+      // Extract the product IDs of the most ordered, second most ordered, and third most ordered products
+      const mostOrderedProductId = sortedProductCount[0][0];
+      const secondMostOrderedProductId = sortedProductCount[1][0];
+      const thirdMostOrderedProductId = sortedProductCount[2][0];
+    
+      console.log('Most Ordered Product ID:', mostOrderedProductId);
+      console.log('Second Most Ordered Product ID:', secondMostOrderedProductId);
+      console.log('Third Most Ordered Product ID:', thirdMostOrderedProductId);
+    
+      // Retrieve details of the most ordered products from the Products collection
+      const products = await Product.find({
+        _id: { $in: [mostOrderedProductId, secondMostOrderedProductId, thirdMostOrderedProductId] }
+      });
+    
+    
+    
+      console.log(monthlyTotals)
+      // Send the monthly totals back to the UI
+      res.render('dashBorad', { monthlyTotals, totalOrderPrice,products });
+}
 
 module.exports = {
     handleHomePageView,
@@ -583,6 +694,10 @@ module.exports = {
     handleAddCoupon,
     handleAddCouponView,
     handleCouponsView,
+    handleEditCouponPageView,
+    handleEditCoupon,
+    handleDeleteCoupon,
+    handleDashBoardView,
 
 }; 
 

@@ -1,0 +1,192 @@
+<%- include('layout/headerAdmin') %>
+<%- include('layout/sidebarAdmin') %>
+
+
+
+<div class="col py-3">
+
+<div class="overview-container">
+    <h5>OverView</h5>
+    <h6>Total Revenue</h6>
+    <h6>$<%= `${(totalOrderPrice).toFixed(2)}` %></h6>
+</div>
+   
+
+    <div id="chartContainer">
+        <canvas id="monthlyTotalChart" width="200" height="70"></canvas>
+      </div>
+
+      <div class="top-products">
+        <h3 class="product-head">Top Products</h3>
+
+
+        <div class="row my-4">
+          <div class="col-lg-12">
+              <div class="table-responsive">
+                  <% if (locals.products) { %>
+                      <table class="table table-borderless table-hover  text-center">
+                        <thead class="table-success">
+                          <tr class="table-dark">
+                            <th>  </th>
+                              <th>Product</th>
+
+                              <th>Brand</th>
+
+                              <th>Price</th>
+                              <th>Description</th>
+
+                          </tr>
+                      </thead>
+                          <tbody>
+                              <% products.forEach((product,index)=> { %>
+                                  <tr class="align-middle mt-5">
+                                      <td>
+                                        <img style="height: 40px;width: 60px;"
+                                              src="http://localhost:5000/<%= product.imageUrl[0] %>"
+                                              alt="Bike image">
+                                      </td>
+                                      <td>
+
+                                          <%= product.product_name %>
+                                      </td>
+
+                                      <td>
+                                          <%= product.brand %>
+                                      </td>
+                                      <td>
+                                          $<%= product.price %>
+                                      </td>
+                                      <td>
+                                          <%= product.description.slice(0,50) %>
+                                      </td>
+
+                                  </tr>
+                                  <% }) %>
+                          </tbody>
+                      </table>
+                      <% } %>
+
+              </div>
+          </div>
+      </div>
+
+
+      </div>
+    
+      <script>
+        const monthlyTotals = <%- JSON.stringify(monthlyTotals) %>;
+      
+        const monthNames = [
+          'Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'
+        ];
+      
+        const allMonths = Array.from({ length: 12 }, (_, i) => i + 1);
+  const availableMonths = monthlyTotals.map(entry => entry.month);
+
+  const filteredData = monthlyTotals.filter(entry => availableMonths.includes(entry.month));
+
+  const labels = allMonths.map(month => `${monthNames[month - 1]}`);
+  const data = Array.from({ length: 12 }, (_, i) => {
+    const matchingEntry = filteredData.find(entry => entry.month === i + 1);
+    return matchingEntry ? matchingEntry.totalOrderPrice : 0;
+  });
+
+  const ctx = document.getElementById('monthlyTotalChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Total Sales', // Ensure that the label is included in the datasets array
+        data: data,
+        backgroundColor: 'rgba(94, 162, 252, 0.8)', // Adjusted color
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      scales: {
+        x: {
+          type: 'category',
+          title: {
+            display: true,
+            text: 'Month',
+            font: {
+              size: 16,
+              weight: 'bold'
+            }
+          },
+          ticks: {
+            font: {
+              size: 14
+            }
+          },
+          grid: {
+            display: false
+          }
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Total Sales',
+            font: {
+              size: 16,
+              weight: 'bold'
+            }
+          },
+          ticks: {
+            font: {
+              size: 14
+            },
+            beginAtZero: true
+          },
+          grid: {
+            display: false
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: true, // Ensure that the legend is displayed
+          labels: {
+            font: {
+              size: 14
+            }
+          }
+        },
+        title: {
+          display: true,
+          text: `Year: ${filteredData[0]?.year}`,
+          align: 'end',
+          position: 'top',
+          font: {
+            size: 18,
+            weight: 'bold'
+          }
+        },
+      },
+      layout: {
+        padding: {
+          right: 30,
+        }
+      },
+      scales: {
+        x: {
+          maxTicksLimit: 12,
+        }
+      }
+    }
+  });
+</script>
+      
+      
+      
+
+
+
+
+
+
+</div>
+</div>
+</div>

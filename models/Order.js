@@ -4,6 +4,8 @@ const { Schema, ObjectId } = mongoose;
 
 const OrdersSchema = new Schema({
     total_price: { type: Number },
+    coupon_code: { type: String },
+    coupon_discount: { type: Number, default:0 },
     Order_date: { type: Date, default: Date.now }, // Set a default value using Date.now()
     User_id: { type: Schema.Types.ObjectId, ref:'user' },
     TimeStamp: { type: Date, default: Date.now }, // Set a default value using Date.now()

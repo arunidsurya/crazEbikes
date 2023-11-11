@@ -9,6 +9,7 @@ const bycrypt = require("bcrypt");
 const userOTPVerification = require("../models/userOTPVerification");
 const transpoter = require("../utils/nodeMailer");
 const Razorpay = require('razorpay');
+const Coupon = require("../models/coupon");
 
 var instance = new Razorpay({ key_id: process.env.RZP_KEY_ID, key_secret: process.env.RZP_SECRET_KEY })
 
@@ -478,7 +479,7 @@ async function handleAddNewAddress(req, res) {
 }
 
 async function handlePlaceOrder(req, res) {
-    const { selectedAddressId, paymentMethod, userId, totalPrice } = req.body;
+    const { selectedAddressId, paymentMethod, userId, totalPrice,coupon_name,coupon_amount } = req.body;
     if (userId) {
       try {
         const status = paymentMethod === 'COD' ? 'placed' : 'pending';
@@ -528,6 +529,8 @@ async function handlePlaceOrder(req, res) {
               Items: orderItems,
               Status: status,
               payment_method:paymentMethod,
+              coupon_code:coupon_name|| null,
+              coupon_discount:coupon_amount || null,
             });
   
             const saveOrder=await newOrder.save();
@@ -663,6 +666,7 @@ async function handleOrdersView(req, res) {
                 isCancelled: order.IsCancelled,
                 collectionId: order._id,
                 payment_method:order.payment_method,
+                coupon_amount:order.coupon_discount ||0,
               };
             });
     
@@ -964,8 +968,32 @@ async function handleVerifyPayment(req,res){
     }
 }
 
+async function handleApplyCoupon(req, res) {
+    const name = req.body.couponName;
+    const currentDate = new Date();
+  
+    const coupons = await Coupon.find({ name: name, isDeleted: false });
+  
+    if (coupons.length > 0) {
+      if (currentDate > coupons[0].expiresAt) {
+        res.json({ success: false, message: 'Coupon has expired.' });
+      } else if (coupons[0].usageCount >= coupons[0].maxUsage) {
+        res.json({ success: false, message: 'Coupon has reached maximum usage.' });
+      } else {
 
+        await Coupon.findByIdAndUpdate(coupons[0]._id, { $inc: { usageCount: 1 } });
 
+        res.json({
+          success: true,
+          couponName: coupons[0].name,
+          couponAmount: coupons[0].amount,
+        });
+      }
+    } else {
+      res.json({ success: false, message: 'Coupon not found.' });
+    }
+  }
+  
 
 
 
@@ -990,4 +1018,5 @@ module.exports = {
     handleVerifyOtp,
     handleChangePassword,
     handleVerifyPayment,
+    handleApplyCoupon,
 }

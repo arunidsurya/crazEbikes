@@ -1,0 +1,88 @@
+/* Default Styles */
+
+  .col {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Header and Sidebar Styles */
+  /* Add your styles for header and sidebar here */
+  
+  /* Main Content Styles */
+  .col.py-3 {
+    padding: 1.5rem;
+  }
+  
+  /* Overview Section Styles */
+  div h5 {
+    font-size: 1.8rem;  /* Increased font size */
+    font-weight: bold;  /* Added bold style */
+    margin-bottom: 1rem;
+    color: #333;        /* Changed color to dark grey */
+  }
+  
+  div h6 {
+    font-size: 1.5rem;  /* Adjusted font size */
+    font-weight: bold;  /* Added bold style */
+    margin-bottom: 0.5rem;
+    color: #555;        /* Changed color to grey */
+  }
+  
+  /* Chart Container Styles */
+  #chartContainer {
+    margin-top: 1.5rem;
+  }
+  
+  /* Top Products Section Styles */
+  .row.my-4 {
+    margin: 2rem 0;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+  /* Make the table background white */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background-color: white !important; /* Add !important to override any other styles */
+  }
+  
+  th, td {
+    padding: 0.75rem;
+    text-align: left;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+  }
+
+  .top-products{
+    margin-top: 50px;
+  }
+  .product-head{
+    color: #555; 
+  }
+
+  .overview-container{
+    margin-top: 20px;
+    margin-left: 50px;
+  }
+  
+  /* Responsive Design using Media Queries */
+  @media only screen and (max-width: 768px) {
+    .col.py-3 {
+      padding: 1rem;
+    }
+  
+    /* Add responsive styles for smaller screens here */
+  }
+  
+  @media only screen and (max-width: 600px) {
+    /* Adjust styles for even smaller screens if needed */
+  }
+  
+  /* Add more media queries as necessary */
+  

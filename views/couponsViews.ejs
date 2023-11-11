@@ -79,12 +79,12 @@
                                                         <%= coupon.expiresAt.toLocaleDateString('en-US')  %>
                                                     </td>
                                                     <td>
-                                                        <a href="/admin/edit-product-page/<%= coupon._id %>"
+                                                        <a href="/admin/view-edit-coupon-page/<%= coupon._id %>"
                                                             class="text-success"><i
                                                                 class="fas fa-edit fa-lg mx-1"></i></a>
-                                                        <a href="/admin/deleteProducts/<%= coupon._id %>"
+                                                        <a href="/admin/deleteCoupon/<%= coupon._id %>"
                                                             class="text-danger"
-                                                            onclick="return confirm('Are you sure want to delete this product?')"><i
+                                                            onclick="return confirm('Are you sure want to delete this coupon?')"><i
                                                                 class="fas fa-trash fa-lg mx-1"></i></a>
                                                     </td>
                                                 </tr>
