@@ -10,6 +10,8 @@ const {check,validationResult} = require('express-validator');
 const Orders = require('../models/Order');
 const Coupon = require('../models/coupon');
 
+const PRODUCTS_PER_PAGE = 5;
+
 function formatPrice(price) {
     return price.toLocaleString(undefined, {
         minimumFractionDigits: 2,
@@ -28,12 +30,24 @@ async function handleHomePageView(req,res){
 async function handleCategoryView(req, res) {
     if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     try {
+
+        const page = req.query.page || 1;
+        const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
+
         const categories = await Category.find({ isDeleted: false })
-        res.render('categories', { categories });
+        .skip(startIndex)
+        .limit(PRODUCTS_PER_PAGE);
+
+        const totalProducts = await Category.countDocuments({ isDeleted: false });
+        const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
+        
+        res.render('categories', { categories ,currentPage: page, totalPages, PRODUCTS_PER_PAGE });
     } catch (error) {
         console.log(error);
     }
 }
+
+
 
 async function handleCategorySearch(req, res) {
     if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
@@ -46,12 +60,24 @@ async function handleCategorySearch(req, res) {
     const options = {}; // Additional options (e.g., limit, sort)
 
     try {
+        const page = req.query.page || 1;
+        const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
+
         const categories = await Category.find(query,projection,options)
-        res.render('categories', { categories });
+        .skip(startIndex)
+        .limit(PRODUCTS_PER_PAGE);
+
+        const totalProducts = await Category.countDocuments({ isDeleted: false });
+        const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
+
+        res.render('categories', { categories,currentPage: page, totalPages, PRODUCTS_PER_PAGE  });
     } catch (error) {
         console.log(error);
     }
 }
+
+
+
 async function handleAddCategoryPageView(req,res){
     if(!req.admin&& req.admin==null) return res.redirect('/adminLogin');
     res.render('addCategories');
@@ -114,12 +140,22 @@ async function handleUserView(req, res) {
     if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
         if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     try {
+        const page = req.query.page || 1;
+        const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
+
         const users = await User.find({ isDeleted: false })
-        res.render('customers', { users });
+            .skip(startIndex)
+            .limit(PRODUCTS_PER_PAGE);
+
+                    const totalProducts = await User.countDocuments({ isDeleted: false });
+        const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
+
+        res.render('customers', { users, currentPage: page, totalPages, PRODUCTS_PER_PAGE  });
     } catch (error) {
         console.log(error);
     }
 }
+
 
 async function handleUserSearch(req, res) {
     if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
@@ -131,12 +167,24 @@ async function handleUserSearch(req, res) {
     const projection={};
     const options={};
     try {
+        const page = req.query.page || 1;
+        const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
+
         const users = await User.find(query,projection,options)
-        res.render('customers', { users });
+        .skip(startIndex)
+        .limit(PRODUCTS_PER_PAGE);
+
+
+        const totalProducts = await User.countDocuments({ isDeleted: false });
+        const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
+
+        res.render('customers', { users,currentPage: page, totalPages, PRODUCTS_PER_PAGE  });
     } catch (error) {
         console.log(error);
     }
 }
+
+
 
 async function handleAddUserPageView(req,res){
     res.render('addCustomers');
@@ -224,13 +272,25 @@ async function handleCustomerUnblock(req, res) {
 };
 
 async function handleProductsView(req, res) {
-    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
+    if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
+
     try {
-        const products = await Product.find({ isDeleted: false }).sort({createdAt:-1}).populate({
-            path: 'categoryId',
-            select: 'category_name',
-        });
-        res.render('products', { products });
+        const page = req.query.page || 1;
+        const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
+
+        const products = await Product.find({ isDeleted: false })
+            .sort({ createdAt: -1 })
+            .populate({
+                path: 'categoryId',
+                select: 'category_name',
+            })
+            .skip(startIndex)
+            .limit(PRODUCTS_PER_PAGE);
+
+        const totalProducts = await Product.countDocuments({ isDeleted: false });
+        const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
+
+        res.render('products', { products, currentPage: page, totalPages, PRODUCTS_PER_PAGE  });
     } catch (error) {
         console.log(error);
     }
@@ -262,15 +322,26 @@ async function handleProductSearch(req, res) {
     const options = {}; // Additional options (e.g., limit, sort)
 
     try {
+
+        const page = req.query.page || 1;
+        const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
+
         const products = await Product.find(query,projection,options).populate({
             path: 'categoryId',
             select: 'category_name',
-        });
-        res.render('products', { products });
+        })
+        .skip(startIndex)
+            .limit(PRODUCTS_PER_PAGE);
+            const totalProducts = await Product.countDocuments({ isDeleted: false });
+            const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
+
+        res.render('products', { products, currentPage: page, totalPages, PRODUCTS_PER_PAGE  });
     } catch (error) {
         console.log(error);
     }
 };
+
+
 
 async function handleAddProductPageView(req,res){
     if(!req.admin&& req.admin==null) return res.redirect('/adminLogin');
@@ -400,13 +471,36 @@ async function handleImageDelete(req, res) {
 };
 
 async function handleOrdersView(req,res){
-    const orders= await Orders.find({}).sort({Order_date:-1});
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
 
-    res.render('orders',{orders,formatPrice})
+    try {
+        const page = req.query.page || 1;
+        const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
+
+        const orders= await Orders.find({}).sort({Order_date:-1})
+            .skip(startIndex)
+            .limit(PRODUCTS_PER_PAGE);
+
+        const totalProducts = await Orders.countDocuments({ isDeleted: false });
+        const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
+
+        res.render('orders',{orders,formatPrice, currentPage: page, totalPages, PRODUCTS_PER_PAGE })
+        
+    } catch (error) {
+        console.log(error);
+    }
 
 }
 
+async function handleOrdersSearch(req,res){
+
+
+}
+
+
+
 async function handleOrderDetailedView(req,res){
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     const orderId= req.query.orderId;
 
 
@@ -458,6 +552,7 @@ async function handleOrderDetailedView(req,res){
 
 
 async function handleChangeOrderStatus(req,res){
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     const status= req.body.selectedOption;
     const orderId=req.body.orderId;
 
@@ -496,6 +591,7 @@ async function handleChangeOrderStatus(req,res){
 
 
 async function handleChangePaymentStatus(req,res){
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     const status= req.body.selectedPaymentOption;
     const orderId=req.body.orderId;
 
@@ -507,6 +603,21 @@ async function handleChangePaymentStatus(req,res){
                         $set:{payment_status:status}
                     }
                     );
+                    if(order.payment_status=="Completed"){
+                        const user = await User.findById({_id:order.User_id});
+                            
+                        if(user){
+                            const totalAmount=order.total_price;
+                            const updateWallet= user.wallet + totalAmount;
+    
+                            const updatedWallet= await User.findByIdAndUpdate(
+                                {_id:order.User_id},
+                                {$set:{wallet:updateWallet}},
+                                {new:true}
+                            );
+                        }
+    
+                    }
                     res.redirect('/admin/orders-view');
 
         } catch (error) {
@@ -517,10 +628,12 @@ async function handleChangePaymentStatus(req,res){
 }
 
 async function handleAddCouponView(req,res){
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     res.render('addCoupon');
 }
 
 async function handleAddCoupon(req,res){
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     const{name,amount,maxUsage,expiresAt,description}=req.body;
     const selectedDate = new Date(expiresAt);
     const utcDate = new Date(selectedDate.toISOString());
@@ -533,7 +646,9 @@ async function handleAddCoupon(req,res){
             maxUsage,
             expiresAt:utcDate,
             description,
-        })
+        });
+
+        res.redirect('/admin/coupons-view')
     } catch (error) {
         console.log(error);
     }
@@ -541,6 +656,7 @@ async function handleAddCoupon(req,res){
 }
 
 async function handleCouponsView(req,res){
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
 
     try {
         const coupons = await Coupon.find({isDeleted:false});
@@ -551,6 +667,7 @@ async function handleCouponsView(req,res){
 }
 
 async function handleEditCouponPageView(req,res){
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     const couponId= req.params.id;
     
     try {
@@ -564,9 +681,8 @@ async function handleEditCouponPageView(req,res){
 }
 
 async function handleEditCoupon(req,res){
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
     const couponId= req.params.id;
-
-
 
     try {
         
@@ -602,62 +718,67 @@ async function handleDeleteCoupon(req,res){
 }
 
 async function handleDashBoardView(req,res){
-    const monthlyTotals = await Orders.aggregate([
-        {
-          $group: {
-            _id: {
-              year: { $year: "$Order_date" }, // Group by year
-              month: { $month: "$Order_date" }, // Group by month
+    if(!req.admin && req.admin==null) return res.redirect('/adminLogin');
+    try {
+        
+        const monthlyTotals = await Orders.aggregate([
+            {
+              $group: {
+                _id: {
+                  year: { $year: "$Order_date" }, // Group by year
+                  month: { $month: "$Order_date" }, // Group by month
+                },
+                totalOrderPrice: { $sum: "$total_price" }, // Sum total_price for each group
+              },
             },
-            totalOrderPrice: { $sum: "$total_price" }, // Sum total_price for each group
-          },
-        },
-        {
-          $project: {
-            year: "$_id.year",
-            month: "$_id.month",
-            totalOrderPrice: 1,
-            _id: 0,
-          },
-        },
-      ]);
+            {
+              $project: {
+                year: "$_id.year",
+                month: "$_id.month",
+                totalOrderPrice: 1,
+                _id: 0,
+              },
+            },
+          ]);
+        
+          const orders = await Orders.find({});
+          const totalOrderPrice = orders.reduce((sum, order) => sum + order.total_price, 0);
+          
+           // Flatten the Items arrays from all orders into a single array of products
+           const allProducts = orders.reduce((products, order) => {
+            return products.concat(order.Items.map(item => item.product_id.toString()));
+          }, []);
+        
+          // Count the occurrences of each product ID
+          const productCount = allProducts.reduce((count, productId) => {
+            count[productId] = (count[productId] || 0) + 1;
+            return count;
+          }, {});
+        
+          // Sort productCount object by count in descending order
+          const sortedProductCount = Object.entries(productCount).sort((a, b) => b[1] - a[1]);
+        
+          // Extract the product IDs of the most ordered, second most ordered, and third most ordered products
+          const mostOrderedProductId = sortedProductCount[0] ? sortedProductCount[0][0] : null;
+          const secondMostOrderedProductId = sortedProductCount[1] ? sortedProductCount[1][0] : null;
+          const thirdMostOrderedProductId = sortedProductCount[2] ? sortedProductCount[2][0] : null;
+        
+          const productIdsToFind = [mostOrderedProductId, secondMostOrderedProductId, thirdMostOrderedProductId].filter(Boolean);
+        
+          // Retrieve details of the most ordered products from the Products collection
+          const products = await Product.find({
+            _id: { $in: productIdsToFind }
+          });
+        
+        
+        
+          // Send the monthly totals back to the UI
+          res.render('dashBorad', { monthlyTotals, totalOrderPrice,products });
+
+    } catch (error) {
+        console.log(error);
+    }
     
-      const orders = await Orders.find({});
-      const totalOrderPrice = orders.reduce((sum, order) => sum + order.total_price, 0);
-      
-       // Flatten the Items arrays from all orders into a single array of products
-       const allProducts = orders.reduce((products, order) => {
-        return products.concat(order.Items.map(item => item.product_id.toString()));
-      }, []);
-    
-      // Count the occurrences of each product ID
-      const productCount = allProducts.reduce((count, productId) => {
-        count[productId] = (count[productId] || 0) + 1;
-        return count;
-      }, {});
-    
-      // Sort productCount object by count in descending order
-      const sortedProductCount = Object.entries(productCount).sort((a, b) => b[1] - a[1]);
-    
-      // Extract the product IDs of the most ordered, second most ordered, and third most ordered products
-      const mostOrderedProductId = sortedProductCount[0][0];
-      const secondMostOrderedProductId = sortedProductCount[1][0];
-      const thirdMostOrderedProductId = sortedProductCount[2][0];
-    
-      console.log('Most Ordered Product ID:', mostOrderedProductId);
-      console.log('Second Most Ordered Product ID:', secondMostOrderedProductId);
-      console.log('Third Most Ordered Product ID:', thirdMostOrderedProductId);
-    
-      // Retrieve details of the most ordered products from the Products collection
-      const products = await Product.find({
-        _id: { $in: [mostOrderedProductId, secondMostOrderedProductId, thirdMostOrderedProductId] }
-      });
-    
-    
-    
-      console.log(monthlyTotals)
-      // Send the monthly totals back to the UI
-      res.render('dashBorad', { monthlyTotals, totalOrderPrice,products });
 }
 
 module.exports = {
@@ -688,6 +809,7 @@ module.exports = {
     handleCustomerUnblock,
     handleImageDelete,
     handleOrdersView,
+    handleOrdersSearch,
     handleOrderDetailedView,
     handleChangeOrderStatus,
     handleChangePaymentStatus,
@@ -698,6 +820,7 @@ module.exports = {
     handleEditCoupon,
     handleDeleteCoupon,
     handleDashBoardView,
+   
 
 }; 
 

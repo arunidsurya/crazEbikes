@@ -32,17 +32,18 @@
                                     <table class="table table-striped text-center">
                                         <thead>
                                             <tr class="table-dark">
-                                                <th>Sl No</th>
+                                                <th>S/N</th>
                                                 <th>Category Name</th>
                                                 <th>Description</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <% const startSerialNumber = (currentPage - 1) * PRODUCTS_PER_PAGE + 1; %>
                                             <% categories.forEach((category,index)=> { %>
                                                 <tr class="align-middle">
                                                     <td>
-                                                        <%= index+1 %>
+                                                        <%= startSerialNumber + index %>
                                                     </td>
                                                     <td>
                                                         <%= category.category_name %>
@@ -68,14 +69,34 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-            </div>
-        </div>
-
-        </div>
-        </div>
-
+<!-- Pagination -->
+<div class="row">
+    <div class="col-lg-12">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <% if (currentPage > 1) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="/admin/categories?page=<%= currentPage - 1 %>" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                <% } %>
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                    <li class="page-item <%= currentPage == i ? 'active' : '' %>">
+                        <a class="page-link" href="/admin/categories?page=<%= i %>"><%= i %></a>
+                    </li>
+                <% } %>
+                <% if (currentPage < totalPages) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="/admin/categories?page=<%= currentPage + 1 %>" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                <% } %>
+            </ul>
+        </nav>
+    </div>
+</div>
 
 
 

@@ -1,0 +1,33 @@
+<%- include('layout/headerUser') %>
+    <%- include('layout/formatPrice') %>
+
+
+
+    <main class="manage-wallet-main-container ">
+
+
+        <div class="manage-wallet-container">
+            <header class="header-wallet">
+                <h3>Your Wallet</h3>
+            </header>
+
+            <div class="wallet-content">
+                <H4>Available Balance:</H4>
+                <h4>$<%= formatPrice(wallet) %></h4>
+            </div>
+
+            
+
+        </div>
+        </main>
+
+
+
+
+
+
+
+
+
+
+    <%- include('layout/footerUser') %>

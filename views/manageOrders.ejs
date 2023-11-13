@@ -40,7 +40,8 @@
                         <p>Payment method  :<%= order.payment_method %> </p>
                     </div>
                     <div class="order-cancel-button-container">
-                        <% if (order.isCancelled) { %> <!-- Use order.isCancelled here -->
+                        <%= order.IsCancelled %>
+                        <% if (order.IsCancelled) { %> <!-- Use order.isCancelled here -->
                             <p>Order Cancelled</p>
                             <% } else { %>
                                 <a href="/user/cancel-order?orderId=<%=order.collectionId %>" onclick="return confirm('Are you sure you want to cancel this order?');"><input  type="text" class="btn btn-danger order-cancel-button" value="Cancel Order"></a>

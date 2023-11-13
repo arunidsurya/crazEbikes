@@ -6,7 +6,8 @@ const{handleCartView,handleAddToCart,handleUpdateCartQuantity,handleDeleteCartIt
     handleCheckoutView,handleEditAddress,handleAddNewAddress,handlePlaceOrder,
     handleAddAddressView,handleEditAddressView,handleOrdersView,handleCancelOrder,
     handleManageAccountView,handleChangeName,handleChangeNumber,handleChangeEmail,
-    handleVerifyOtp,handleChangePassword,handleVerifyPayment,handleApplyCoupon}=require('../controllers/user')
+    handleVerifyOtp,handleChangePassword,handleVerifyPayment,handleApplyCoupon,handleWalletView,
+    handleAddToCartFromWishlist,handleAddToWishlist,handleWishlistView,handleDeleteFromWishlist}=require('../controllers/user')
 
 
 const router = express.Router();
@@ -20,6 +21,14 @@ router.get('/checkout', handleCheckoutView);
 router.get('/add-new-address', handleAddAddressView);
 
 router.post('/addToCart', handleAddToCart);
+
+router.get('/wishlist-view', handleWishlistView);
+
+router.post('/addToWishList', handleAddToWishlist);
+
+router.get('/addToCartFromWishlist', handleAddToCartFromWishlist);
+
+router.post('/detele-wishlist-item', handleDeleteFromWishlist);
 
 router.post('/updateCartQuantity', handleUpdateCartQuantity);
 
@@ -54,6 +63,8 @@ router.post('/change-password',handleChangePassword);
 router.post('/verify-payment',handleVerifyPayment);
 
 router.post('/applyCoupon',handleApplyCoupon);
+
+router.get('/wallet',handleWalletView)
 
 
 module.exports = router;

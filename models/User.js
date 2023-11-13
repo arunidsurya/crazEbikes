@@ -53,6 +53,14 @@ const UserSchema= new mongoose.Schema({
         type:Boolean,
         default:false,
     },
+    wallet:{
+        type:Number,
+        default:0,
+    },
+    wishlist: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'product', // Assuming 'Product' is the model name for your product schema
+    }],
 
 })
 

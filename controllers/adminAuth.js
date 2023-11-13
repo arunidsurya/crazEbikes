@@ -23,23 +23,30 @@ async function handleAdminSignup(req, res) {
 
 async function handleAdminLogin(req, res) {
 
-    const errors=validationResult(req);
-    if(!errors.isEmpty()){
-        return res.render('adminlogin',{
-            errors:errors.mapped(),
+    try {
+        
+        const errors=validationResult(req);
+        if(!errors.isEmpty()){
+            return res.render('adminlogin',{
+                errors:errors.mapped(),
+            });
+        }
+        const { email, password } = req.body;
+    
+        const admin = await Admin.findOne({ email});
+        const validPassword = await bycrypt.compare(password,admin.password);
+        if (!admin || !validPassword) return res.render("adminlogin", {
+            error: "Invalid email or password",
         });
+    
+        const adminToken = setAdmin(admin);
+        res.cookie("adminuid", adminToken);
+        return res.redirect("/admin/dash-board");
+
+    } catch (error) {
+        console.log(error);
     }
-    const { email, password } = req.body;
 
-    const admin = await Admin.findOne({ email});
-    const validPassword = await bycrypt.compare(password,admin.password);
-    if (!admin || !validPassword) return res.render("adminlogin", {
-        error: "Invalid email or password",
-    });
-
-    const adminToken = setAdmin(admin);
-    res.cookie("adminuid", adminToken);
-    return res.redirect("/admin");
 };
 
 async function handleAdminLogout(req, res) {
@@ -52,6 +59,7 @@ async function handleAdminLogout(req, res) {
 
 
 module.exports = {
+    
     handleAdminLogin,
     handleAdminSignup,
     handleAdminLogout,

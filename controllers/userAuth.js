@@ -163,11 +163,12 @@ const sendVerificationEmail = async({_id,email},res)=>{
             userId:_id,
             otp: hashedOTP,
             createdAt:Date.now(),
-            expiresAt:Date.now() + 3600000,
+            expiresAt:Date.now() + 300000,
         });
         // save otp record
         await newOTPVerification.save();
         transpoter.sendMail(mailOptions);
+        console.log('verification mail send');
         res.render('userOtpVerify',{ message:"Verification otp email sent", userid:_id,imgUri:imgUri,images:images})
   
     } catch (error) {

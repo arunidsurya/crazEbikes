@@ -2,13 +2,15 @@
 <%- include('layout/headerUser') %>
 <%- include('layout/formatPrice') %>
 
-<form class="otp-verify" action="/user-auth/verifyOTP?userid=<%= userid %>" method="post">
+
+
+<form class="otp-verification" action="/user-auth/verifyOTP?userid=<%= userid %>" method="post">
     <div class="form-group ">
       <h5>An OTP has been sent to your registered Email address.</h5>
       <% if (locals.message) { %>
-       <p class="otp-success-message"><%= message %></p>
+       <p class="otp-success-message" id="otp-success-message"><%= message %></p>
        <p>click here to <span><a href="/user-login">Login</a></span></p>
-      <% } %>
+      <% } %>mongio
       <% if (locals.message_no_otp) { %>
         <p class="otp-status-message"><%= message_no_otp %></p>
        <% } %>
@@ -22,20 +24,74 @@
        <% if (locals.message_inavlid_otp) { %>
         <p class="otp-status-message"><%= message_inavlid_otp %></p>
        <% } %>
-       <!-- <% if (locals.userid) { %>
-        <p><%= userid %></p>
-       <% } %> -->
-      <label for="exampleInputEmail1">Enter Your OTP</label>
-      <input type="text" name="otp" class="form-control otp-form" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter OTP">
-      <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-    </div>
-    <p>OTP not received!!</p>
-    <p><a href="/user-auth/resendOTPVerificationCode">Click here</a> here to resend OTP <span></span></p>
-    <button type="submit" class="btn btn-primary">Verify</button>
-  </form>
 
+       <div id="timer-container">
+        <!-- Initial content of the timer -->
+        <p id="timer-text">Resend OTP in 5:00</p>
+      </div>
+
+       <label for="exampleInputEmail1">Enter Your OTP</label>
+       <input type="text" name="otp" class="form-control otp-form" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter OTP">
+       <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+     </div>
+     <p>OTP not received!!</p>
+     <p><a href="/user-auth/resendOTPVerificationCode" id="resendButton">Click here</a> to resend OTP <span></span></p>
+     <button type="submit" class="btn btn-primary">Verify</button>
+   </form>
+
+
+
+   
 
 
 
 
   <%- include('layout/footerUser') %>
+
+
+
+
+  <script>
+    // Function to start the timer
+    function startTimer(duration, display) {
+      let timer = duration, minutes, seconds;
+      let timerRunning = true; // Variable to track if the timer is running
+  
+      const timerInterval = setInterval(function () {
+        if (!timerRunning) {
+          clearInterval(timerInterval); // Stop the timer if it's not running
+          return;
+        }
+  
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+  
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+  
+        display.textContent = "Resend OTP in " + minutes + ":" + seconds;
+  
+        if (--timer < 0) {
+          // When the timer reaches zero, show the resend button
+          document.getElementById('timer-container').innerHTML = '<p id="timer-text">Resend OTP now</p>';
+          document.getElementById('resendButton').style.display = 'inline';
+          timerRunning = false; // Set the timerRunning variable to false
+        }
+      }, 1000);
+    }
+  
+    document.addEventListener("DOMContentLoaded", function () {
+      // Set the duration to 5 minutes (300 seconds)
+      let fiveMinutes = 60 * 5,
+        display = document.getElementById('timer-text');
+      startTimer(fiveMinutes, display);
+    });
+  
+    // Stop the timer and hide it when OTP success message is received
+    document.getElementById('otp-success-message').addEventListener('DOMSubtreeModified', function () {
+      clearInterval(timerInterval); // Stop the timer
+      document.getElementById('timer-container').style.display = 'none'; // Hide the timer container
+    });
+  </script>
+
+  

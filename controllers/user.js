@@ -10,6 +10,7 @@ const userOTPVerification = require("../models/userOTPVerification");
 const transpoter = require("../utils/nodeMailer");
 const Razorpay = require('razorpay');
 const Coupon = require("../models/coupon");
+const Product = require("../models/product");
 
 var instance = new Razorpay({ key_id: process.env.RZP_KEY_ID, key_secret: process.env.RZP_SECRET_KEY })
 
@@ -211,8 +212,170 @@ async function handleAddToCart(req, res) {
 }
 };
 
+async function handleAddToCartFromWishlist(req, res) {
+    const userId = req.session.userId;
+
+    if (userId) {
+        try {
+            // Assuming user.wishlist contains the product IDs
+            const user = await User.findById(userId);
+
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            const wishlistProductIds = user.wishlist || [];
+
+            // Check if the user's cart exists; if not, create a new one
+            let cart = await Cart.findOne({ userId: userId });
+            if (!cart) {
+                cart = new Cart({ userId: userId, cartItems: [] });
+            }
+
+            // Convert cart items to a map for efficient lookup
+            const cartItemMap = new Map(cart.cartItems.map(item => [item.product_id.toString(), item]));
+
+            // Iterate through wishlist product IDs and add them to the cart
+            for (const product_id of wishlistProductIds) {
+                const quantityToAdd = 1; // You can adjust the quantity as needed
+
+                // Check if the product already exists in the cart
+                if (cartItemMap.has(product_id.toString())) {
+                    // If the product is already in the cart, update the quantity
+                    cartItemMap.get(product_id.toString()).quantity += quantityToAdd;
+                } else {
+                    // If the product is not in the cart, add it
+                    cartItemMap.set(product_id.toString(), { product_id, quantity: quantityToAdd });
+                }
+            }
+
+            // Convert back to array and update cart items
+            cart.cartItems = Array.from(cartItemMap.values());
+
+            // Save the updated cart
+            await cart.save();
+
+            // Clear the wishlist for the user
+            // Assuming you have a Wishlist model with a method to clear items by user ID
+            user.wishlist = [];
+            await user.save();
+
+            // Redirect to the cart page or any other desired page
+            res.redirect('/user/cart-view');
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'An error occurred while adding items from the wishlist to the cart' });
+        }
+    } else {
+        res.render('userlogin', { images, imgUri });
+    }
+}
 
 
+async function handleWishlistView(req, res) {
+    const userId = req.session.userId;
+
+    try {
+        const user = await User.findById(userId).populate('wishlist'); // Populate the wishlist array with product details
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Extract product details from the populated wishlist
+        const products = user.wishlist.map(product => ({
+            _id: product._id,
+            name:product.product_name,
+            brand:product.brand,
+            color:product.color,
+            imageUrl:product.imageUrl[0],
+            price:product.price,
+            description:product.description,
+        }));
+        
+        if (products.length === 0) {
+            return res.render('cart', { imgUri, images, message: "0 items in your wishlist" });
+        }
+        // Now, you can send the 'products' array to the UI
+        res.render('wishlist', { products ,images, imgUri,userId,formatPrice});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while fetching wishlist data' });
+    }
+}
+
+async function handleAddToWishlist(req,res) {
+    const userId = req.session.userId;
+    const productId = req.query.productId;
+
+    try {
+      // Check if the user exists
+      const user = await User.findById(userId);
+      if (!user) {
+        throw new Error('User not found');
+      }
+  
+      // Check if the product exists
+      const product = await Product.findById(productId);
+      if (!product) {
+        throw new Error('Product not found');
+      }
+  
+      // Check if the product is already in the wishlist
+      if (user.wishlist.includes(productId)) {
+        throw new Error('Product is already in the wishlist');
+      }
+  
+      // Add the product to the wishlist
+      user.wishlist.push(productId);
+  
+      // Save the updated user document
+      await user.save();
+  
+      return { success: true, message: 'Product added to wishlist successfully' };
+    } catch (error) {
+      console.error('Error:', error.message);
+      return { success: false, message: error.message };
+    }
+  }
+
+async function handleDeleteFromWishlist(req,res){
+
+    const userId= req.query.userId;
+    const productId= req.query.productId;
+
+
+
+
+    try {
+        // Find the user by userId
+        const user = await User.findById({_id:userId});
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        // Check if the product exists in the wishlist
+        const productIndex = user.wishlist.findIndex(product => product.toString() === productId);
+
+        if (productIndex === -1) {
+            throw new Error('Product not found in the wishlist');
+        }
+
+        // Remove the product from the wishlist array
+        user.wishlist.splice(productIndex, 1);
+
+        // Save the updated user with the removed product
+        await user.save();
+
+        res.redirect('/user/wishlist-view');
+        // return { success: true, message: 'Product removed from wishlist successfully' };
+    } catch (error) {
+        console.error(error);
+        return { success: false, message: 'Error removing product from wishlist' };
+    }
+
+}
 async function handleUpdateCartQuantity(req, res) {
 
     function formatPrice(price) {
@@ -754,7 +917,23 @@ async function handleCancelOrder(req,res){
                     $set:{IsCancelled:true, Status:'Cancelled'}
                 }
                 );
-            res.redirect('/user/view-orders');
+
+                if(order.payment_status=="Completed"){
+                    const user = await User.findById({_id:userId});
+                        
+                    if(user){
+                        const totalAmount=order.total_price;
+                        const updateWallet= user.wallet + totalAmount;
+
+                        const updatedWallet= await User.findByIdAndUpdate(
+                            {_id:userId},
+                            {$set:{wallet:updateWallet}},
+                            {new:true}
+                        );
+                    }
+
+                }
+            res.redirect('/user/view-orders',{order});
         } catch (error) {
             console.log(error)
         }
@@ -995,7 +1174,23 @@ async function handleApplyCoupon(req, res) {
   }
   
 
+async function handleWalletView(req,res){
 
+    const userId= req.session.userId;
+
+
+    if(userId){
+        try {
+            const user= await User.findById({_id:userId});
+            if(user){
+                const wallet = user.wallet;
+                res.render('walletView',{wallet,imgUri,images,formatPrice})
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+}
 
 
 module.exports = {
@@ -1019,4 +1214,9 @@ module.exports = {
     handleChangePassword,
     handleVerifyPayment,
     handleApplyCoupon,
+    handleWalletView,
+    handleAddToCartFromWishlist,
+    handleAddToWishlist,
+    handleWishlistView,
+    handleDeleteFromWishlist,
 }

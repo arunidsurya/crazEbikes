@@ -33,7 +33,7 @@
           <img class="product-image" src="<%= imgUri %><%= product.imageUrl[0] %>" alt="">
           <h2><%= product.product_name %></h2>
           <h4>$<%= formatPrice(product.price) %></h4>
-          <a href="/user/addToWishList"><i class='bx bx-heart'></i></a>
+          <a onclick="addToWishList(this,'<%= product.id %>')"><i class='bx bx-heart'></i></a>
         </a>
       </div>
     <% }); %>
@@ -131,6 +131,31 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 </script>
 
+<script>
+  function addToWishList(element, productId) {
+  fetch(`/user/addToWishList?productId=${productId}`, {
+    method: 'POST',
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      element.classList.toggle('wishlist-active');
+      console.log('Element classes:', element.classList);
+    } else {
+      console.log('Failed:', data.message);
+    }
+  })
+  .catch(error => {
+    console.error('Fetch error:', error.message);
+  });
+}
+
+</script>
 
 
 

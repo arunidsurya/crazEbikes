@@ -4,7 +4,7 @@ const {handleHomePageView, handleCategoryView,handleAddCategoryPageView, handleC
     handleCategoryDelete,handleAddUserPageView, handleUserAdd, handleUserView, handleEditCustomerPageView,handleCustomerEdit,
     handleCustomerDelete, handleProductAdd, handleProductsView,handleProductUpdatePageView, handleProductUpdate,
     handleProdcutDelete, handleCustomerBlock, handleCustomerUnblock, handleImageDelete,handleProductSearch, 
-    handleProductsSort, handleCategorySearch, handleUserSearch,handleAddProductPageView,handleOrdersView,
+    handleProductsSort, handleCategorySearch, handleUserSearch,handleAddProductPageView,handleOrdersView,handleOrdersSearch,
     handleOrderDetailedView,handleChangeOrderStatus,handleChangePaymentStatus,handleAddCoupon,handleAddCouponView,
     handleCouponsView,handleEditCouponPageView,handleEditCoupon,handleDeleteCoupon,handleDashBoardView} = require('../controllers/admin');
     
@@ -45,6 +45,7 @@ router.get("/deleteProducts/:id", handleProdcutDelete);
 router.get("/deleteImages", handleImageDelete);
 
 router.get("/orders-view", handleOrdersView);
+router.post("/orders-search", handleOrdersSearch);
 router.get('/orders-detailed-view',handleOrderDetailedView);
 router.post('/change-order-status',handleChangeOrderStatus);
 router.post('/change-payment-status',handleChangePaymentStatus);

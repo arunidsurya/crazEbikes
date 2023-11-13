@@ -2,110 +2,90 @@
 
 <%- include('layout/sidebarAdmin') %>
 
-
-
-    <div class="col py-3">
-      <h4>Add Coupon</h4>
-      <% if (locals.message) { %>
+<div class="col py-3">
+    <h4>Add Coupon</h4>
+    <% if (locals.message) { %>
         <h7 style="color: red;">
-          <%= message %>
+            <%= message %>
         </h7>
-        <% } %>
-          <h5></h5>
-          <form action="/admin/add-coupons" method="post">
-            <div class="form-group row">
-              <label for="product_name" class="col-sm-2 col-form-label">Coupon Name:</label>
-              <div class="col-sm-10">
-                <input type="text" name="name" class="form-control" id="category_name">
-                <% if (locals.errors && locals.errors.coupon_name) { %>
-                  <span class="text-danger"><%= errors.coupon_name.msg %></span>
-                 <% } %>
-              </div>
-              <label for="brand" class="col-sm-2 col-form-label">Amount:</label>
-              <div class="col-sm-10">
-                <input type="text" name="amount" class="form-control" id="brand">
-                <% if (locals.errors && locals.errors.amount) { %>
-                  <span class="text-danger"><%= errors.amount.msg %></span>
-                 <% } %>
-              </div>
+    <% } %>
+    <h5></h5>
+    <form action="/admin/add-coupons" method="post">
+      <div class="form-group row">
+        <label for="product_name" class="col-sm-2 col-form-label">Coupon Name:</label>
+        <div class="col-sm-10">
+          <input type="text" name="name" class="form-control" id="category_name">
+          <% if (locals.errors && locals.errors.coupon_name) { %>
+            <span class="text-danger"><%= errors.coupon_name.msg %></span>
+           <% } %>
+        </div>
+        <label for="brand" class="col-sm-2 col-form-label">Amount:</label>
+        <div class="col-sm-10">
+          <input type="text" name="amount" class="form-control" id="brand">
+          <% if (locals.errors && locals.errors.amount) { %>
+            <span class="text-danger"><%= errors.amount.msg %></span>
+           <% } %>
+        </div>
 
-              <label for="color" class="col-sm-2 col-form-label">Max.Usage</label>
-              <div class="col-sm-10">
-                <input type="text" name="maxUsage" class="form-control" id="brand">
-                <% if (locals.errors && locals.errors.color) { %>
-                  <span class="text-danger"><%= errors.color.msg %></span>
-                 <% } %>
-              </div>
+        <label for="color" class="col-sm-2 col-form-label">Max.Usage</label>
+        <div class="col-sm-10">
+          <input type="text" name="maxUsage" class="form-control" id="brand">
+          <% if (locals.errors && locals.errors.color) { %>
+            <span class="text-danger"><%= errors.color.msg %></span>
+           <% } %>
+        </div>
 
+        <label for="expiresAt" class="col-sm-2 col-form-label">Expiry Date</label>
+        <div class="col-sm-10">
+            <input type="text" name="expiresAt" class="form-control" id="expiresAtInput">
+            <% if (locals.errors && locals.errors.expiresAt) { %>
+                <span class="text-danger"><%= errors.expiresAt.msg %></span>
+            <% } %>
+        </div>
+       
+        
+        <label for="product_description" class="col-sm-2 col-form-label">Description:</label>
+        <div class="col-sm-10">
+          <input type="text" name="description" class="form-control id="description" >
+          <% if (locals.errors && locals.errors.description) { %>
+            <span class="text-danger"><%= errors.description.msg %></span>
+           <% } %>
+        </div>
+      </div>
 
+        <center>
+            <button type="submit" class="text-center mt-4 btn btn-success">Submit</button>
+        </center>
+    </form>
 
-              <label for="expiresAt" class="col-sm-2 col-form-label">Expiry Date</label>
-              <div class="col-sm-10">
-                <input type="text" name="expiresAt" class="form-control" id="expiresAtInput">
-                <% if (locals.errors && locals.errors.price) { %>
-                  <span class="text-danger"><%= errors.price.msg %></span>
-                <% } %>
-              </div>
-              
+    <form action="/admin/products" method="get">
+        <button class="btn btn-primary">Product view</button>
+    </form>
+</div>
 
+<%- include('layout/footerAdmin') %>
 
-              <label for="product_description" class="col-sm-2 col-form-label">Description:</label>
-              <div class="col-sm-10">
-                <input type="text" name="description" class="form-control id="description" >
-                <% if (locals.errors && locals.errors.description) { %>
-                  <span class="text-danger"><%= errors.description.msg %></span>
-                 <% } %>
-              </div>
-            </div>
-            <center>
-              <button type="submit" class="text-center mt-4 btn btn-success">Submit</button>
-            </center>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
-          </form>
-
-          <form action="/admin/products" method="get">
-            <button class="btn btn-primary">Product view</button>
-          </form>
-
-
-    </div>
-    </div>
-    </div>
-
-
-    <script>
-        $(function() {
-          // Replace 'expiresAtInput' with the ID of your input field
-          $("#expiresAtInput").datepicker();
+<script>
+    $(function () {
+        $("#expiresAtInput").datepicker({
+            dateFormat: "yy-mm-dd", // Set the desired date format
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true
         });
-      </script>
-      
+    });
+</script>
 
-
-<style>
-  .image-container {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-
-  .image-container img {
-    max-width: 100px;
-    max-height: 100px;
-  }
-
-  .delete-button {
-    margin-left: 10px;
-  }
-</style>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
 
 
-  
-  
-  
-  
-  
-  
 
-    <%- include('layout/footerAdmin') %>
+
+
+
+
+
