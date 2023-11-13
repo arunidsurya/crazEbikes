@@ -233,7 +233,17 @@ async function handleAddToCartFromWishlist(req, res) {
             }
 
             // Convert cart items to a map for efficient lookup
-            const cartItemMap = new Map(cart.cartItems.map(item => [item.product_id.toString(), item]));
+            const cartItemMap = new Map(cart.cartItems.map(item => {
+                // Check if the item has a product_id property before using it
+                if (item && item.product_id) {
+                    return [item.product_id.toString(), item];
+                } else {
+                    // Handle the case where an item is missing the product_id property
+                    console.error('Invalid item in cart.cartItems:', item);
+                    return null; // or handle it in a way that makes sense for your application
+                }
+            }).filter(Boolean));
+            
 
             // Iterate through wishlist product IDs and add them to the cart
             for (const product_id of wishlistProductIds) {

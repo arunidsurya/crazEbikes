@@ -2,12 +2,12 @@ const express = require('express');
 const Cart = require('../models/cart');
 const mongoose = require('mongoose');
 
-const{handleCartView,handleAddToCart,handleUpdateCartQuantity,handleDeleteCartItem,
-    handleCheckoutView,handleEditAddress,handleAddNewAddress,handlePlaceOrder,
-    handleAddAddressView,handleEditAddressView,handleOrdersView,handleCancelOrder,
-    handleManageAccountView,handleChangeName,handleChangeNumber,handleChangeEmail,
-    handleVerifyOtp,handleChangePassword,handleVerifyPayment,handleApplyCoupon,handleWalletView,
-    handleAddToCartFromWishlist,handleAddToWishlist,handleWishlistView,handleDeleteFromWishlist}=require('../controllers/user')
+const { handleCartView, handleAddToCart, handleUpdateCartQuantity, handleDeleteCartItem,
+    handleCheckoutView, handleEditAddress, handleAddNewAddress, handlePlaceOrder,
+    handleAddAddressView, handleEditAddressView, handleOrdersView, handleCancelOrder,
+    handleManageAccountView, handleChangeName, handleChangeNumber, handleChangeEmail,
+    handleVerifyOtp, handleChangePassword, handleVerifyPayment, handleApplyCoupon, handleWalletView,
+    handleAddToCartFromWishlist, handleAddToWishlist, handleWishlistView, handleDeleteFromWishlist } = require('../controllers/user')
 
 
 const router = express.Router();
@@ -32,39 +32,39 @@ router.post('/detele-wishlist-item', handleDeleteFromWishlist);
 
 router.post('/updateCartQuantity', handleUpdateCartQuantity);
 
-router.post('/detele-cart-item', handleDeleteCartItem );
+router.post('/detele-cart-item', handleDeleteCartItem);
 
 router.get('/edit-address', handleEditAddressView);
 
-router.post('/edit-address', handleEditAddress );
+router.post('/edit-address', handleEditAddress);
 
 router.get('/add-new-address', handleAddAddressView);
 
-router.post('/addNewAddress',handleAddNewAddress);
+router.post('/addNewAddress', handleAddNewAddress);
 
-router.post('/place-order',handlePlaceOrder);
+router.post('/place-order', handlePlaceOrder);
 
 router.get('/view-orders', handleOrdersView);
 
-router.get('/cancel-order',handleCancelOrder);
+router.get('/cancel-order', handleCancelOrder);
 
-router.get('/manage-account',handleManageAccountView); 
+router.get('/manage-account', handleManageAccountView);
 
-router.post('/change-name',handleChangeName);
+router.post('/change-name', handleChangeName);
 
-router.post('/change-contact-number',handleChangeNumber);
+router.post('/change-contact-number', handleChangeNumber);
 
-router.post('/change-email',handleChangeEmail);
+router.post('/change-email', handleChangeEmail);
 
-router.post('/verify-otp',handleVerifyOtp);
+router.post('/verify-otp', handleVerifyOtp);
 
-router.post('/change-password',handleChangePassword);
+router.post('/change-password', handleChangePassword);
 
-router.post('/verify-payment',handleVerifyPayment);
+router.post('/verify-payment', handleVerifyPayment);
 
-router.post('/applyCoupon',handleApplyCoupon);
+router.post('/applyCoupon', handleApplyCoupon);
 
-router.get('/wallet',handleWalletView)
+router.get('/wallet', handleWalletView)
 
 
 module.exports = router;
