@@ -7,7 +7,8 @@ const { handleCartView, handleAddToCart, handleUpdateCartQuantity, handleDeleteC
     handleAddAddressView, handleEditAddressView, handleOrdersView, handleCancelOrder,
     handleManageAccountView, handleChangeName, handleChangeNumber, handleChangeEmail,
     handleVerifyOtp, handleChangePassword, handleVerifyPayment, handleApplyCoupon, handleWalletView,
-    handleAddToCartFromWishlist, handleAddToWishlist, handleWishlistView, handleDeleteFromWishlist } = require('../controllers/user')
+    handleAddToCartFromWishlist, handleAddToWishlist, handleWishlistView, handleDeleteFromWishlist,
+    handleDownloadInvoice } = require('../controllers/user')
 
 
 const router = express.Router();
@@ -46,7 +47,7 @@ router.post('/place-order', handlePlaceOrder);
 
 router.get('/view-orders', handleOrdersView);
 
-router.get('/cancel-order', handleCancelOrder);
+router.post('/cancel-order', handleCancelOrder);
 
 router.get('/manage-account', handleManageAccountView);
 
@@ -65,6 +66,8 @@ router.post('/verify-payment', handleVerifyPayment);
 router.post('/applyCoupon', handleApplyCoupon);
 
 router.get('/wallet', handleWalletView)
+
+router.get('/download-invoice',handleDownloadInvoice)
 
 
 module.exports = router;

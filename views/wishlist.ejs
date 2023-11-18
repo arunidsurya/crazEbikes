@@ -1,39 +1,49 @@
 <%- include('layout/headerUser') %>
-<%- include('layout/formatPrice') %>
+    <%- include('layout/formatPrice') %>
 
-<div class="wishlist-header">
-    <h1>Your Wishlist</h1>
-</div>
-<% if (locals.message) { %>
- <div class="no-tem-cart"><h3><%= message %></h3></div>
-<% }  else { %>
-    
-<div class="wishlist">
-    <div class="wishlist-item-container">
-        <h2>Wishlist </h2>
-
-        <% products.forEach(item => { %>
-            <div class="cart-item">
-                <img src="<%= imgUri+item.imageUrl %>" alt="Product Image">
-                <p><%= item.name %></p>
-                <p>Brand:<%= item.brand %></p>
-                <p>Color:<%= item.color %></p>
-                <p>Price: $<%= formatPrice(item.price) %></p>
-   
-                <form action="/user/detele-wishlist-item?userId=<%=userId %>&productId=<%= item._id  %>" method="post">
-                    <button class="delete-button" type="submit">Delete</button>
-                </form>
-
-                
+        <div class="wishlist-header">
+            <h1>Your Wishlist</h1>
+        </div>
+        <% if (locals.message) { %>
+            <div class="no-tem-cart">
+                <h3>
+                    <%= message %>
+                </h3>
             </div>
-        <% }); %>
-        <form action="/user/addToCartFromWishlist">
-            <button class="btn btn-success">Buy Items</button>
-        </form>
-    </div>
+            <% } else { %>
 
-</div>
+                <div class="wishlist">
+                    <div class="wishlist-item-container">
+                        <h2>Wishlist </h2>
 
-<%}%>
+                        <% products.forEach(item=> { %>
+                            <div class="cart-item">
+                                <img src="<%= imgUri+item.imageUrl %>" alt="Product Image">
+                                <p>
+                                    <%= item.name %>
+                                </p>
+                                <p>Brand:<%= item.brand %>
+                                </p>
+                                <p>Color:<%= item.color %>
+                                </p>
+                                <p>Price: $<%= formatPrice(item.price) %>
+                                </p>
 
-<%- include('layout/footerUser') %>
+                                <form action="/user/detele-wishlist-item?userId=<%=userId %>&productId=<%= item._id  %>"
+                                    method="post">
+                                    <button class="delete-button" type="submit">Delete</button>
+                                </form>
+
+
+                            </div>
+                            <% }); %>
+                                <form action="/user/addToCartFromWishlist">
+                                    <button class="btn btn-success">Buy Items</button>
+                                </form>
+                    </div>
+
+                </div>
+
+                <%}%>
+
+                    <%- include('layout/footerUser') %>

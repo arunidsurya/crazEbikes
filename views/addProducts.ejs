@@ -1,6 +1,6 @@
 <%- include('layout/headerAdmin') %>
 
-<%- include('layout/sidebarAdmin') %>
+  <%- include('layout/sidebarAdmin') %>
 
 
 
@@ -20,8 +20,10 @@
               <div class="col-sm-10">
                 <input type="text" name="product_name" class="form-control" id="category_name">
                 <% if (locals.errors && locals.errors.product_name) { %>
-                  <span class="text-danger"><%= errors.product_name.msg %></span>
-                 <% } %>
+                  <span class="text-danger">
+                    <%= errors.product_name.msg %>
+                  </span>
+                  <% } %>
               </div>
               <label for="category_description" class="col-sm-2 col-form-label">Select category:</label>
               <div class="col-sm-10">
@@ -38,55 +40,68 @@
               <div class="col-sm-10">
                 <input type="text" name="brand" class="form-control" id="brand">
                 <% if (locals.errors && locals.errors.brand) { %>
-                  <span class="text-danger"><%= errors.brand.msg %></span>
-                 <% } %>
+                  <span class="text-danger">
+                    <%= errors.brand.msg %>
+                  </span>
+                  <% } %>
               </div>
 
               <label for="color" class="col-sm-2 col-form-label">Color:</label>
               <div class="col-sm-10">
                 <input type="text" name="color" class="form-control" id="brand">
                 <% if (locals.errors && locals.errors.color) { %>
-                  <span class="text-danger"><%= errors.color.msg %></span>
-                 <% } %>
+                  <span class="text-danger">
+                    <%= errors.color.msg %>
+                  </span>
+                  <% } %>
               </div>
 
 
               <label for="image" class="col-sm-2 col-form-label">Image:</label>
               <div class="col-sm-10">
-                <input type="file" multiple name="image" class="form-control" id="imageInput" onchange="previewImages(event)">
+                <input type="file" multiple name="image" class="form-control" id="imageInput"
+                  onchange="previewImages(event)">
                 <div id="imagePreviews" class="mt-2 image-container"></div>
                 <% if (locals.errors && locals.errors.image) { %>
-                  <span class="text-danger image-upload"><%= errors.image.msg %></span>
-                <% } %>
+                  <span class="text-danger image-upload">
+                    <%= errors.image.msg %>
+                  </span>
+                  <% } %>
               </div>
 
 
 
-    
+
 
 
               <label for="retail_price" class="col-sm-2 col-form-label">Price:</label>
               <div class="col-sm-10">
                 <input type="text" name="price" class="form-control" id="retailPrice">
                 <% if (locals.errors && locals.errors.price) { %>
-                  <span class="text-danger"><%= errors.price.msg %></span>
-                 <% } %>
+                  <span class="text-danger">
+                    <%= errors.price.msg %>
+                  </span>
+                  <% } %>
               </div>
 
               <label for="discount" class="col-sm-2 col-form-label">Stock:</label>
               <div class="col-sm-10">
                 <input type="text" name="stock" class="form-control" id="stock">
                 <% if (locals.errors && locals.errors.stock) { %>
-                  <span class="text-danger"><%= errors.stock.msg %></span>
-                 <% } %>
+                  <span class="text-danger">
+                    <%= errors.stock.msg %>
+                  </span>
+                  <% } %>
               </div>
 
               <label for="product_description" class="col-sm-2 col-form-label">Description:</label>
               <div class="col-sm-10">
-                <input type="text" name="description" class="form-control id="description" >
+                <input type="text" name="description" class="form-control id=" description">
                 <% if (locals.errors && locals.errors.description) { %>
-                  <span class="text-danger"><%= errors.description.msg %></span>
-                 <% } %>
+                  <span class="text-danger">
+                    <%= errors.description.msg %>
+                  </span>
+                  <% } %>
               </div>
             </div>
             <center>
@@ -106,78 +121,78 @@
 
 
     <script>
-      function displayImage(event){
-        document.getElementById(viewImage).src=URL.createObjectURL(event.files[0]);
+      function displayImage(event) {
+        document.getElementById(viewImage).src = URL.createObjectURL(event.files[0]);
       }
     </script>
 
 
-<style>
-  .image-container {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-
-  .image-container img {
-    max-width: 100px;
-    max-height: 100px;
-  }
-
-  .delete-button {
-    margin-left: 10px;
-  }
-</style>
-
-<script>
-  function previewImages(event) {
-    const imagePreviews = document.getElementById("imagePreviews");
-    imagePreviews.innerHTML = "";
-    const files = [];
-  
-    for (let i = 0; i < event.target.files.length; i++) {
-      const file = event.target.files[i];
-      if (file) {
-        files.push(file);
-  
-        const img = document.createElement("img");
-        img.src = URL.createObjectURL(file);
-  
-        const deleteButton = document.createElement("button");
-        deleteButton.type = "button";
-        deleteButton.innerText = "Delete";
-        deleteButton.className = "btn btn-danger btn-sm delete-button";
-  
-        deleteButton.onclick = function () {
-          const index = Array.from(imagePreviews.children).indexOf(imageContainer);
-          files.splice(index, 1); // Remove the file from the array
-          imagePreviews.removeChild(imageContainer);
-          updateFileInput(); // Update the file input
-        };
-  
-        const imageContainer = document.createElement("div");
-        imageContainer.className = "image-container";
-        imageContainer.appendChild(img);
-        imageContainer.appendChild(deleteButton);
-        imagePreviews.appendChild(imageContainer);
+    <style>
+      .image-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
       }
-    }
-  
-    // Update the file input with the remaining files
-    function updateFileInput() {
-      const newFileList = new DataTransfer();
-      files.forEach((file) => newFileList.items.add(file));
-      event.target.files = newFileList.files;
-    }
-  }
-  </script>
 
-  
-  
-  
-  
-  
-  
-  
+      .image-container img {
+        max-width: 100px;
+        max-height: 100px;
+      }
+
+      .delete-button {
+        margin-left: 10px;
+      }
+    </style>
+
+    <script>
+      function previewImages(event) {
+        const imagePreviews = document.getElementById("imagePreviews");
+        imagePreviews.innerHTML = "";
+        const files = [];
+
+        for (let i = 0; i < event.target.files.length; i++) {
+          const file = event.target.files[i];
+          if (file) {
+            files.push(file);
+
+            const img = document.createElement("img");
+            img.src = URL.createObjectURL(file);
+
+            const deleteButton = document.createElement("button");
+            deleteButton.type = "button";
+            deleteButton.innerText = "Delete";
+            deleteButton.className = "btn btn-danger btn-sm delete-button";
+
+            deleteButton.onclick = function () {
+              const index = Array.from(imagePreviews.children).indexOf(imageContainer);
+              files.splice(index, 1); // Remove the file from the array
+              imagePreviews.removeChild(imageContainer);
+              updateFileInput(); // Update the file input
+            };
+
+            const imageContainer = document.createElement("div");
+            imageContainer.className = "image-container";
+            imageContainer.appendChild(img);
+            imageContainer.appendChild(deleteButton);
+            imagePreviews.appendChild(imageContainer);
+          }
+        }
+
+        // Update the file input with the remaining files
+        function updateFileInput() {
+          const newFileList = new DataTransfer();
+          files.forEach((file) => newFileList.items.add(file));
+          event.target.files = newFileList.files;
+        }
+      }
+    </script>
+
+
+
+
+
+
+
+
 
     <%- include('layout/footerAdmin') %>

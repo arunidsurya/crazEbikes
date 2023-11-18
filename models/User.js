@@ -2,60 +2,60 @@ const mongoose = require('mongoose');
 
 
 
-const UserSchema= new mongoose.Schema({
-    name:{
-        type:String,
-        required:true,
+const UserSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
     },
-    email:{
-        type:String,
-        required:true,
-        unique:true,
+    email: {
+        type: String,
+        required: true,
+        unique: true,
     },
-    password:{
-        type:String,
-        required:true,
+    password: {
+        type: String,
+        required: true,
     },
-    contactNumber:{
-        type:String,
-        required:true,
-        unique:true,
+    contactNumber: {
+        type: String,
+        required: true,
+        unique: true,
     },
-    delivery:[{
-        name:{
-            type:String,
+    delivery: [{
+        name: {
+            type: String,
         },
-        contactNumber:{
-            type:String
+        contactNumber: {
+            type: String
         },
-        pincode:{
-            type:String
+        pincode: {
+            type: String
         },
-        address:{
-            type:String
+        address: {
+            type: String
         },
-        city:{
-            type:String
+        city: {
+            type: String
         },
-        state:{
-            type:String
+        state: {
+            type: String
         }
     }],
-    isDeleted:{
-        type:Boolean,
-        default:false,
+    isDeleted: {
+        type: Boolean,
+        default: false,
     },
-    isBlocked:{
-        type:Boolean,
-        default:false,
+    isBlocked: {
+        type: Boolean,
+        default: false,
     },
-    isVerified:{
-        type:Boolean,
-        default:false,
+    isVerified: {
+        type: Boolean,
+        default: false,
     },
-    wallet:{
-        type:Number,
-        default:0,
+    wallet: {
+        type: Number,
+        default: 0,
     },
     wishlist: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -64,7 +64,7 @@ const UserSchema= new mongoose.Schema({
 
 })
 
-const User= mongoose.model('user',UserSchema);
+const User = mongoose.model('user', UserSchema);
 
 
-module.exports=User;
+module.exports = User;

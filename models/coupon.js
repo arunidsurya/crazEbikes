@@ -15,26 +15,26 @@ const couponSchema = new mongoose.Schema({
     },
     usageCount: {
         type: Number,
-        default:0,
+        default: 0,
     },
     createdAt: {
         type: Date,
-        default:Date.now(),
+        default: Date.now(),
     },
     expiresAt: {
         type: Date,
-        required:true,
+        required: true,
     },
     description: {
         type: String,
         required: true,
     },
-    isDeleted:{
-        type:Boolean,
-        default:false,
+    isDeleted: {
+        type: Boolean,
+        default: false,
     }
 })
 
-const Coupon = mongoose.model('coupon',couponSchema);
+const Coupon = mongoose.model('coupon', couponSchema);
 
 module.exports = Coupon;

@@ -242,7 +242,7 @@
               <div class="input-group mt-3 mb-4">
                 <input type="text" class="form-control border" id="coupon-code" name="" placeholder="Promo code" />
                 <button class="btn btn-light text-primary border" onclick="applCoupon()">Apply</button>
-                
+
               </div>
               <p id="coupon-message"></p>
               <hr />
@@ -551,13 +551,13 @@
           .then((data) => {
             if (data.success) {
               // Coupon applied successfully, update UI and display a success message
-              coupon_amount=data.couponAmount;
+              coupon_amount = data.couponAmount;
               coupon_name = data.couponName;
-              cartTotal.textContent=`${(totalPrice-data.couponAmount).toFixed(2)}`;
-              totalInput.value=`${(totalPrice-data.couponAmount).toFixed(2)}`;
-              totalPrice=totalPrice-data.couponAmount;
+              cartTotal.textContent = `${(totalPrice - data.couponAmount).toFixed(2)}`;
+              totalInput.value = `${(totalPrice - data.couponAmount).toFixed(2)}`;
+              totalPrice = totalPrice - data.couponAmount;
               couponMessage.textContent = `Coupon "${data.couponName}" applied successfully!`;
-              couponDiscount.innerHTML= `$${(data.couponAmount).toFixed(2)}`;
+              couponDiscount.innerHTML = `$${(data.couponAmount).toFixed(2)}`;
             } else {
               couponMessage.textContent = data.message;
             }

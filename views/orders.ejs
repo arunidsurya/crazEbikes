@@ -1,108 +1,118 @@
 <%- include('layout/headerAdmin') %>
-<%- include('layout/sidebarAdmin') %>
+    <%- include('layout/sidebarAdmin') %>
 
 
 
-<div class="col py-3">
+        <div class="col py-3">
 
 
-    <div class="container">
-        <div class="mt-4">
-            <h4 id="products-heading">Orders View</h4>
+            <div class="container">
+                <div class="mt-4">
+                    <h4 id="products-heading">Orders View</h4>
 
 
-            <!-- <div class="filter-sort-options d-flex justify-content-between">
+                    <!-- <div class="filter-sort-options d-flex justify-content-between">
                 <form action="/admin/order-search" method="post" class="form-inline" style="display:flex">
                     <input name="searchKey" class="form-control mr-sm-2" type="search" placeholder="Search"
                         aria-label="Search">
                     <button class="btn btn-outline-success my-0 my-sm-0" type="submit">Search</button>
                 </form>
             </div> -->
-    
-            <div class="row my-4">
-                <div class="col-lg-12">
-                    <div class="table-responsive">
-                        <% if (locals.orders) { %>
-                            <table class="table table-striped text-center">
-                                <thead>
-                                    <tr class="table-dark">
-                                        <th>S/N</th>
-                                        <th>Order#</th>
-                                        <th>Customer Id</th>
-                                        <th>Order Date</th>
-                                        <th>Total Price</th>
-                                        <th>Payment Method</th>
-                                        <th>Order Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% const startSerialNumber = (currentPage - 1) * PRODUCTS_PER_PAGE + 1; %>
-                                    <% orders.forEach((order,index)=> { %>
-                                        <tr class="align-middle mt-5">
-                                            <td>
-                                                <%= startSerialNumber + index %>
-                                            </td>
-                                            <td>
-                                                #<%= index+1 %>
-                                            </td>
-                                            <td>
-                                                <%= order.User_id %>
-                                            </td>
 
-                                            <td>
-                                                <%= order.Order_date %>
-                                            </td>
-                                            <td>
-                                                $<%= formatPrice(order.total_price ) %>
-                                            </td>
-                                            <td>
-                                                <p><%= order.payment_method %></p>
-                                            </td>
-                                            <td>
-                                                <%= order.Status %>
-                                            </td>
-                                            <td>
-                                               <a href="/admin/orders-detailed-view?orderId=<%= order._id %>"><input type="button" class="btn btn-primary" value="view"></a>
-                                            </td>
-                                        </tr>
-                                        <% }) %>
-                                </tbody>
-                            </table>
-                            <% } %>
-    
+                    <div class="row my-4">
+                        <div class="col-lg-12">
+                            <div class="table-responsive">
+                                <% if (locals.orders) { %>
+                                    <table class="table table-striped text-center">
+                                        <thead>
+                                            <tr class="table-dark">
+                                                <th>S/N</th>
+                                                <th>Order#</th>
+                                                <th>Customer Id</th>
+                                                <th>Order Date</th>
+                                                <th>Total Price</th>
+                                                <th>Payment Method</th>
+                                                <th>Order Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% const startSerialNumber=(currentPage - 1) * PRODUCTS_PER_PAGE + 1; %>
+                                                <% orders.forEach((order,index)=> { %>
+                                                    <tr class="align-middle mt-5">
+                                                        <td>
+                                                            <%= startSerialNumber + index %>
+                                                        </td>
+                                                        <td>
+                                                            #<%= index+1 %>
+                                                        </td>
+                                                        <td>
+                                                            <%= order.User_id %>
+                                                        </td>
+
+                                                        <td>
+                                                            <%= order.Order_date %>
+                                                        </td>
+                                                        <td>
+                                                            $<%= formatPrice(order.total_price ) %>
+                                                        </td>
+                                                        <td>
+                                                            <p>
+                                                                <%= order.payment_method %>
+                                                            </p>
+                                                        </td>
+                                                        <td>
+                                                            <%= order.Status %>
+                                                        </td>
+                                                        <td>
+                                                            <a
+                                                                href="/admin/orders-detailed-view?orderId=<%= order._id %>"><input
+                                                                    type="button" class="btn btn-primary"
+                                                                    value="view"></a>
+                                                        </td>
+                                                    </tr>
+                                                    <% }) %>
+                                        </tbody>
+                                    </table>
+                                    <% } %>
+
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-  <!-- Pagination -->
-<div class="row">
-    <div class="col-lg-12">
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
-                <% if (currentPage > 1) { %>
-                    <li class="page-item">
-                        <a class="page-link" href="/admin/orders-view?page=<%= currentPage - 1 %>" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                <% } %>
-                <% for (let i = 1; i <= totalPages; i++) { %>
-                    <li class="page-item <%= currentPage == i ? 'active' : '' %>">
-                        <a class="page-link" href="/admin/orders-view?page=<%= i %>"><%= i %></a>
-                    </li>
-                <% } %>
-                <% if (currentPage < totalPages) { %>
-                    <li class="page-item">
-                        <a class="page-link" href="/admin/orders-view?page=<%= currentPage + 1 %>" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                <% } %>
-            </ul>
-        </nav>
-    </div>
-</div>
+                    <!-- Pagination -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center">
+                                    <% if (currentPage> 1) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="/admin/orders-view?page=<%= currentPage - 1 %>"
+                                                aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <% } %>
+                                            <% for (let i=1; i <=totalPages; i++) { %>
+                                                <li class="page-item <%= currentPage == i ? 'active' : '' %>">
+                                                    <a class="page-link" href="/admin/orders-view?page=<%= i %>">
+                                                        <%= i %>
+                                                    </a>
+                                                </li>
+                                                <% } %>
+                                                    <% if (currentPage < totalPages) { %>
+                                                        <li class="page-item">
+                                                            <a class="page-link"
+                                                                href="/admin/orders-view?page=<%= currentPage + 1 %>"
+                                                                aria-label="Next">
+                                                                <span aria-hidden="true">&raquo;</span>
+                                                            </a>
+                                                        </li>
+                                                        <% } %>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
 
 
 
-<%- include('layout/footerAdmin') %>
+                    <%- include('layout/footerAdmin') %>

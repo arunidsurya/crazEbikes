@@ -1,0 +1,50 @@
+.order-container{
+    background-color: #fff;
+    margin-bottom: 50px;
+    padding: 20px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+}
+
+.order-invoice {
+    background-color: #fff;
+    margin-bottom: 20px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    height: 120px;
+    align-items: center;
+
+}
+
+
+.order-invoice h2 {
+    font-size: 24px;
+    margin: 0;
+}
+
+
+.order-invoice-total {
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    float: right;
+    height: 80px;
+    font-size: 20px;
+    font-weight: bold;
+}
+.order-total-price{
+
+    padding: 20px;
+}
+
+
+.order-invoice .order-image{
+    height: 80px;
+    width: 100px;
+}
+
+
+  
+
+
+

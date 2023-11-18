@@ -23,7 +23,7 @@
                             <span class="sr-only">Previous</span>
                         </a>
                         <a class="carousel-control-next" href="#productCarousel" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" ariahidden="true"></span>
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
                             <span class="sr-only">Next</span>
                         </a>
                     </div>
@@ -65,7 +65,7 @@
             </p>
         </div>
 
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        
 
         <script>
             $('.thumbnail-item').click(function () {
@@ -82,14 +82,17 @@
                 $('#productCarousel').carousel(index);
             });
         </script>
-        <!-- <script>
-            var options = {
-                width: 400,
-                zoomWidth: 400,
-                offset: { vertical: 0, horizontal: 10 }
-            };
-            new ImageZoom(document.getElementById("img-container"), options);
 
-        </script> -->
+        <!-- Add this script block after including jQuery and your other scripts -->
+        <script>
+            $(document).ready(function () {
+                // Handle click on the "Next" button
+                $('.carousel-control-next').click(function () {
+                    $('#productCarousel').carousel('next'); // Manually trigger the next slide
+                });
+            });
+        </script>
+
+
 
         <%- include('layout/footerUser') %>

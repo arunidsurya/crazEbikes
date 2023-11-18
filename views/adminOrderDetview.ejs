@@ -111,12 +111,14 @@
 
                         </section>
                         <% }) %>
-                        <section class="order-total">
-                            <p class="discount-paragraph">Discount Applied: <span class="order-total-price">$ <%= formatPrice(order.coupon_amount) %>
-                            </span></p>
-                            <p>Total Order price(including delivery charge): <span class="order-total-price">$ <%= formatPrice(order.totalPrice) %>
-                                        </span></p>
-                        </section>
+                            <section class="order-total">
+                                <p class="discount-paragraph">Discount Applied: <span class="order-total-price">$ <%=
+                                            formatPrice(order.coupon_amount) %>
+                                    </span></p>
+                                <p>Total Order price(including delivery charge): <span class="order-total-price">$ <%=
+                                            formatPrice(order.totalPrice) %>
+                                    </span></p>
+                            </section>
                 </div>
                 <% }) %>
 
@@ -131,7 +133,7 @@
         <script>
             // Get a reference to the select element
             var orderStatusSelect = document.getElementById("orderStatus");
-            var paymentStatusSelect =document.getElementById('paymentStatus');
+            var paymentStatusSelect = document.getElementById('paymentStatus');
 
             var orderId = orderStatusSelect.getAttribute("data-order-id");
 
