@@ -1,11 +1,16 @@
 <%- include('layout/headerUser') %>
     <%- include('layout/formatPrice') %>
 
-        <main>
+
+
+<% if (locals.order) { %>
+ 
+
+        <main class="invoice-main">
 
             <div class="button-orders">
                 <a onclick="downloadInvoice()"><button class="btn btn-success">Download Invoice</button></a>
-                <section class="back-to-orders"><a href="/user/view-orders"><button class="btn btn-primary ">View
+                <section class="back-to-orders"><a href="/user/dash-board"><button class="btn btn-primary ">Back to
                             Orders</button></a></section>
 
             </div>
@@ -15,9 +20,11 @@
                     <h1>Invoice</h1>
                 </center>
                 <hr>
-                <div class="">
+                <div>
+                    <h5 style="float: right; margin-right: 5px;">Inv.No : <%= order.invoiceNumber %></h5>
                     <div class="deliver-address">
-                        <h4>Delivery Address</h4>
+                        <h4 >Delivery Address</h4>
+    
                         <h6>
                             <%= order.delivery_address[0].Name %>
                         </h6>
@@ -36,9 +43,8 @@
                     </div>
                     <div>
                         <h4>Order</h4>
-                        <p>
-                            Status :<%= order.Status %>
-                        </p>
+
+
                         <p>
                             Order date :<%= order.Order_date %>
                         </p>
@@ -82,7 +88,7 @@
                         <hr>
                         </hr>
                         <section class="order-invoice-total">
-                            <div>
+                            <div style="display: grid; justify-content: end;">
                                 <p class="discount-paragraph">Discount Applied: <span class="order-total-price">$
                                         <% if (order.coupon_amount!=null) { %>
                                             <%= formatPrice(order.coupon_amount) %>
@@ -103,7 +109,9 @@
 
 
         </main>
-
+        <% }  else {%>
+            <p>No invoice available</p>
+            <% } %>
 
 
         <script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>

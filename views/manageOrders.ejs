@@ -1,100 +1,23 @@
 <%- include('layout/headerUser') %>
     <%- include('layout/formatPrice') %>
 
-        <header class="header-orders">
+        <header class="header-order">
             <h1>Your Orders</h1>
         </header>
 
         <main>
             <% if (ordersData) { %>
-
+                
 
                 <% ordersData.forEach((order,index)=> { %> <!-- Iterate over ordersData -->
 
                     <div id="orderContainer<%= order.collectionId %>" class="order-container">
-                        <h5>#Order Number : <%= index+1 %>
-                        </h5>
-                        <a href="/user/download-invoice?orderId=<%= order.collectionId %>"><button class="btn btn-primary">Invoice</button></a>
-                        <p>
-                            <%= order._id %>
-                        </p>
-                        <div class="order-outline">
-                            <div class="deliver-address">
-                                <h4>Delivery Address</h4>
-                                <h6>
-                                    <%= order.address.Name %>
-                                </h6>
-                                <p><span>
-                                        <%= order.address.Address %>,
-                                    </span><span>
-                                        <%= order.address.City %>-
-                                    </span><span>
-                                        <%= order.address.Pincode %>
-                                    </span></p>
-                                <p>
-                                    <%=order.address.State %>
-                                </p>
-                                <p>Phone Number :<%= order.address.ContactNumber %>
-                                </p>
-                            </div>
-                            <div>
-                                <h4>Order Status</h4>
-                                <p>
-                                    Order :<%= order.Status %>
-                                </p>
-                                <p>
-                                    Order date :<%= order.OrderDate %>
-                                </p>
-                                <p>
-                                    Payment method :<%= order.payment_method %>
-                                </p>
-                               
-                            </div>
-                            <div class="order-cancel-button-container">
-                                
-                                <% if (order.IsCancelled) { %> <!-- Use order.isCancelled here -->
-                                    <p>Order Cancelled</p>
-                                    <% } else { %>
-                                        <!-- <a href="/user/cancel-order?orderId=<%=order.collectionId %>"
-                                                onclick="return confirm('Are you sure you want to cancel this order?');"><input
-                                                    type="text" class="btn btn-danger order-cancel-button"
-                                                    value="Cancel Order"></a> -->
-                                        <a onclick="handleDelete('<%= order.collectionId %>')"><input type="text"
-                                                class="btn btn-danger order-cancel-button" value="Cancel Order"></a>
 
-                                           
-                                        <div id="modal<%= order.collectionId %>" class="modal">
-                                            <span
-                                                onclick="document.getElementById('modal<%= order.collectionId %>').style.display='none'"
-                                                class="close" title="Close Modal">×</span>
-                                            <form class="modal-content"
-                                                action="/user/cancel-order?orderId=<%= order.collectionId %>"
-                                                method="post">
-                                                <div class="modal-container">
-                                                    <h1>Delete Account</h1>
-                                                    <p>Are you sure you want to cancel this
-                                                        Order?
-                                                    </p>
-
-                                                    <div class="clearfix">
-                                                        <button type="button"
-                                                            onclick="document.getElementById('modal<%= order.collectionId %>').style.display='none'"
-                                                            class="cancelbtn">Cancel</button>
-                                                        <button type="submit"
-                                                            onclick="document.getElementById('modal<%= order.collectionId %>').style.display='none'"
-                                                            class="deletebtn">Delete</button>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                            
-                                        </div>
-                                        <% } %>
-                                        
-                            </div>
-                        </div>
+                        <h6>#<%= order.invoiceNumber %></h6>
+                        
                         <% order.productsArray.forEach(product=> { %>
+                            <a href="/user/view-selected-order?orderId=<%= order.collectionId %>">
                             <section class="order">
-
                                 <div>
                                     <img class="order-image" src="<%= imgUri + product.imageUrl %>" alt="Image">
 
@@ -103,8 +26,6 @@
                                     <p>
                                         <%= product.product_name.slice(0,20) %>
                                     </p>
-                                </div>
-                                <div>
                                     <p>
                                         color: <%= product.color %>
                                     </p>
@@ -119,58 +40,48 @@
                                     <p>Price: $<%= formatPrice(product.price)%>
                                     </p>
                                 </div>
+                                <div class="orderStatus">
+                                 <% if (order.Status=='Cancelled') { %>
+                                  <div class="redCircle"></div>
+                                 <% } else {%>
+                                    <div class="greenCircle"></div>
+                                    <%}  %> 
+
+                                 Order <%= order.Status %> on <%= order.OrderDate %>
+                                </div>
 
                             </section>
+                        </a>
                             <% }) %>
-                                <section class="order-total">
-                                    <p class="discount-paragraph">Discount Applied: <span class="order-total-price">$
-                                            <%= formatPrice(order.coupon_amount) %>
-                                        </span></p>
-                                    <p>Total Order price(including delivery charge): <span class="order-total-price">$
-                                            <%= formatPrice(order.totalPrice) %>
-                                        </span></p>
-                                </section>
-                                <!-- <button onclick="downloadInvoice('<%= order.collectionId %>')">Download Invoice</button> -->
-                                
+
                     </div>
+
+
                     <% }) %>
 
-                        <% }else {%>
-                            <h4>No orders yet</h4>
+                    <div class="pagination">
+                        <% if (currentPage > 1) { %>
+                            <a href="/user/view-my-orders?page=1">&laquo;&laquo; First</a>
+                            <a href="/user/view-my-orders?page=<%= currentPage - 1 %>">&laquo; Previous</a>
+                        <% } %>
+                    
+                        <% for (let i = Math.max(1, currentPage - 2); i <= Math.min(currentPage + 2, totalPages); i++) { %>
+                            <a href="/user/view-my-orders?page=<%= i %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+                        <% } %>
+                    
+                        <% if (currentPage < totalPages) { %>
+                            <a href="/user/view-my-orders?page=<%= currentPage + 1 %>">Next &raquo;</a>
+                            <a href="/user/view-my-orders?page=<%= totalPages %>">Last &raquo;&raquo;</a>
+                        <% } %>
+                    </div>
+
+                        <% } else {%>
+                            <h4>No orders to show</h4>
                             <%}%>
         </main>
 
 
-
-        <script>
-            function handleDelete(orderId) {
-                const modalDiv = document.getElementById('modal' + orderId);
-                modalDiv.style.display = 'block';
-            }
-        </script>
-
-<script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
-<script>
-    async function downloadInvoice(orderId) {
-        const orderContainer = document.getElementById('orderContainer' + orderId);
-
-        // Use the async version of html2pdf to handle the promise
-        const pdf = await html2pdf().from(orderContainer).outputPdf();
-
-        // Create a blob from the PDF data
-        const blob = new Blob([pdf], { type: 'application/pdf' });
-
-        // Create a download link and trigger the download
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = 'invoice.pdf';
-        link.click();
-    }
-</script>
-
-
-
-
+     
 
 
 

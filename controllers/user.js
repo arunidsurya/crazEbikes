@@ -34,9 +34,15 @@ function formatPrice(price) {
     });
 };
 
+function generateInvoiceNumber() {
+    const staticPrefix = "INV/CRAZEBIKES/WS/2023"; // Add your static alphanumeric values here
+    const randomDigits = Math.floor(1000 + Math.random() * 9000); // Generates a random 4-digit number
+
+    return `${staticPrefix}${randomDigits}`;
+}
 
 
-async function handleCartView(req, res) {
+async function handleCartView(req, res, next) {
     const userId = req.session.userId;
 
     try {
@@ -89,41 +95,19 @@ async function handleCartView(req, res) {
         res.render('cart', { cartdata, cartTotal, userId, totalQuantity: cartDataResult[0].totalQuantity, imgUri, images, formatPrice });
     } catch (err) {
         console.error('Error:', err);
-        return res.render('cart', { imgUri, images, message: "0 items in the cart" });
+        next(err);
+        // return res.render('cart', { imgUri, images, message: "0 items in the cart" });
+        
     }
-
-    // if (!userId && userId == undefined) {
-    //     res.render('userlogin', { imgUri, images })
-    // } else {
-
-    //     const cartdata = await Cart.findOne({ userId: userId }).populate({
-    //         path: 'cartItems.product_id',
-    //         model: 'product'
-    //     });
-
-
-    //     // console.log(cartdata);
-    //     let cartTotal = 0;
-    //     let totalQunatity = 0;
-
-    //     for (let i = 0; i < cartdata.cartItems.length; i++) {
-    //         const item = cartdata.cartItems[i];
-    //         const itemPrice = item.product_id.price;
-    //         const itemQuantity = item.quantity;
-    //         totalQunatity += item.quantity;
-    //         cartTotal += itemPrice * itemQuantity;
-    //     }
-    //     res.render('cart', { cartdata, cartTotal, totalQunatity, imgUri, images, formatPrice });
-    // }
 
 };
 
-async function handleAddToCart(req, res) {
+async function handleAddToCart(req, res, next) {
     const userId = req.session.userId;
-    if (userId) {
+
         try {
-            const product_id = req.query.product_id;
-            const quantity = req.body.quantity;
+            const product_id = req.query.product_id || req.body.productId;
+            const quantity = req.body.quantity || 1;
 
 
             // Check if the user's cart exists; if not, create a new one
@@ -192,36 +176,95 @@ async function handleAddToCart(req, res) {
 
                 if (cartDataResult.length === 0) {
                     // No records found
-                    return res.status(404).json("No records found");
+                    const err = new Error(`no matching data found!!!` );
+                    err.status='fail';
+                    err.statusCode=404;
+                    next(err);
                 }
 
                 const { cartdata, cartTotal, totalQuantity } = cartDataResult[0];
                 // console.log(cartdata)
 
                 res.render('cart', { cartdata, cartTotal, userId, totalQuantity, imgUri, images, formatPrice });
-            } catch (err) {
+            } catch (error) {
                 console.error('Error:', err);
-                res.status(500).send('An error occurred while fetching the cart data.');
+                next(error);
             }
         } catch (error) {
             console.error(error);
-            res.status(500).json({ error: 'An error occurred while adding the item to the cart' });
+            next(error);
+            // res.status(500).json({ error: 'An error occurred while adding the item to the cart' });
         }
-    } else {
-        res.render('userlogin', { images, imgUri })
-    }
 };
 
-async function handleAddToCartFromWishlist(req, res) {
+async function handleAddToCartOneItemFromWishlist(req, res , next) {
     const userId = req.session.userId;
 
-    if (userId) {
+        try {
+            const product_id = req.query.product_id || req.body.productId;
+            const quantity = req.body.quantity || 1;
+
+
+            // Check if the user's cart exists; if not, create a new one
+            let cart = await Cart.findOne({ userId: userId });
+            if (!cart) {
+                cart = new Cart({ userId: userId, cartItems: [] });
+            }
+
+            // Check if the product already exists in the cart
+            const existingCartItemIndex = cart.cartItems.findIndex(item => item.product_id.toString() === product_id);
+
+            const quantityToAdd = parseInt(quantity, 10);
+            if (existingCartItemIndex !== -1) {
+                // If the product is already in the cart, update the quantity
+                cart.cartItems[existingCartItemIndex].quantity += quantityToAdd;
+            } else {
+                // If the product is not in the cart, add it
+                cart.cartItems.push({ product_id, quantity });
+            }
+
+            // Save the updated cart
+            await cart.save();
+
+            const user = await User.findById(userId);
+
+            if (!user) {
+                const err = new Error(`no matching data found!!!` );
+                err.status='fail';
+                err.statusCode=404;
+                next(err);
+            }
+
+            // Check if the product exists in the wishlist
+            const indexToRemove = user.wishlist.indexOf(product_id);
+            if (indexToRemove !== -1) {
+                // Remove the productId from the wishlist array
+                user.wishlist.splice(indexToRemove, 1);
+
+                // Save the updated user document
+                await user.save();
+            }
+
+            res.redirect('/user/wishlist-view');
+
+        } catch (error) {
+            console.error(error);
+            next(error);
+        }
+};
+
+async function handleAddToCartFromWishlist(req, res, next) {
+    const userId = req.session.userId;
+
         try {
             // Assuming user.wishlist contains the product IDs
             const user = await User.findById(userId);
 
             if (!user) {
-                return res.status(404).json({ error: 'User not found' });
+                const err = new Error(`no matching data found!!!` );
+                err.status='fail';
+                err.statusCode=404;
+                next(err);
             }
 
             const wishlistProductIds = user.wishlist || [];
@@ -274,22 +317,22 @@ async function handleAddToCartFromWishlist(req, res) {
             res.redirect('/user/cart-view');
         } catch (error) {
             console.error(error);
-            res.status(500).json({ error: 'An error occurred while adding items from the wishlist to the cart' });
+            next(error);
         }
-    } else {
-        res.render('userlogin', { images, imgUri });
-    }
 }
 
 
-async function handleWishlistView(req, res) {
+async function handleWishlistView(req, res, next) {
     const userId = req.session.userId;
 
     try {
         const user = await User.findById(userId).populate('wishlist'); // Populate the wishlist array with product details
 
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            const err = new Error(`no matching data found!!!` );
+            err.status='fail';
+            err.statusCode=404;
+            next(err);
         }
 
         // Extract product details from the populated wishlist
@@ -310,11 +353,11 @@ async function handleWishlistView(req, res) {
         res.render('wishlist', { products, images, imgUri, userId, formatPrice });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'An error occurred while fetching wishlist data' });
+        next(error);
     }
 }
 
-async function handleAddToWishlist(req, res) {
+async function handleAddToWishlist(req, res, next) {
     const userId = req.session.userId;
     const productId = req.query.productId;
 
@@ -322,13 +365,19 @@ async function handleAddToWishlist(req, res) {
         // Check if the user exists
         const user = await User.findById(userId);
         if (!user) {
-            throw new Error('User not found');
+            const err = new Error(`no matching data found!!!` );
+            err.status='fail';
+            err.statusCode=404;
+            next(err);
         }
 
         // Check if the product exists
         const product = await Product.findById(productId);
         if (!product) {
-            throw new Error('Product not found');
+            const err = new Error(`no matching data found!!!` );
+            err.status='fail';
+            err.statusCode=404;
+            next(err);
         }
 
         // Check if the product is already in the wishlist
@@ -355,14 +404,15 @@ async function handleDeleteFromWishlist(req, res) {
     const productId = req.query.productId;
 
 
-
-
     try {
         // Find the user by userId
         const user = await User.findById({ _id: userId });
 
         if (!user) {
-            throw new Error('User not found');
+            const err = new Error(`Task not completed!!!` );
+            err.status='fail';
+            err.statusCode=404;
+            next(err);
         }
 
         // Check if the product exists in the wishlist
@@ -379,7 +429,6 @@ async function handleDeleteFromWishlist(req, res) {
         await user.save();
 
         res.redirect('/user/wishlist-view');
-        // return { success: true, message: 'Product removed from wishlist successfully' };
     } catch (error) {
         console.error(error);
         return { success: false, message: 'Error removing product from wishlist' };
@@ -404,7 +453,10 @@ async function handleUpdateCartQuantity(req, res) {
         const cart = await Cart.findOne({ userId: userId });
 
         if (!cart) {
-            return res.json({ success: false, message: 'Cart not found.' });
+            const err = new Error(`Cart not found!!!` );
+            err.status='fail';
+            err.statusCode=404;
+            next(err);
         }
 
         // Find the item in the cart
@@ -470,27 +522,6 @@ async function handleUpdateCartQuantity(req, res) {
                 console.error('Error:', err);
                 return res.render('cart', { imgUri, images, message: "0 items in the cart" });
             }
-
-            // const cartdata = await Cart.findOne({ userId: userId }).populate({
-            //     path: 'cartItems.product_id',
-            //     model: 'product'
-            // });
-
-
-            // let cartTotal = 0;
-            // let totalQunatity = 0;
-
-            // for (let i = 0; i < cartdata.cartItems.length; i++) {
-            //     const item = cartdata.cartItems[i];
-            //     const itemPrice = item.product_id.price;
-            //     const itemQuantity = item.quantity;
-            //     totalQunatity += item.quantity;
-            //     cartTotal += itemPrice * itemQuantity;
-            // }
-
-            // res.json({ success: true, cartTotal, totalQunatity });
-
-            // // res.json({ success: true });
         }
     } catch (error) {
         console.error('Error updating cart quantity:', error);
@@ -499,10 +530,32 @@ async function handleUpdateCartQuantity(req, res) {
 };
 
 
+// async function handleDeleteCartItem(req, res) {
+//     const userId = req.query.userid;
+//     const product_id = req.query.productid;
+
+//     try {
+//         const cart = await Cart.updateOne(
+//             { userId: userId },
+//             {
+//                 $pull: { cartItems: { product_id: product_id } }
+//             }
+//         );
+
+//         if (cart) {
+//             res.redirect('cart-view');
+//         }
+//     } catch (error) {
+//         console.log(error);
+//     }
+// };
+
 async function handleDeleteCartItem(req, res) {
     const userId = req.query.userid;
     const product_id = req.query.productid;
 
+    console.log(userId);
+    console.log(product_id);
     try {
         const cart = await Cart.updateOne(
             { userId: userId },
@@ -512,7 +565,7 @@ async function handleDeleteCartItem(req, res) {
         );
 
         if (cart) {
-            res.redirect('cart-view');
+            res.json({success:true});
         }
     } catch (error) {
         console.log(error);
@@ -521,7 +574,7 @@ async function handleDeleteCartItem(req, res) {
 
 async function handleCheckoutView(req, res) {
     const userId = req.session.userId;
-    if (userId) {
+
         const userAddress = await User.findById({ _id: userId }, { delivery: 1, _id: 0 });
 
         try {
@@ -572,14 +625,6 @@ async function handleCheckoutView(req, res) {
             console.error('Error:', err);
             return res.render('cart', { imgUri, images, message: "0 items in the cart" });
         }
-
-
-
-    } else {
-        res.render('userlogin', { images, imgUri })
-    }
-
-
 }
 
 async function handleEditAddressView(req, res) {
@@ -604,7 +649,6 @@ async function handleEditAddress(req, res) {
 
     const { id, name, contactNumber, pincode, address, city, state, userId } = req.body;
 
-    if (userId) {
         try {
             const user = await User.updateOne({ _id: userId, 'delivery._id': id },
                 {
@@ -622,9 +666,6 @@ async function handleEditAddress(req, res) {
         } catch (error) {
             console.log(error);
         }
-    } else {
-        res.render('userlogin', { images, imgUri })
-    }
 }
 
 async function handleAddAddressView(req, res) {
@@ -653,7 +694,7 @@ async function handleAddNewAddress(req, res) {
 
 async function handlePlaceOrder(req, res) {
     const { selectedAddressId, paymentMethod, userId, totalPrice, coupon_name, coupon_amount } = req.body;
-    if (userId) {
+
         try {
             const status = paymentMethod === 'COD' ? 'placed' : 'pending';
 
@@ -695,7 +736,10 @@ async function handlePlaceOrder(req, res) {
                 });
 
                 if (status && address && orderItems) {
+                    const invoiceNumber = generateInvoiceNumber();
+
                     const newOrder = new Orders({
+                        invoiceNumber: invoiceNumber,
                         total_price: totalPrice,
                         User_id: user._id,
                         delivery_address: address,
@@ -703,7 +747,7 @@ async function handlePlaceOrder(req, res) {
                         Status: status,
                         payment_method: paymentMethod,
                         coupon_code: coupon_name || null,
-                        coupon_discount: coupon_amount || null,
+                        coupon_discount: coupon_amount || 0,
                     });
 
                     const saveOrder = await newOrder.save();
@@ -711,10 +755,11 @@ async function handlePlaceOrder(req, res) {
 
                     if (req.body.paymentMethod === 'COD') {
                         res.json({ CODpayment: true });
-                    } else {
+                    } else if (req.body.paymentMethod === 'ONLINE') {
+                        const user = await User.findById({ _id: userId });
+                        const walletAmount = user.wallet.amount || 0;
                         const amount = (parseInt(totalPrice, 10)) * 100;
                         const orderId = saveOrder._id;
-                        console.log(amount);
                         var options = {
                             amount: amount,
                             currency: "INR",
@@ -723,12 +768,54 @@ async function handlePlaceOrder(req, res) {
                         instance.orders.create(options, function (err, order) {
                             const order_det = order;
                             // console.log("new Order:",order_det);
-                            res.json({ order: order_det, KEY_ID: process.env.RZP_KEY_ID });
+                            res.json({ order: order_det, walletAmount, KEY_ID: process.env.RZP_KEY_ID });
                         })
+                    } else if (req.body.paymentMethod === 'WALLET') {
+                        const user = await User.findById({ _id: userId });
+                        if (user) {
+                            const walletAmount = user.wallet.amount;
+                            const priceToPay = (parseInt(totalPrice, 10));
+
+                            if (priceToPay < walletAmount) {
+                                const remainingWalletAmount = walletAmount - totalPrice;
+                                console.log(remainingWalletAmount);
+                                const orderId = saveOrder.id;
+                                const updatedOrder = await Orders.findByIdAndUpdate(
+                                    { _id: orderId },
+                                    { $set: { payment_status: 'Completed', Status: 'Placed' } }
+                                );
+                                const source = updatedOrder.invoiceNumber;
+                                const updatedWallet = await User.findByIdAndUpdate(
+                                    { _id: userId },
+                                    {
+                                        $set: { 'wallet.amount': remainingWalletAmount }, // Increment wallet amount
+                                        $push: { 'wallet.transactions': { source: source, method: 'debit', description: 'Payment completd for the order', transaction_amount: priceToPay } } // Push transaction details
+                                    },
+                                    { new: true }
+                                );
+
+                                res.json({ WALLETpayment: true });
+
+                            } else {
+                                const amount = (priceToPay - walletAmount) * 100;
+                                const orderId = saveOrder._id;
+                                var options = {
+                                    amount: amount,
+                                    currency: "INR",
+                                    receipt: orderId,
+                                };
+                                instance.orders.create(options, function (err, order) {
+                                    const order_det = order;
+                                    // console.log("new Order:",order_det);
+                                    res.json({ order: order_det, walletAmount, KEY_ID: process.env.RZP_KEY_ID });
+                                })
+                            }
+
+                        }
                     }
 
 
-                    // res.redirect('/user/view-orders');
+                    // res.redirect('/user/view-my-orders');
 
                     // res.status(200).json({ message: 'Order placed successfully' });
                 }
@@ -739,83 +826,23 @@ async function handlePlaceOrder(req, res) {
             console.error(error);
             res.status(500).json({ error: 'Internal server error' });
         }
-    } else {
-        res.render('userlogin', { images, imgUri })
-    }
 }
 
 
-// async function handlePlaceOrder(req, res) {
-//     const { selectedAddress, paymentMethod, userId, totalPrice } = (req.body);
-//     if (userId) {
-//         try {
 
-//             const status = paymentMethod === 'COD' ? 'placed' : 'pending';
-
-//         const user = await User.findById({ _id: userId });
-//         const address=[];
-//         const selectedAddressObj = user.delivery.find((deliveryAddress) =>
-//         deliveryAddress._id.equals(selectedAddress) // Use the `equals` method to compare ObjectId
-//       );
-
-//       if (selectedAddressObj) {
-//         const cleanedAddress = {
-//           Address: selectedAddressObj.address,
-//           City: selectedAddressObj.city,
-//           ContactNumber: selectedAddressObj.contactNumber,
-//           Name: selectedAddressObj.name,
-//           Pincode: selectedAddressObj.pincode,
-//           State: selectedAddressObj.state,
-//         };
-
-//         address.push(cleanedAddress);
-//       }
-
-//         const cart = await Cart.find({ userId: userId });
-
-//         const items = [];
-
-//         // Iterate through each cart and extract cartItems
-//         for (const cartItem of cart) {
-//             // Assuming cartItems is an array in the cart document
-//             const cartItems = cartItem.cartItems;
-//             // Add cartItems to the Items array
-//             items.push(...cartItems);
-//         }
-
-//         if(status,address,items){
-//             const newOrder = new Orders({
-//                 total_price: totalPrice,
-//                 User_id: user._id,
-//                 delivery_address: address,
-//                 Items: items,
-//                 Status: status,
-//             });
-
-//             await newOrder.save();
-//             await Cart.deleteMany({ userId: user._id });
-
-//         }
-
-//         } catch (error) {
-//             console.error(error);
-//             res.status(500).json({ error: 'Internal server error' });
-//         }     
-
-//     } else {
-//         res.render('userlogin', { images, imgUri })
-//     }
-// };
-
-
-
-async function handleOrdersView(req, res) {
+async function handleMyOrdersView(req, res) {
     const userId = req.session.userId;
 
-    if (userId) {
         try {
-            // Find all orders for the given user ID
-            const userOrders = await Orders.find({ User_id: userId, isDeleted: false }).sort({ Order_date: -1 });
+
+            const page = parseInt(req.query.page) || 1;
+            const itemsPerPage = 5;
+
+            // Find all orders for the given user ID with pagination
+            const userOrders = await Orders.find({ User_id: userId, isDeleted: false })
+                .sort({ Order_date: -1 })
+                .skip((page - 1) * itemsPerPage)
+                .limit(itemsPerPage);
 
 
             // Create an array to accumulate orders' data
@@ -825,7 +852,8 @@ async function handleOrdersView(req, res) {
                     Status: order.Status,
                     OrderDate: `${order.Order_date.getFullYear()}-${order.Order_date.getMonth() + 1}-${order.Order_date.getDate()}`,
                     TimeStamp: `${order.TimeStamp.getFullYear()}-${order.TimeStamp.getMonth() + 1}-${order.TimeStamp.getDate()}`,
-                    IsCancelled:order.IsCancelled,
+                    IsCancelled: order.IsCancelled,
+                    invoiceNumber: order.invoiceNumber,
                     // Extract and transform items
                     productsArray: order.Items.map(item => ({
                         product_id: item.product_id,
@@ -844,121 +872,52 @@ async function handleOrdersView(req, res) {
                 };
             });
 
+            // Calculate total number of pages
+            const totalOrders = await Orders.countDocuments({ User_id: userId, isDeleted: false });
+            const totalPages = Math.ceil(totalOrders / itemsPerPage);
 
             // Now, after processing all orders, render the view and send the accumulated data
-            res.render('manageOrders', { imgUri, images, ordersData, formatPrice });
+            res.render('manageOrders', { imgUri, images, ordersData, formatPrice, currentPage: page, totalPages });
 
         } catch (error) {
             console.error(error);
             throw error; // Handle the error as needed
         }
-    } else {
-        res.render('userlogin', { images, imgUri })
-    }
+
+}
+
+async function handleSelectedOrderView(req, res) {
+    const orderId = req.query.orderId;
+    const userId = req.session.userId;
+
+        const order = await Orders.findById({ _id: orderId });
+        res.render('viewSelectedorder', { order, imgUri, images, formatPrice })
 
 }
 
 
-
-// async function handleOrdersView(req, res) {
-//     const userId = req.session.userId;
-
-
-//     try {
-//         const ordersResult = await Orders.aggregate([
-//             {
-//                 $match: { User_id: new mongoose.Types.ObjectId(userId) }
-//             },
-//             {
-//                 $unwind: '$Items'
-//             },
-//             {
-//                 $lookup: {
-//                     from: 'products',
-//                     localField: 'Items.product_id',
-//                     foreignField: '_id',
-//                     as: 'product'
-//                 }
-//             },
-//             {
-//                 $group: {
-//                     _id: '$_id',
-//                     total_price: { $first: '$total_price' },
-//                     User_id: { $first: '$User_id' },
-//                     isDeleted: { $first: '$isDeleted' },
-//                     delivery_address: { $first: '$delivery_address' },
-//                     IsCancelled: { $first: '$IsCancelled' },
-//                     Status: { $first: '$Status' },
-//                     Order_date: { $first: '$Order_date' },
-//                     TimeStamp: { $first: '$TimeStamp' },
-//                     Items: { $push: '$Items' },
-//                     product: { $push: { $arrayElemAt: ['$product', 0] } }
-//                 }
-//             }
-//         ]);
-
-//         // Separate array for 'products'
-//         const productsArray = ordersResult.map(order => order.product).flat(); // Use flat() to flatten the array
-
-//         // Extract total_price and collection object _id
-//        const totalPrice = ordersResult[0].total_price;
-//         const collectionId = ordersResult[0]._id;
-
-//         // Remove 'product' field from the 'ordersResult' objects
-//         ordersResult.forEach(order => delete order.product);
-
-//         // You now have totalPrices and collectionIds as separate arrays with the desired values
-
-//         // console.log("Orders Result:", ordersResult);
-
-//         res.render('manageOrders', { imgUri, images, ordersResult, productsArray,totalPrice,collectionId,formatPrice });
-//     } catch (err) {
-//         console.error('Error:', err);
-//     }
-// }
-
 async function handleCancelOrder(req, res) {
     const orderId = req.query.orderId;
     const userId = req.session.userId;
+    const dateToday = (new Date()).toISOString();
 
-    if (userId) {
         try {
             const order = await Orders.findByIdAndUpdate({ _id: orderId },
                 {
-                    $set: { IsCancelled: true, Status: 'Cancelled' }
+                    $set: { IsCancelled: true, Status: 'Cancelled', cancelledDate: dateToday }
                 }
             );
 
-            if (order.payment_status == "Completed") {
-                const user = await User.findById({ _id: userId });
-
-                if (user) {
-                    const totalAmount = order.total_price;
-                    const updateWallet = user.wallet + totalAmount;
-
-                    const updatedWallet = await User.findByIdAndUpdate(
-                        { _id: userId },
-                        { $set: { wallet: updateWallet } },
-                        { new: true }
-                    );
-                }
-
-            }
-            res.redirect('/user/view-orders');
+            res.redirect('/user/view-my-orders');
         } catch (error) {
             console.log(error)
         }
-
-    } else {
-        res.render('userlogin', { images, imgUri })
-    }
 
 };
 
 async function handleManageAccountView(req, res) {
     const userId = req.session.userId;
 
-    if (userId) {
         try {
 
             const user = await User.findById({ _id: userId });
@@ -968,18 +927,12 @@ async function handleManageAccountView(req, res) {
         } catch (error) {
             console.log(error)
         }
-    } else {
-        res.render('userlogin', { images, imgUri })
-    }
-
 }
 
 async function handleChangeName(req, res) {
     const userId = req.session.userId;
     const name = req.body.name;
 
-
-    if (userId) {
         try {
 
             const user = await User.findOneAndUpdate({ _id: userId }, {
@@ -993,9 +946,6 @@ async function handleChangeName(req, res) {
         } catch (error) {
             console.log(error)
         }
-    } else {
-        res.render('userlogin', { images, imgUri })
-    }
 
 }
 
@@ -1003,8 +953,6 @@ async function handleChangeNumber(req, res) {
     const userId = req.session.userId;
     const contactNumber = req.body.contactNumber;
 
-
-    if (userId) {
         try {
 
             const user = await User.findOneAndUpdate({ _id: userId }, {
@@ -1022,17 +970,12 @@ async function handleChangeNumber(req, res) {
         } catch (error) {
             console.log(error)
         }
-    } else {
-        res.render('userlogin', { images, imgUri })
-    }
-
 }
 
 
 async function handleChangeEmail(req, res) {
     const email = req.body.email;
     const id = req.session.userId;
-
 
     try {
         const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
@@ -1139,6 +1082,8 @@ async function handleVerifyPayment(req, res) {
     const razorpay_order_id = req.body.response.razorpay_order_id;
     const razorpay_signature = req.body.response.razorpay_signature;
     const orderId = req.body.order.receipt;
+    const userId = req.session.userId;
+    const updateWalletAmount = req.body.walletAmount;
 
 
     const crypto = require('crypto');
@@ -1148,13 +1093,36 @@ async function handleVerifyPayment(req, res) {
     hmac = hmac.digest('hex'); // converting to hexa code
 
     if (hmac == razorpay_signature) {
-        const updateStatus = await Orders.findByIdAndUpdate({ _id: orderId },
-            {
-                $set: { Status: "Placed", payment_status: "Completed" }
-            }
-        )
+        const order = await Orders.findById({ _id: orderId });
+        if (order.payment_method == 'WALLET') {
+            source = order.invoiceNumber;
+            const updatedWallet = await User.findByIdAndUpdate(
+                { _id: userId },
+                {
+                    $set: { 'wallet.amount': 0 }, // Increment wallet amount
+                    $push: { 'wallet.transactions': { source: source, method: 'debit', description: 'Payment completd for the order', transaction_amount: updateWalletAmount } } // Push transaction details
+                },
+                { new: true }
+            );
 
-        res.json({ success: true });
+            const updateStatus = await Orders.findByIdAndUpdate({ _id: orderId },
+                {
+                    $set: { Status: "Placed", payment_status: "Completed", payment_method: "WALLET+ONLINE" }
+                }
+            )
+
+            res.json({ success: true });
+        } else {
+            const updateStatus = await Orders.findByIdAndUpdate({ _id: orderId },
+                {
+                    $set: { Status: "Placed", payment_status: "Completed" }
+                }
+            )
+
+            res.json({ success: true });
+        }
+
+
     }
 }
 
@@ -1185,30 +1153,44 @@ async function handleApplyCoupon(req, res) {
 }
 
 
-async function handleWalletView(req, res) {
 
+async function handleWalletView(req, res) {
     const userId = req.session.userId;
 
-
-    if (userId) {
         try {
-            const user = await User.findById({ _id: userId });
+
+            const user = await User.findById(userId);
             if (user) {
                 const wallet = user.wallet;
-                res.render('walletView', { wallet, imgUri, images, formatPrice })
+
+                // Sort transactions in reverse chronological order
+                wallet.transactions.sort((a, b) => b.date - a.date);
+
+
+                // Render the wallet view with pagination information
+                res.render('walletView', {
+                    wallet,
+                    imgUri, 
+                    images, 
+                    formatPrice,
+                });
+            } else {
+                res.status(404).send('User not found');
             }
         } catch (error) {
             console.log(error);
+            res.status(500).send('Internal Server Error');
         }
-    }
+
 }
 
-async function handleDownloadInvoice(req,res){
-    const orderId=req.query.orderId;
-    
-    const order = await Orders.findById({_id:orderId})
 
-    res.render('Invoice',{order,imgUri,formatPrice,images})
+async function handleDownloadInvoice(req, res) {
+    const orderId = req.query.orderId;
+
+    const order = await Orders.findById({ _id: orderId })
+
+    res.render('Invoice', { order, imgUri, formatPrice, images })
 }
 
 
@@ -1223,7 +1205,8 @@ module.exports = {
     handlePlaceOrder,
     handleAddAddressView,
     handleEditAddressView,
-    handleOrdersView,
+    handleMyOrdersView,
+    handleSelectedOrderView,
     handleCancelOrder,
     handleManageAccountView,
     handleChangeName,
@@ -1235,6 +1218,7 @@ module.exports = {
     handleApplyCoupon,
     handleWalletView,
     handleAddToCartFromWishlist,
+    handleAddToCartOneItemFromWishlist,
     handleAddToWishlist,
     handleWishlistView,
     handleDeleteFromWishlist,

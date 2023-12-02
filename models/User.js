@@ -54,8 +54,26 @@ const UserSchema = new mongoose.Schema({
         default: false,
     },
     wallet: {
-        type: Number,
-        default: 0,
+
+        amount: {
+            type: Number,
+            default: 0
+        },
+        transactions:[{
+            source: {
+                type: String,
+            },
+            transaction_amount: {
+                type: Number,
+            },
+            method: {
+                type: String,
+            },
+            description:{
+                type:String,
+            },
+            date: { type: Date, default: Date.now }, 
+        }],
     },
     wishlist: [{
         type: mongoose.Schema.Types.ObjectId,

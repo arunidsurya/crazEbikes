@@ -1,37 +1,11 @@
-.header-orders {
+.header-order {
     background-color: #246c1c;
     color: #fff;
     text-align: center;
     padding: 1em 0;
+    font-size: .5rem;
 }
 
-.header-wallet {
-    background-color: #246c1c;
-    color: #fff;
-    text-align: center;
-    margin: 10px 0 10px 0;
-    border-radius: 5px;
-}
-
-.manage-wallet-main-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-}
-
-.manage-wallet-container {
-    background-color: #fff;
-    margin: 30px 0 30px 0;
-    padding: 20px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
-    width: 300px;
-    height: 300px;
-    text-align: center;
-}
-.wallet-content{
-    margin: 50px 0 50px 0;
-}
 
 main {
     margin: 0 auto;
@@ -44,7 +18,14 @@ main {
     padding: 20px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
 }
-
+.order-container a{
+  text-decoration: none;
+  color: black;
+}
+.order-container a :hover{
+  text-decoration: none;
+  color: rgb(84, 79, 79);
+}
 .order {
     background-color: #fff;
     margin-bottom: 20px;
@@ -55,6 +36,8 @@ main {
     justify-content: space-between;
     align-items: center;
 }
+
+
 
 .order h2 {
     font-size: 24px;
@@ -70,7 +53,11 @@ main {
     font-size: 18px;
     margin-bottom: 10px;
 }
-
+.invoice-container{
+  display: flex;
+  justify-content: end;
+  padding: 10px;
+}
 .order-total {
     background-color: #fff;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
@@ -219,7 +206,30 @@ main {
     clear: both;
     display: table;
   }
+
+  .redCircle{
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin: 10px;
+    background-color: #f44336;
+  }
+
+  .greenCircle{
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin: 10px;
+    background-color: #246c1c;
+  }
   
+.orderStatus{
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+
   /* Change styles for cancel button and delete button on extra small screens */
   @media screen and (max-width: 300px) {
     .cancelbtn, .deletebtn {

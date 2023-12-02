@@ -10,6 +10,8 @@ const cookieParser = require("cookie-parser");
 const { check, validationResult } = require('express-validator');
 const MonthlyTotals = require('./models/monthlyTotal');
 const imgUri = process.env.IMGURI;
+const errorHandler=require("./middleware/errorHandler");
+const Swal = require('sweetalert2');
 const images = {
   cover: 'resources/images/coverPhoto.jpg',
   logo: 'resources/images/logo.jpg',
@@ -20,8 +22,6 @@ const images = {
   master: 'resources/images/master.jpg',
   visa: 'resources/images/visa.jpg',
 };
-
-
 
 
 const connectMongoDB = require('./mongodb/connectMongo');
@@ -36,6 +36,7 @@ const adminAuthRouter = require("./routes/adminAuth")
 const { checkAdminAuth, checkUserAuth } = require("./middleware/auth");
 const Orders = require('./models/Order');
 const Product = require('./models/product');
+const User = require('./models/User');
 
 
 
@@ -65,13 +66,24 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(multer({ dest: 'images', storage: fileStorage, fileFilter: fileFilter }).array('image', 10));
 
 
+
 //Routes
 
 app.use("/admin-auth", adminAuthRouter);
 app.use("/admin", checkAdminAuth, adminRouter);
-app.use('/', checkAdminAuth, checkUserAuth, staticRouter);
+app.use('/', checkAdminAuth, staticRouter);
 app.use("/user-auth", userAuthRouter);
-app.use('/user', userRouter);
+app.use('/user',checkUserAuth, userRouter ,errorHandler);
+
+
+
+app.all('*',(req,res,next)=>{
+  const err = new Error(`cant find ${req.originalUrl} on the server` );
+  err.status='fail';
+  err.statusCode=404;
+  next(err);
+})
+
 
 
 

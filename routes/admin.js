@@ -3,10 +3,10 @@ const {handleHomePageView, handleCategoryView,handleAddCategoryPageView, handleC
     handleEditCategoryPageView,handleCategoryEdit,
     handleCategoryDelete,handleAddUserPageView, handleUserAdd, handleUserView, handleEditCustomerPageView,handleCustomerEdit,
     handleCustomerDelete, handleProductAdd, handleProductsView,handleProductUpdatePageView, handleProductUpdate,
-    handleProdcutDelete, handleCustomerBlock, handleCustomerUnblock, handleImageDelete,handleProductSearch, 
-    handleProductsSort, handleCategorySearch, handleUserSearch,handleAddProductPageView,handleOrdersView,handleOrdersSearch,
+    handleProdcutDelete, handleCustomerBlock, handleCustomerUnblock, handleImageDelete,handleCategorySearch, handleUserSearch,handleAddProductPageView,handleOrdersView,handleOrdersSearch,
     handleOrderDetailedView,handleChangeOrderStatus,handleChangePaymentStatus,handleAddCoupon,handleAddCouponView,
-    handleCouponsView,handleEditCouponPageView,handleEditCoupon,handleDeleteCoupon,handleDashBoardView} = require('../controllers/admin');
+    handleCouponsView,handleEditCouponPageView,handleEditCoupon,handleDeleteCoupon,handleDashBoardView,
+    handleSalesReportView} = require('../controllers/admin');
     
 const productValidator =require('../middleware/productValidator');
 
@@ -33,10 +33,7 @@ router.post("/editCustomers/:id", handleCustomerEdit);
 router.get("/deleteCustomers/:id", handleCustomerDelete);
 router.get("/blockCustomers/:id", handleCustomerBlock);
 router.get("/unBlockCustomers/:id", handleCustomerUnblock);
-
 router.get("/products", handleProductsView);
-router.get("/products-sort", handleProductsSort);
-router.post("/products-search", handleProductSearch);
 router.get("/addProduct-view",handleAddProductPageView);
 router.post("/addProduct",productValidator, handleProductAdd);
 router.get("/edit-product-page/:id",handleProductUpdatePageView)
@@ -60,6 +57,8 @@ router.get('/deleteCoupon/:id',handleDeleteCoupon);
 
 
 router.get('/dash-board',handleDashBoardView);
+
+router.get('/sales-report',handleSalesReportView);
 
 
 

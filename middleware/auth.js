@@ -10,9 +10,10 @@ async function checkAdminAuth(req,res,next){
 }
 
 async function checkUserAuth(req,res,next){
-    const userUid = req.cookies?.useruid;
-    const user = getUser(userUid);
-    req.user = user;
+    const userId= req.session.userId;
+    if(!userId||userId==null){
+       return res.redirect('/user-login');
+    }
     next();
 }
 

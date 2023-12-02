@@ -19,6 +19,9 @@ const OrdersSchema = new Schema({
         State: { type: String },
     }],
     IsCancelled: { type: Boolean, default: false },
+    cancelledDate: { type: Date,default:null },
+    IsRefund:{ type: Boolean, default: false },
+    refundDate: { type: Date, default:null},
     Items: [{
         product_id: {
             type: mongoose.Schema.Types.ObjectId,
@@ -44,6 +47,7 @@ const OrdersSchema = new Schema({
     Status: { type: String },
     payment_method: { type: String },
     payment_status: { type: String, default: "Pending" },
+    invoiceNumber:{type:String}
 });
 
 const Orders = mongoose.model('Orders', OrdersSchema);

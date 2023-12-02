@@ -1,34 +1,64 @@
+<!-- views/walletView.ejs -->
+
 <%- include('layout/headerUser') %>
-    <%- include('layout/formatPrice') %>
+<%- include('layout/formatPrice') %>
+
+<main class="manage-wallet-main-container">
+    <div class="manage-wallet-container">
+        <header class="header-wallet">
+            <h3>Your Wallet</h3>
+        </header>
+
+        <div class="wallet-content">
+            <h4>Available Balance:</h4>
+            <h4>₹<%= formatPrice(wallet.amount) %></h4>
+        </div>
+
+        <h4>Transactions</h4>
+        <table class="table table-bordered text-center" id="myTable">
+            <thead>
+                <tr>
+                    <th>Invoice Number</th>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Credit/Debit</th>
+                </tr>
+            </thead>
+  
+                <tbody>
+                    <% wallet.transactions.forEach(transaction => { %> 
+                    <tr>
+                        <td><%= transaction.source %></td>
+                        <td><%= new Date(transaction.date).toLocaleString() %></td>
+                        <td><%= transaction.description %></td>
+                        <td><%= formatPrice(transaction.transaction_amount) %></td>
+                        <% if (transaction.method === 'credit') { %>
+                            <td style="color: green;">+<%= transaction.method %></td>
+                        <% } else { %>
+                            <td style="color: red;">-<%= transaction.method %></td>
+                        <% } %>
+                    </tr>
+                    <% }) %>
+                </tbody>
+   
+        </table>
+
+   
+
+    </div>
+</main>
+
+<%- include('layout/footerUser') %>
 
 
 
-        <main class="manage-wallet-main-container ">
-
-
-            <div class="manage-wallet-container">
-                <header class="header-wallet">
-                    <h3>Your Wallet</h3>
-                </header>
-
-                <div class="wallet-content">
-                    <H4>Available Balance:</H4>
-                    <h4>$<%= formatPrice(wallet) %>
-                    </h4>
-                </div>
-
-
-
-            </div>
-        </main>
-
-
-
-
-
-
-
-
-
-
-        <%- include('layout/footerUser') %>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+  <script>
+    // let table = new DataTable('#myTable');
+    $(document).ready( function () {
+        $('#myTable').DataTable({
+            "order": [[1, "desc"]] // This will sort the second column (Date) in descending order by default
+        });
+    } );
+  </script>

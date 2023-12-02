@@ -4,11 +4,11 @@ const mongoose = require('mongoose');
 
 const { handleCartView, handleAddToCart, handleUpdateCartQuantity, handleDeleteCartItem,
     handleCheckoutView, handleEditAddress, handleAddNewAddress, handlePlaceOrder,
-    handleAddAddressView, handleEditAddressView, handleOrdersView, handleCancelOrder,
+    handleAddAddressView, handleEditAddressView, handleMyOrdersView,handleSelectedOrderView, handleCancelOrder,
     handleManageAccountView, handleChangeName, handleChangeNumber, handleChangeEmail,
     handleVerifyOtp, handleChangePassword, handleVerifyPayment, handleApplyCoupon, handleWalletView,
     handleAddToCartFromWishlist, handleAddToWishlist, handleWishlistView, handleDeleteFromWishlist,
-    handleDownloadInvoice } = require('../controllers/user')
+    handleAddToCartOneItemFromWishlist,handleDownloadInvoice } = require('../controllers/user')
 
 
 const router = express.Router();
@@ -29,6 +29,8 @@ router.post('/addToWishList', handleAddToWishlist);
 
 router.get('/addToCartFromWishlist', handleAddToCartFromWishlist);
 
+router.post('/addToCartOneItemFromWishlist', handleAddToCartOneItemFromWishlist);
+
 router.post('/detele-wishlist-item', handleDeleteFromWishlist);
 
 router.post('/updateCartQuantity', handleUpdateCartQuantity);
@@ -45,7 +47,9 @@ router.post('/addNewAddress', handleAddNewAddress);
 
 router.post('/place-order', handlePlaceOrder);
 
-router.get('/view-orders', handleOrdersView);
+router.get('/view-my-orders', handleMyOrdersView);
+
+router.get('/view-selected-order', handleSelectedOrderView);
 
 router.post('/cancel-order', handleCancelOrder);
 

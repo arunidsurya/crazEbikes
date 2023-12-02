@@ -1,0 +1,41 @@
+.sales-heading{
+ display: flex;
+ justify-content: space-between;
+
+}
+.download-sales-report{
+    display: flex;
+    justify-content: end;
+    margin-bottom: 50px;
+    gap: 10px;
+}
+
+.sales-overview-container{
+    display: flex;
+    justify-content: space-between;
+    border: 2px solid brown;
+    margin-bottom: 30px;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.sales-report-heading{
+    font-weight: 900;
+    border-bottom: 2px solid grey;
+    margin-bottom: 50px;
+    color: #555; 
+}
+.overView_heading{
+    color: #555; 
+}
+.graph-heading{
+    text-transform: uppercase;
+    color: #555; 
+
+}
+
+.overview-det{
+    display: grid;
+    align-items: center;
+    text-align: center;
+}

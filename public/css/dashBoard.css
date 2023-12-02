@@ -69,8 +69,14 @@
   .overview-container{
     margin-top: 20px;
     margin-left: 50px;
+    display: flex;
+    justify-content: space-between;
   }
-  
+  .filter-buttons{
+    display: flex;
+    justify-content: end;
+    gap: 10px;
+  }
   /* Responsive Design using Media Queries */
   @media only screen and (max-width: 768px) {
     .col.py-3 {

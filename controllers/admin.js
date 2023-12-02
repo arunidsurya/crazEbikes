@@ -9,6 +9,7 @@ const productValidator = require('../middleware/productValidator');
 const { check, validationResult } = require('express-validator');
 const Orders = require('../models/Order');
 const Coupon = require('../models/coupon');
+const { isNumber } = require('razorpay/dist/utils/razorpay-utils');
 
 const PRODUCTS_PER_PAGE = 5;
 
@@ -275,8 +276,7 @@ async function handleProductsView(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
 
     try {
-        const page = req.query.page || 1;
-        const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
+
 
         const products = await Product.find({ isDeleted: false })
             .sort({ createdAt: -1 })
@@ -284,58 +284,10 @@ async function handleProductsView(req, res) {
                 path: 'categoryId',
                 select: 'category_name',
             })
-            .skip(startIndex)
-            .limit(PRODUCTS_PER_PAGE);
+;
 
-        const totalProducts = await Product.countDocuments({ isDeleted: false });
-        const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
 
-        res.render('products', { products, currentPage: page, totalPages, PRODUCTS_PER_PAGE });
-    } catch (error) {
-        console.log(error);
-    }
-};
-
-async function handleProductsSort(req, res) {
-    if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
-    const sortid = req.query.sort || -1;
-    try {
-        const products = await Product.find({ isDeleted: false }).sort({ price: sortid }).populate({
-            path: 'categoryId',
-            select: 'category_name',
-        });
-        res.render('products', { products });
-    } catch (error) {
-        console.log(error);
-    }
-};
-
-async function handleProductSearch(req, res) {
-    if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
-    const searchKey = req.body.searchKey;
-
-    const query = {
-        product_name: { $regex: searchKey, $options: 'i' },
-        isDeleted: false,
-    };
-    const projection = {}; // Optional fields to include/exclude
-    const options = {}; // Additional options (e.g., limit, sort)
-
-    try {
-
-        const page = req.query.page || 1;
-        const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
-
-        const products = await Product.find(query, projection, options).populate({
-            path: 'categoryId',
-            select: 'category_name',
-        })
-            .skip(startIndex)
-            .limit(PRODUCTS_PER_PAGE);
-        const totalProducts = await Product.countDocuments({ isDeleted: false });
-        const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
-
-        res.render('products', { products, currentPage: page, totalPages, PRODUCTS_PER_PAGE });
+        res.render('products', { products,formatPrice });
     } catch (error) {
         console.log(error);
     }
@@ -590,6 +542,7 @@ async function handleChangeOrderStatus(req, res) {
 }
 
 
+
 async function handleChangePaymentStatus(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
     const status = req.body.selectedPaymentOption;
@@ -597,33 +550,35 @@ async function handleChangePaymentStatus(req, res) {
 
     if (orderId) {
         try {
-
-            const order = await Orders.findByIdAndUpdate({ _id: orderId },
-                {
-                    $set: { payment_status: status }
-                }
+            const order = await Orders.findByIdAndUpdate(
+                { _id: orderId },
+                { $set: { payment_status: status } }
             );
-            if (order.payment_status == "Completed") {
+
+            if (order.payment_status === "Completed") {
                 const user = await User.findById({ _id: order.User_id });
 
                 if (user) {
                     const totalAmount = order.total_price;
-                    const updateWallet = user.wallet + totalAmount;
-
+                    const source = order.invoiceNumber;
+                    // Update the user's wallet
                     const updatedWallet = await User.findByIdAndUpdate(
                         { _id: order.User_id },
-                        { $set: { wallet: updateWallet } },
+                        {
+                            $inc: { 'wallet.amount': totalAmount }, // Increment wallet amount
+                            $push: { 'wallet.transactions': { source: source, method: 'credit', description: 'order cancelled by user', transaction_amount: totalAmount } } // Push transaction details
+                        },
                         { new: true }
                     );
                 }
-
             }
+
             res.redirect('/admin/orders-view');
 
         } catch (error) {
-            console.log(error)
+            console.error(error);
+            res.status(500).send('Internal Server Error');
         }
-
     }
 }
 
@@ -717,11 +672,80 @@ async function handleDeleteCoupon(req, res) {
     }
 }
 
-async function handleDashBoardView(req, res) {
-    if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
-    try {
+// async function handleDashBoardView(req, res) {
+//     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
+//     try {
 
-        const monthlyTotals = await Orders.aggregate([
+//         const monthlyTotals = await Orders.aggregate([
+//             {
+//                 $group: {
+//                     _id: {
+//                         year: { $year: "$Order_date" }, // Group by year
+//                         month: { $month: "$Order_date" }, // Group by month
+//                     },
+//                     totalOrderPrice: { $sum: "$total_price" }, // Sum total_price for each group
+//                 },
+//             },
+//             {
+//                 $project: {
+//                     year: "$_id.year",
+//                     month: "$_id.month",
+//                     totalOrderPrice: 1,
+//                     _id: 0,
+//                 },
+//             },
+//         ]);
+
+//         const orders = await Orders.find({});
+//         const totalOrderPrice = orders.reduce((sum, order) => sum + order.total_price, 0);
+
+//         // Flatten the Items arrays from all orders into a single array of products
+//         const allProducts = orders.reduce((products, order) => {
+//             return products.concat(order.Items.map(item => item.product_id.toString()));
+//         }, []);
+
+//         // Count the occurrences of each product ID
+//         const productCount = allProducts.reduce((count, productId) => {
+//             count[productId] = (count[productId] || 0) + 1;
+//             return count;
+//         }, {});
+
+//         // Sort productCount object by count in descending order
+//         const sortedProductCount = Object.entries(productCount).sort((a, b) => b[1] - a[1]);
+
+//         // Extract the product IDs of the most ordered, second most ordered, and third most ordered products
+//         const mostOrderedProductId = sortedProductCount[0] ? sortedProductCount[0][0] : null;
+//         const secondMostOrderedProductId = sortedProductCount[1] ? sortedProductCount[1][0] : null;
+//         const thirdMostOrderedProductId = sortedProductCount[2] ? sortedProductCount[2][0] : null;
+
+//         const productIdsToFind = [mostOrderedProductId, secondMostOrderedProductId, thirdMostOrderedProductId].filter(Boolean);
+
+//         // Retrieve details of the most ordered products from the Products collection
+//         const products = await Product.find({
+//             _id: { $in: productIdsToFind }
+//         });
+
+
+
+//         // Send the monthly totals back to the UI
+//         res.render('dashBorad', { monthlyTotals, totalOrderPrice, products, formatPrice });
+
+//     } catch (error) {
+//         console.log(error);
+//     }
+
+// }
+
+async function handleDashBoardView(req, res) {
+      if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
+    
+    const timeRange = req.query.timeRange || 'monthly'; 
+    let totalsData;  
+
+    if(timeRange=='monthly'){
+            try {
+
+                totalsData = await Orders.aggregate([
             {
                 $group: {
                     _id: {
@@ -741,45 +765,281 @@ async function handleDashBoardView(req, res) {
             },
         ]);
 
-        const orders = await Orders.find({});
-        const totalOrderPrice = orders.reduce((sum, order) => sum + order.total_price, 0);
-
-        // Flatten the Items arrays from all orders into a single array of products
-        const allProducts = orders.reduce((products, order) => {
-            return products.concat(order.Items.map(item => item.product_id.toString()));
-        }, []);
-
-        // Count the occurrences of each product ID
-        const productCount = allProducts.reduce((count, productId) => {
-            count[productId] = (count[productId] || 0) + 1;
-            return count;
-        }, {});
-
-        // Sort productCount object by count in descending order
-        const sortedProductCount = Object.entries(productCount).sort((a, b) => b[1] - a[1]);
-
-        // Extract the product IDs of the most ordered, second most ordered, and third most ordered products
-        const mostOrderedProductId = sortedProductCount[0] ? sortedProductCount[0][0] : null;
-        const secondMostOrderedProductId = sortedProductCount[1] ? sortedProductCount[1][0] : null;
-        const thirdMostOrderedProductId = sortedProductCount[2] ? sortedProductCount[2][0] : null;
-
-        const productIdsToFind = [mostOrderedProductId, secondMostOrderedProductId, thirdMostOrderedProductId].filter(Boolean);
-
-        // Retrieve details of the most ordered products from the Products collection
-        const products = await Product.find({
-            _id: { $in: productIdsToFind }
-        });
-
-
-
-        // Send the monthly totals back to the UI
-        res.render('dashBorad', { monthlyTotals, totalOrderPrice, products, formatPrice });
+    
 
     } catch (error) {
         console.log(error);
     }
+    }else if(timeRange=='weekly'){
+        try {
+
+            totalsData = await Orders.aggregate([
+                                {
+                                    $group: {
+                                        _id: {
+                                            year: { $year: "$Order_date" },
+                                            week: { $isoWeek: "$Order_date" },
+                                        },
+                                        totalOrderPrice: { $sum: "$total_price" },
+                                    },
+                                },
+                                {
+                                    $project: {
+                                        year: "$_id.year",
+                                        week: "$_id.week",
+                                        totalOrderPrice: 1,
+                                        _id: 0,
+                                    },
+                                },
+                                {
+                                    $sort: {
+                                        year: 1,
+                                        week: 1
+                                    }
+                                }
+                            ]);
+    
+            
+    
+        } catch (error) {
+            console.log(error);
+        }
+
+
+    }else if(timeRange=='yearly'){
+        try {
+
+            totalsData = await Orders.aggregate([
+                                {
+                                    $group: {
+                                        _id: {
+                                            year: { $year: { $toDate: "$Order_date" } },
+                                        },
+                                        totalOrderPrice: { $sum: "$total_price" },
+                                    },
+                                },
+                                {
+                                    $project: {
+                                        year: "$_id.year",
+                                        totalOrderPrice: 1,
+                                        _id: 0,
+                                    },
+                                },
+                            ]);
+    
+            
+    
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+    const orders = await Orders.find({});
+    const totalOrderPrice = orders.reduce((sum, order) => sum + order.total_price, 0);
+
+    // Flatten the Items arrays from all orders into a single array of products
+    const allProducts = orders.reduce((products, order) => {
+        return products.concat(order.Items.map(item => item.product_id.toString()));
+    }, []);
+
+    // Count the occurrences of each product ID
+    const productCount = allProducts.reduce((count, productId) => {
+        count[productId] = (count[productId] || 0) + 1;
+        return count;
+    }, {});
+
+    // Sort productCount object by count in descending order
+    const sortedProductCount = Object.entries(productCount).sort((a, b) => b[1] - a[1]);
+
+    // Extract the product IDs of the most ordered, second most ordered, and third most ordered products
+    const mostOrderedProductId = sortedProductCount[0] ? sortedProductCount[0][0] : null;
+    const secondMostOrderedProductId = sortedProductCount[1] ? sortedProductCount[1][0] : null;
+    const thirdMostOrderedProductId = sortedProductCount[2] ? sortedProductCount[2][0] : null;
+
+    const productIdsToFind = [mostOrderedProductId, secondMostOrderedProductId, thirdMostOrderedProductId].filter(Boolean);
+
+    // Retrieve details of the most ordered products from the Products collection
+    const products = await Product.find({
+        _id: { $in: productIdsToFind }
+    });
+
+
+
+    // Send the monthly totals back to the UI
+    res.render('dashBorad', { totalsData, totalOrderPrice, products, timeRange, formatPrice });
+}
+
+async function handleSalesReportView(req,res){
+
+    if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
+    
+    const timeRange = req.query.timeRange || 'monthly'; 
+    let totalsData;  
+
+    if(timeRange=='monthly'){
+            try {
+
+                totalsData = await Orders.aggregate([
+            {
+                $group: {
+                    _id: {
+                        year: { $year: "$Order_date" }, // Group by year
+                        month: { $month: "$Order_date" }, // Group by month
+                    },
+                    totalOrderPrice: { $sum: "$total_price" }, // Sum total_price for each group
+                },
+            },
+            {
+                $project: {
+                    year: "$_id.year",
+                    month: "$_id.month",
+                    totalOrderPrice: 1,
+                    _id: 0,
+                },
+            },
+        ]);
+
+    
+
+    } catch (error) {
+        console.log(error);
+    }
+    }else if(timeRange=='weekly'){
+        try {
+
+            totalsData = await Orders.aggregate([
+                                {
+                                    $group: {
+                                        _id: {
+                                            year: { $year: "$Order_date" },
+                                            week: { $isoWeek: "$Order_date" },
+                                        },
+                                        totalOrderPrice: { $sum: "$total_price" },
+                                    },
+                                },
+                                {
+                                    $project: {
+                                        year: "$_id.year",
+                                        week: "$_id.week",
+                                        totalOrderPrice: 1,
+                                        _id: 0,
+                                    },
+                                },
+                                {
+                                    $sort: {
+                                        year: 1,
+                                        week: 1
+                                    }
+                                }
+                            ]);
+    
+            
+    
+        } catch (error) {
+            console.log(error);
+        }
+
+
+    }else if(timeRange=='yearly'){
+        try {
+
+            totalsData = await Orders.aggregate([
+                                {
+                                    $group: {
+                                        _id: {
+                                            year: { $year: { $toDate: "$Order_date" } },
+                                        },
+                                        totalOrderPrice: { $sum: "$total_price" },
+                                    },
+                                },
+                                {
+                                    $project: {
+                                        year: "$_id.year",
+                                        totalOrderPrice: 1,
+                                        _id: 0,
+                                    },
+                                },
+                            ]);
+    
+            
+    
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
+    const orders = await Orders.find({});
+    const totalOrderPrice = orders.reduce((sum, order) => sum + order.total_price, 0);
+    const averageOrderValue =totalOrderPrice/(orders.length);
+    const totalOrders=orders.length;
+    
+    // Flatten the Items arrays from all orders into a single array of products
+    const allProducts = orders.reduce((products, order) => {
+        return products.concat(order.Items.map(item => item.product_id.toString()));
+    }, []);
+
+    // Count the occurrences of each product ID
+    const productCount = allProducts.reduce((count, productId) => {
+        count[productId] = (count[productId] || 0) + 1;
+        return count;
+    }, {});
+
+    // Sort productCount object by count in descending order
+    const sortedProductCount = Object.entries(productCount).sort((a, b) => b[1] - a[1]);
+
+    // Extract the product IDs of the most ordered, second most ordered, and third most ordered products
+    const mostOrderedProductId = sortedProductCount[0] ? sortedProductCount[0][0] : null;
+    const secondMostOrderedProductId = sortedProductCount[1] ? sortedProductCount[1][0] : null;
+    const thirdMostOrderedProductId = sortedProductCount[2] ? sortedProductCount[2][0] : null;
+    const forthMostOrderedProductId = sortedProductCount[3] ? sortedProductCount[3][0] : null;
+    const fifthMostOrderedProductId = sortedProductCount[4] ? sortedProductCount[4][0] : null;
+    
+
+    const productIdsToFind = [mostOrderedProductId, secondMostOrderedProductId, thirdMostOrderedProductId,forthMostOrderedProductId,fifthMostOrderedProductId].filter(Boolean);
+
+    // Retrieve details of the most ordered products from the Products collection
+    const products = await Product.find({
+        _id: { $in: productIdsToFind }
+    });
+
+    const top5Users = await Orders.aggregate([
+        {
+          $group: {
+            _id: '$User_id',
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: { count: -1 },
+        },
+        {
+          $limit: 5,
+        },
+      ]);
+  
+      // Extract User_id values from the aggregation result
+      const top5UserIds = top5Users.map(user => user._id);
+  
+      // Find user details for the top 5 User_ids
+      const userDetails = await User.find({ _id: { $in: top5UserIds } });
+  
+
+    
+
+    // Send the monthly totals back to the UI
+    res.render('salesReport', { totalsData, averageOrderValue, totalOrders, totalOrderPrice,orders,userDetails, products, timeRange, formatPrice });
+
+
 
 }
+
+
+
+
+
+
 
 module.exports = {
     handleHomePageView,
@@ -798,8 +1058,6 @@ module.exports = {
     handleCustomerEdit,
     handleCustomerDelete,
     handleProductsView,
-    handleProductSearch,
-    handleProductsSort,
     handleAddProductPageView,
     handleProductAdd,
     handleProductUpdatePageView,
@@ -820,6 +1078,7 @@ module.exports = {
     handleEditCoupon,
     handleDeleteCoupon,
     handleDashBoardView,
+    handleSalesReportView,
 
 
 };

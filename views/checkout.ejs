@@ -115,9 +115,8 @@
                     <!-- Heading -->
                   </header>
 
-
                   <div id="Order-sumary">
-                    <div class="order-details">
+                    <div id="addressList">
                       <% cartdata.forEach(item=> { %>
                         <div class="cart-item">
                           <img src="<%= imgUri+item.product.imageUrl[0] %>" alt="Product Image">
@@ -136,7 +135,7 @@
                                 <%= item.product_name %>
                               </div>
                             </a>
-                            <div class="cart-item-price">$<%= formatPrice(item.product.price) %>
+                            <div class="cart-item-price">₹<%= formatPrice(item.product.price) %>
                             </div>
                             <div class="cart-item-quantity">
                               Quantity:
@@ -144,21 +143,16 @@
                                 data-item-id="<%= item.product._id %>" onchange="updateCart(this)" min="1">
                             </div>
                           </div>
-                          <form action="/user/detele-cart-item?userid=<%=userId %>&productid=<%= item.product._id  %>"
-                            method="post">
-                            <button class="delete-button" type="submit">Delete</button>
-                          </form>
-
-
+                          <input type="button" class="delete-button" onclick="deleteOrder('<%=userId %>','<%= item.product._id  %>')" value="Delete">
                         </div>
-                        <% }); %>
+                        <% }) %>
                     </div>
 
 
-                    <div class="float-end">
-                      <button class="btn btn-success shadow-0 border" type="button" onclick="hideOrders()">next</button>
+                    <div style="display: grid; justify-content: end;">
+                      <button class="btn btn-success shadow-0 border" type="button"
+                      onclick="hideOrders()">next</button>
                     </div>
-
                   </div>
 
                   <div class="float-end" id="view-order-summary">
@@ -166,6 +160,9 @@
                       onclick="displayOrders()">View</button>
                   </div>
                   <hr class="my-4" />
+
+
+
                   <!-- Order Summary -->
 
                   <!-- Payment Options -->
@@ -193,10 +190,14 @@
                       <input type="radio" id="onlineOption" name="paymentMethod" value="ONLINE"
                         onchange="getSelectedPaymentMethod(this)"> Online Payment
                     </label>
+                    <label for="walletOption" class="radio-inline">
+                      <input type="radio" id="WalletOption" name="paymentMethod" value="WALLET"
+                        onchange="getSelectedPaymentMethod(this)"> Wallet
+                    </label>
 
                     <P id="payment-error"></P>
                     <input type="text" name="userId" id="userId" value="<%= userId %>" hidden>
-                    <input type="text" name="totalPrice" id="total-price" value="<%= cartTotal+10 %>" hidden>
+                    <input type="text" name="totalPrice" id="total-price" value="<%= cartTotal+300 %>" hidden>
 
                     <div class="float-end">
                       <button class="btn btn-light border">Cancel</button>
@@ -218,23 +219,23 @@
               <h6 class="mb-3">Summary</h6>
               <div class="d-flex justify-content-between">
                 <p class="mb-2">Cart Total price:</p>
-                <p class="mb-2">$<span id="CartTotalPrice">
+                <p class="mb-2">₹<span id="CartTotalPrice">
                     <%= formatPrice(cartTotal) %>
                   </span></p>
               </div>
               <div class="d-flex justify-content-between">
                 <p class="mb-2">Shipping cost:</p>
-                <p class="mb-2">+ $10.00</p> <!-- You can change this value as needed -->
+                <p class="mb-2">+ ₹300.00</p> <!-- You can change this value as needed -->
               </div>
               <div class="d-flex justify-content-between">
                 <p class="mb-2">Discount:</p>
-                <p class="mb-2" id="coupon-discount">$ 0 </p> <!-- You can change this value as needed -->
+                <p class="mb-2" id="coupon-discount">₹ 0 </p> <!-- You can change this value as needed -->
               </div>
               <hr />
               <div class="d-flex justify-content-between">
                 <p class="mb-2">Total price:</p>
-                <p class="mb-2 fw-bold" id="totalPrice">$<span id="TotalPrice">
-                    <%= formatPrice(cartTotal+10)%>
+                <p class="mb-2 fw-bold" id="totalPrice">₹<span id="TotalPrice">
+                    <%= formatPrice(cartTotal+300)%>
                   </span></p>
               </div>
 
@@ -365,32 +366,7 @@
           });
       }
     </script>
-    <!-- <script>
-      function updateTotalPrice() {
-        // Get the cart total and shipping cost elements
-        const cartTotalElement = document.getElementById('cartTotalPrice');
-        const shippingCostElement = document.querySelector('.d-flex:contains("Shipping cost")');
-
-        if (cartTotalElement && shippingCostElement) {
-          // Extract and parse the cart total and shipping cost values
-          const cartTotal = parseFloat(cartTotalElement.textContent.replace('$', ''));
-          const shippingCost = parseFloat(shippingCostElement.textContent.match(/\d+\.\d+/)[0]);
-
-          // Calculate the total price
-          const totalPrice = cartTotal + shippingCost;
-
-          // Update the total price element
-          const totalPriceElement = document.getElementById('totalPrice');
-          if (totalPriceElement) {
-            totalPriceElement.textContent = `$${totalPrice.toFixed(2)}`;
-          }
-        }
-      }
-
-      // Call the updateTotalPrice function whenever needed
-      updateTotalPrice();
-
-    </script> -->
+   
     <script>
       function editAddress(id, name, contactNumber, pincode, address, city, state) {
         const shippingAddressSection = document.getElementById('shipping-address');
@@ -456,13 +432,16 @@
             .then(response => response.json()) // Parse the JSON response
             .then(data => {
               if (data.CODpayment) {
-                window.location.href = '/user/view-orders';
+                window.location.href = '/user/view-my-orders';
+              }else if(data.WALLETpayment){
+                window.location.href = '/user/view-my-orders';
               } else {
                 const order = data.order;
+                const walletAmount= data.walletAmount;
                 const KEY_ID = data.KEY_ID;
                 // console.log(KEY_ID);
                 // console.log(order); // Access the 'order' property from the response
-                razorpayPayment(order, KEY_ID);
+                razorpayPayment(order, KEY_ID,walletAmount);
               }
             })
         } else {
@@ -470,7 +449,7 @@
         }
       }
 
-      function razorpayPayment(order, KEY_ID) {
+      function razorpayPayment(order, KEY_ID,walletAmount) {
 
         var options = {
           "key": KEY_ID,
@@ -486,7 +465,7 @@
             // alert(response.razorpay_signature);
 
             // Call verifyPayment with the response and order
-            verifyPayment(response, order);
+            verifyPayment(response, order,walletAmount);
           },
           "prefill": {
             "name": "Gaurav Kumar",
@@ -506,17 +485,17 @@
       }
 
 
-      function verifyPayment(response, order) {
+      function verifyPayment(response, order,walletAmount) {
         fetch('/user/verify-payment', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ order, response }),
+          body: JSON.stringify({ order, response,walletAmount}),
         })
           .then(response => {
             if (response.ok) {
-              window.location.href = '/user/view-orders';
+              window.location.href = '/user/view-my-orders';
             } else {
               console.log("response not ok")
             }
@@ -568,5 +547,43 @@
           });
       }
     </script>
+                           <script>
+                            function deleteOrder(userId, productId) {
+                                Swal.fire({
+                                    title: "Are you sure?",
+                                    text: "You won't be able to revert this!",
+                                    icon: "warning",
+                                    showCancelButton: true,
+                                    confirmButtonColor: "#3085d6",
+                                    cancelButtonColor: "#d33",
+                                    confirmButtonText: "Yes, delete it!"
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        fetch(`/user/detele-cart-item?userid=${userId}&productid=${productId}`, {
+                                            method: 'POST',
+                                        })
+                                        .then(response => {
+                                            if (response.ok) {
+                                                Swal.fire({
+                                                    title: "Deleted!",
+                                                    text: "Your file has been deleted.",
+                                                    icon: "success"
+                                                }).then(()=>{
+                                                    window.location.href = '/user/cart-view';
+                                                })
+                                                
+                                            } else {
+                                                Swal.fire({
+                                                    title: "Task incomplete!",
+                                                    text: "Error when deleting item. Please try again later.",
+                                                    icon: "failure"
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        </script>
+ 
 
     <%- include('layout/footerUser') %>
