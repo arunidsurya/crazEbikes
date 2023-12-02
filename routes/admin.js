@@ -33,6 +33,8 @@ router.post("/editCustomers/:id", handleCustomerEdit);
 router.get("/deleteCustomers/:id", handleCustomerDelete);
 router.get("/blockCustomers/:id", handleCustomerBlock);
 router.get("/unBlockCustomers/:id", handleCustomerUnblock);
+
+
 router.get("/products", handleProductsView);
 router.get("/addProduct-view",handleAddProductPageView);
 router.post("/addProduct",productValidator, handleProductAdd);

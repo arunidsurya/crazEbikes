@@ -753,6 +753,23 @@ async function handlePlaceOrder(req, res) {
                     const saveOrder = await newOrder.save();
                     await Cart.deleteMany({ userId: user._id });
 
+                    // Update stock for each product in orderItems
+for (const orderItem of orderItems) {
+    const productId = orderItem.product_id;
+    const quantity = orderItem.quantity;
+
+    // Assuming you have a Product model
+    const product = await Product.findById(productId);
+
+    // Update stock
+    if (product) {
+        const updatedStock = product.stock - quantity;
+        // Assuming 'stock' is the field in your Product model representing the stock
+        await Product.findByIdAndUpdate(productId, { stock: updatedStock });
+    }
+}
+
+
                     if (req.body.paymentMethod === 'COD') {
                         res.json({ CODpayment: true });
                     } else if (req.body.paymentMethod === 'ONLINE') {
