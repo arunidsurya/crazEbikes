@@ -3,18 +3,27 @@
 
     <div class="col py-3">
 
-
-      <div class="overview-container">
-        <div>
-        <h5>Overview</h5>
-        <h6>Total Revenue</h6>
-        <h6>$<%= formatPrice(totalOrderPrice) %>
-        </h6>
-      </div>
-      <div>
+      <div class="sales-report-view">
         <a href="/admin/sales-report"><input type="button" class="btn btn-success" value="Sales Report"></a>
       </div>
+
+      <h4 class="overView_heading">OVER VIEW</h4>
+      <div class="sales-overview-container">
+        <div class="overview-det">
+            <h6 >Total Revenue</h6>
+            <h6>₹<%= formatPrice(totalOrderPrice) %></h6>
+        </div>  
+        <div class="overview-det">
+        <h6 >Average Order Value </h6>
+        <h6>₹<%= formatPrice(averageOrderValue)%> </h6>
+        </div>
+        <div class="overview-det">
+        <h6>Total orders </h6>
+        <h6><%= totalOrders  %></h6>
+        </div>
       </div>
+
+
       <input type="text" name="timeRange" id="timeRange" value="<%= timeRange %>" hidden>
 
       <div class="filter-buttons">
@@ -37,9 +46,9 @@
           <div class="col-lg-12">
             <div class="table-responsive">
               <% if (locals.products) { %>
-                <table class="table table-borderless table-hover text-center">
+                <table class="table table-borderless text-center">
                   <thead class="table-success">
-                    <tr class="table-dark">
+                    <tr class="table-success">
                       <th> </th>
                       <th>Product</th>
                       <th>Brand</th>
@@ -51,8 +60,8 @@
                     <% products.forEach((product,index)=> { %>
                       <tr class="align-middle mt-5">
                         <td>
-                          <img style="height: 40px;width: 100px;" src="http://localhost:5000/<%= product.imageUrl[0] %>"
-                            alt="Bike image">
+                          <img class="product-image" src="<%= imgUri %><%= product.imageUrl[0] %>"
+                          alt="product image">
                         </td>
                         <td>
                           <%= product.product_name %>

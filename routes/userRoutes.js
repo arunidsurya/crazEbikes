@@ -4,10 +4,10 @@ const mongoose = require('mongoose');
 const addressValidator = require('../middleware/addressValidator');
 
 const { handleCartView, handleAddToCart, handleUpdateCartQuantity, handleDeleteCartItem,
-    handleCheckoutView, handleEditAddress, handleAddNewAddress, handlePlaceOrder,
+    handleCheckoutView, handleEditAddress, handleAddNewAddress, handlePlaceOrder,handleOrdersPay,handleWalletPay,
     handleAddAddressView, handleEditAddressView,handleAccountEditAddress, handleMyOrdersView,
     handleSelectedOrderView, handleCancelOrder,handleManageAccountView, handleChangeName, handleChangeNumber, 
-    handleChangeEmail,handleVerifyOtp, handleChangePassword, handleVerifyPayment, handleApplyCoupon, 
+    handleChangeEmail,handleVerifyOtp, handleChangePassword, handleVerifyPayment,handleVerifyWalletPayment, handleApplyCoupon, 
     handleWalletView,handleAddToCartFromWishlist, handleAddToWishlist, handleWishlistView, 
     handleDeleteFromWishlist,handleAddToCartOneItemFromWishlist,handleDownloadInvoice } = require('../controllers/user')
 
@@ -54,6 +54,10 @@ router.get('/view-selected-order', handleSelectedOrderView);
 
 router.post('/cancel-order', handleCancelOrder);
 
+router.post('/orders-pay', handleOrdersPay);
+
+router.post('/wallet-pay', handleWalletPay);
+
 router.get('/manage-account', handleManageAccountView);
 
 router.post('/change-name', handleChangeName);
@@ -66,7 +70,9 @@ router.post('/verify-otp', handleVerifyOtp);
 
 router.post('/change-password', handleChangePassword);
 
-router.post('/verify-payment', handleVerifyPayment);
+router.post('/verify-payment', handleVerifyPayment); 
+
+router.post('/verify-wallet-payment', handleVerifyWalletPayment);
 
 router.post('/applyCoupon', handleApplyCoupon);
 

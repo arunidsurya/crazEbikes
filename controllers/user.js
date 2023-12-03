@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const User = require('../models/User');
 const Orders = require('../models/Order');
 const nodemailer = require("nodemailer");
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 const bycrypt = require("bcrypt");
 const userOTPVerification = require("../models/userOTPVerification");
 const transpoter = require("../utils/nodeMailer");
@@ -1274,6 +1274,56 @@ async function handlePlaceOrder(req, res) {
 }
 
 
+async function handleOrdersPay(req,res){
+    const userId=req.session.userId;
+    const orderId=req.body.orderId;
+
+    try {
+
+        const order_det= await Orders.findOne({User_id:userId,_id:orderId});
+
+        const amount=order_det.total_price*100;
+
+        var options = {
+            amount: amount,
+            currency: "INR",
+            receipt: orderId,
+        };
+        instance.orders.create(options, function (err, order) {
+            const order_det = order;
+            res.json({ order: order_det, KEY_ID: process.env.RZP_KEY_ID });
+        })
+        
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+async function handleWalletPay(req,res){
+    const userId=req.session.userId;
+
+    const amount = req.body.amount * 100;
+    const id = uuid.v4();
+
+    try {
+        var options = {
+            amount: amount,
+            currency: "INR",
+            receipt: id,
+        };
+        instance.orders.create(options, function (err, order) {
+            const order_det = order;
+            res.json({ order: order_det, KEY_ID: process.env.RZP_KEY_ID });
+        })
+        
+    } catch (error) {
+        console.log(error);
+    }
+
+
+
+}
+
 
 async function handleMyOrdersView(req, res) {
     const userId = req.session.userId;
@@ -1571,6 +1621,40 @@ async function handleVerifyPayment(req, res) {
     }
 }
 
+async function handleVerifyWalletPayment(req,res){
+    const razorpay_payment_id = req.body.response.razorpay_payment_id;
+    const razorpay_order_id = req.body.response.razorpay_order_id;
+    const razorpay_signature = req.body.response.razorpay_signature;
+    const orderId = req.body.order.receipt;
+    const userId = req.session.userId;
+    const amount =(req.body.order.amount)/100;
+    const wallet_amount=1172888;
+
+
+    const crypto = require('crypto');
+    let hmac = crypto.createHmac('sha256', process.env.RZP_SECRET_KEY);
+
+    hmac.update(razorpay_order_id + '|' + razorpay_payment_id);
+    hmac = hmac.digest('hex'); // converting to hexa code
+
+    if (hmac == razorpay_signature) {
+           const source = razorpay_payment_id;
+            const updatedWallet = await User.findByIdAndUpdate(
+                { _id: userId },
+                {
+                    $inc: { 'wallet.amount': amount }, // Increment wallet amount
+                    $push: { 'wallet.transactions': { source: source, method: 'credit', description: 'Payment added to the wallet', transaction_amount: amount } } // Push transaction details
+                },
+                { new: true }
+            );
+
+
+            res.json({ success: true });
+
+
+}
+}
+
 async function handleApplyCoupon(req, res) {
     const name = req.body.couponName;
     const currentDate = new Date();
@@ -1648,6 +1732,8 @@ module.exports = {
     handleEditAddress,
     handleAddNewAddress,
     handlePlaceOrder,
+    handleOrdersPay,
+    handleWalletPay,
     handleAddAddressView,
     handleEditAddressView,
     handleAccountEditAddress,
@@ -1661,6 +1747,7 @@ module.exports = {
     handleVerifyOtp,
     handleChangePassword,
     handleVerifyPayment,
+    handleVerifyWalletPayment,
     handleApplyCoupon,
     handleWalletView,
     handleAddToCartFromWishlist,

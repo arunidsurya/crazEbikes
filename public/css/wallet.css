@@ -12,6 +12,7 @@
     justify-content: center;
     align-items: center;
 
+
 }
 
 .manage-wallet-container {
@@ -21,8 +22,17 @@
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
     width: auto;
     height: auto;
+    min-width: 90vw;
+    min-height:20vh;
     text-align: center;
 }
 .wallet-content{
     margin: 50px 0 50px 0;
+}
+
+.table-success {
+    text-align: center !important; 
+}
+.table-body{
+    text-align: left;
 }

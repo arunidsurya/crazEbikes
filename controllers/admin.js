@@ -32,17 +32,10 @@ async function handleCategoryView(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
     try {
 
-        const page = req.query.page || 1;
-        const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
-
         const categories = await Category.find({ isDeleted: false })
-            .skip(startIndex)
-            .limit(PRODUCTS_PER_PAGE);
 
-        const totalProducts = await Category.countDocuments({ isDeleted: false });
-        const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
 
-        res.render('categories', { categories, currentPage: page, totalPages, PRODUCTS_PER_PAGE });
+        res.render('categories', { categories});
     } catch (error) {
         console.log(error);
     }
@@ -141,17 +134,10 @@ async function handleUserView(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
     try {
-        const page = req.query.page || 1;
-        const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
 
         const users = await User.find({ isDeleted: false })
-            .skip(startIndex)
-            .limit(PRODUCTS_PER_PAGE);
 
-        const totalProducts = await User.countDocuments({ isDeleted: false });
-        const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
-
-        res.render('customers', { users, currentPage: page, totalPages, PRODUCTS_PER_PAGE });
+        res.render('customers', { users});
     } catch (error) {
         console.log(error);
     }
@@ -287,7 +273,7 @@ async function handleProductsView(req, res) {
 ;
 
 
-        res.render('products', { products,formatPrice });
+        res.render('products', { products,formatPrice,imgUri });
     } catch (error) {
         console.log(error);
     }
@@ -426,17 +412,15 @@ async function handleOrdersView(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
 
     try {
-        const page = req.query.page || 1;
-        const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
+
 
         const orders = await Orders.find({}).sort({ Order_date: -1 })
-            .skip(startIndex)
-            .limit(PRODUCTS_PER_PAGE);
+
 
         const totalProducts = await Orders.countDocuments({ isDeleted: false });
         const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
 
-        res.render('orders', { orders, formatPrice, currentPage: page, totalPages, PRODUCTS_PER_PAGE })
+        res.render('orders', { orders, formatPrice })
 
     } catch (error) {
         console.log(error);
@@ -778,7 +762,7 @@ async function handleDashBoardView(req, res) {
                                     $group: {
                                         _id: {
                                             year: { $year: "$Order_date" },
-                                            week: { $isoWeek: "$Order_date" },
+                                            week: {  $week: "$Order_date" },
                                         },
                                         totalOrderPrice: { $sum: "$total_price" },
                                     },
@@ -837,6 +821,8 @@ async function handleDashBoardView(req, res) {
 
     const orders = await Orders.find({});
     const totalOrderPrice = orders.reduce((sum, order) => sum + order.total_price, 0);
+    const averageOrderValue =totalOrderPrice/(orders.length);
+    const totalOrders=orders.length;
 
     // Flatten the Items arrays from all orders into a single array of products
     const allProducts = orders.reduce((products, order) => {
@@ -867,7 +853,7 @@ async function handleDashBoardView(req, res) {
 
 
     // Send the monthly totals back to the UI
-    res.render('dashBorad', { totalsData, totalOrderPrice, products, timeRange, formatPrice });
+    res.render('dashBorad', { totalsData, totalOrderPrice, products, timeRange, averageOrderValue, totalOrders,  formatPrice,imgUri });
 }
 
 async function handleSalesReportView(req,res){

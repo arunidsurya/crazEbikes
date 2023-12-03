@@ -11,7 +11,6 @@ const { check, validationResult } = require('express-validator');
 const MonthlyTotals = require('./models/monthlyTotal');
 const imgUri = process.env.IMGURI;
 const errorHandler=require("./middleware/errorHandler");
-const Swal = require('sweetalert2');
 const images = {
   cover: 'resources/images/coverPhoto.jpg',
   logo: 'resources/images/logo.jpg',

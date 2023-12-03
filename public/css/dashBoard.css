@@ -45,7 +45,6 @@
   /* Make the table background white */
   table {
     width: 100%;
-    border-collapse: collapse;
     margin-top: 1rem;
     background-color: white !important; /* Add !important to override any other styles */
   }
@@ -76,6 +75,14 @@
     display: flex;
     justify-content: end;
     gap: 10px;
+  }
+  .product-image{
+    height: 80px;
+  }
+  .sales-report-view{
+    display: flex;
+    justify-content: end;
+    margin-bottom: 20px;
   }
   /* Responsive Design using Media Queries */
   @media only screen and (max-width: 768px) {
