@@ -65,7 +65,7 @@ main {
     flex-direction: column; /* Arrange items in a column */
     justify-content: flex-end; /* Horizontally align the content to the right */
     align-items: flex-end; /* Align items to the right */
-    height: 80px;
+    height: auto;
     font-size: 20px;
     font-weight: bold;
 }

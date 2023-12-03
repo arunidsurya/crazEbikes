@@ -7,40 +7,70 @@
           <p class="mb-0">First name</p>
           <div class="form-outline">
             <input type="text" name="name" id="name" placeholder="Type here" class="form-control" />
+            <% if (locals.errors && locals.errors.name) { %>
+              <span class="text-danger" id="errors-name" >
+                <%= errors.name.msg %>
+              </span>
+              <% } %>
           </div>
         </div>
         <div class="col-6">
           <p class="mb-0">Contact Number</p>
           <div class="form-outline">
             <input type="text" name="contactNumber" id="contactNumber" placeholder="Type here" class="form-control" />
+            <% if (locals.errors && locals.errors.contactNumber) { %>
+              <span class="text-danger" id="errors-contactNumber" >
+                <%= errors.contactNumber.msg %>
+              </span>
+              <% } %>
           </div>
         </div>
         <div class="col-6 mb-3">
           <p class="mb-0">Pincode</p>
           <div class="form-outline">
             <input type="text" name="pincode" id="pincode" placeholder="Type here" class="form-control" />
+            <% if (locals.errors && locals.errors.pincode) { %>
+              <span class="text-danger" id="errors-pincode" >
+                <%= errors.pincode.msg %>
+              </span>
+              <% } %>
           </div>
         </div>
         <div class="col-6 mb-3">
           <p class="mb-0">Address</p>
           <div class="form-outline">
             <input type="text" name="address" id="address" placeholder="Type here" class="form-control" />
+            <% if (locals.errors && locals.errors.address) { %>
+              <span class="text-danger" id="errors-address" >
+                <%= errors.address.msg %>
+              </span>
+              <% } %>
           </div>
         </div>
         <div class="col-6 mb-3">
           <p class="mb-0">City</p>
           <div class="form-outline">
             <input type="text" name="city" id="city" placeholder="Type here" class="form-control" />
+            <% if (locals.errors && locals.errors.city) { %>
+              <span class="text-danger" id="errors-city" >
+                <%= errors.city.msg %>
+              </span>
+              <% } %>
           </div>
         </div>
         <div class="col-6 mb-3">
           <p class="mb-0">State</p>
           <div class="form-outline">
             <input type="text" name="state" id="state" placeholder="Type here" class="form-control" />
+            <% if (locals.errors && locals.errors.state) { %>
+              <span class="text-danger" id="errors-state" >
+                <%= errors.state.msg %>
+              </span>
+              <% } %>
           </div>
         </div>
 
-        <button class="btn btn-success shadow-0 border" type="submit">Save Changes</button>
+        <button class="btn btn-success shadow-0 border" type="submit">Submit</button>
       </form>
     </div>
 

@@ -9,6 +9,7 @@ const {handleHomePageView, handleCategoryView,handleAddCategoryPageView, handleC
     handleSalesReportView} = require('../controllers/admin');
     
 const productValidator =require('../middleware/productValidator');
+const addressValidator = require('../middleware/addressValidator');
 
 const router = express.Router();
 

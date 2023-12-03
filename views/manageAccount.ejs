@@ -3,7 +3,7 @@
 
 
         <header class="header-orders">
-            <h1>Profile overview</h1>
+            <h1>Your Profile</h1>
         </header>
 
         <main class="manage-account-main-container">
@@ -81,18 +81,107 @@
 
                 </div>
 
-                <div class="change-password-btn">
-                    <input type="button" name="" id="change-password" class="btn btn-danger" value="change password"
-                        onclick="passwordInput()">
-                    <p id="pass-message" style="display: none;color: red;"></p>
+
+
+
+
+
+                <div class="personal-info">
+                    <div class="personal_info_heading">
+                        <h4>Address</h4>
+                    </div>
+                    <div id="addressList">
+                        <% user.delivery.forEach(address=> { %>
+                            <div class="account-address-container" id="account-address-container<%= address._id %>">
+
+                                <label>
+                                    <div class="name-mobile">
+                                        <strong>
+                                            <%= address.name %>
+                                        </strong>
+                                    </div>
+                                    <div>
+                                        <strong>Mob: <%= address.contactNumber %></strong>
+                                    </div>
+                                    <div>
+                                        <%= address.address %>, <%= address.city %>, <%= address.pincode %>
+                                    </div>
+                                    <div>
+                                        <%= address.state %>
+                                    </div>
+                                </label>
+                                <a href="" onclick="editAddress(event,'<%= address._id %>','<%= user._id %>')"><input class="btn btn-link" type="button"
+                                        value="Edit" />
+                                </a>
+
+                            </div>
+
+                            <div class="account-edit-address-form" id="account-edit-address-form<%= address._id %>">
+
+                                <div class="edit-address-input">
+                                    <label for="name">Name:</label>
+                                    <input type="text" name="name" id="name<%= address._id %>" value="<%= address.name %>">
+                                </div>
+                                <div class="edit-address-input">
+                                    <label for="contactNumber">Contact Number:</label>
+                                    <input type="text" name="contactNumber" id="contactNumber<%= address._id %>"
+                                        value="<%= address.contactNumber %>">
+                                </div>
+                                <div class="edit-address-input">
+                                    <label for="address">Address :</label>
+                                    <input type="text" name="address" id="address<%= address._id %>" value="<%= address.address %>">
+                                </div>
+
+                                <div class="edit-address-input">
+                                    <label for="address">Pincode :</label>
+                                    <input type="text" name="pincode" id="pincode<%= address._id %>" value="<%= address.pincode %>">
+                                </div>
+
+
+                                <div class="edit-address-input">
+                                    <label for="address">City :</label>
+                                    <input type="text" name="city" id="city<%= address._id %>" value="<%= address.city %>">
+                                </div>
+
+                                <div class="edit-address-input">
+                                    <label for="address">State :</label>
+                                    <input type="text" name="state" id="state<%= address._id %>" value="<%= address.state %>">
+                                </div>
+
+
+                                <div class="edit-address-btn">
+                                    <input type="button" name="" id="" class="btn btn-success" value="submit"
+                                        onclick="editAddressForm(event,'<%= address._id %>','<%= user._id %>')">
+                                    <input type="button" name="" id="" class="btn btn-danger" value="cancel"
+                                        onclick="editAddressCancel(event,'<%= address._id %>','<%= user._id %>')">
+                                </div>
+
+
+                            </div>
+                            <% }) %>
+
+                    </div>
                 </div>
-                <div id="new-password-div" class="change-password">
-                    <label for="oldPassword"> Old password :</label>
-                    <input id="old-password" type="password" class="name-change" name="" id="">
-                    <label for="newPassword"> New password :</label>
-                    <input id="new-password" type="password" class="name-change" name="" id="">
-                    <input type="button" class="btn btn-primary" name="" id="" value="change"
-                        onclick="changePassword()">
+
+
+
+                <div class="personal-info">
+                    <div class="personal_info_heading">
+                        <h4>Password</h4>
+                    </div>
+                    <div class="change-password-btn">
+                        <input type="button" name="" id="change-password" class="btn btn-danger" value="change password"
+                            onclick="passwordInput()">
+                        <p id="pass-message" style="display: none;color: red;"></p>
+                    </div>
+                    <div id="new-password-div" class="change-password">
+                        <label for="oldPassword"> Old password :</label>
+                        <input id="old-password" type="password" class="name-change" name="" id="">
+                        <label for="newPassword"> New password :</label>
+                        <input id="new-password" type="password" class="name-change" name="" id="">
+                        <input type="button" class="btn btn-primary" name="" id="" value="change"
+                            onclick="changePassword()">
+                    </div>
                 </div>
 
             </div>
@@ -304,8 +393,73 @@
 
 
         </script>
+        <script>
+            function editAddress(event,addressId) {
+                event.preventDefault();
+                const addressField = document.getElementById(`account-address-container${addressId}`);
+                const editAddressFrom = document.getElementById(`account-edit-address-form${addressId}`);
 
 
+                editAddressFrom.style.display = 'block';
+
+            }
+        </script>
+        <script>
+            function editAddressForm(event, addressId, userId) {
+                event.preventDefault();
+                const addressField = document.getElementById(`account-address-container${addressId}`);
+                const editAddressFrom = document.getElementById(`account-edit-address-form${addressId}`);
+
+                const id = addressId;
+                const name = document.getElementById(`name${addressId}`).value;
+                const contactNumber = document.getElementById(`contactNumber${addressId}`).value;
+                const address = document.getElementById(`address${addressId}`).value;
+                const city = document.getElementById(`city${addressId}`).value;
+                const pincode = document.getElementById(`pincode${addressId}`).value;
+                const state = document.getElementById(`state${addressId}`).value;
+                
+
+                // Validate input fields
+                if (!name || !contactNumber || !address || !city || !pincode || !state) {
+                    alert('Please fill in all the fields.');
+                    return;
+                }
+
+                // Additional validations (you can customize these as needed)
+                if (!/^\d+$/.test(contactNumber) || contactNumber.length < 10) {
+                    alert('Invalid Contact Number');
+                    return;
+                }
+
+                if (!/^\d+$/.test(pincode)) {
+                    alert('Invalid Pincode');
+                    return;
+                }
+
+                fetch('/user/account-edit-address', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id, userId, name, contactNumber, address, city, pincode, state })
+                }).then(response => {
+                    if (response.ok) {
+                        editAddressFrom.style.display = 'none';
+                        window.location.href = '/user/manage-account';
+                    }
+                })
+            }
+        </script>
+        <script>
+function editAddressCancel(event,addressId) {
+    event.preventDefault();
+    const addressField = document.getElementById(`account-address-container${addressId}`);
+    const editAddressFrom = document.getElementById(`account-edit-address-form${addressId}`);
+
+    editAddressFrom.style.display = 'none';
+}
+
+        </script>
 
 
 

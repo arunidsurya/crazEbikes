@@ -3,16 +3,17 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 80vh;
+            height: auto;
             margin: 50px;
         }
 
         .manage-account-container {
             background-color: #fff;
-            margin-bottom: 50px;
             padding: 20px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
-            width: 400px;
+            width: auto;
+            height: auto;
+            min-width: 40vw;
         }
 
         .personal-info {
@@ -72,7 +73,7 @@
         }
 
         .header-orders {
-            background-color: #343a40;
+            background-color: #2268af;
             color: #fff;
             padding: 20px;
             text-align: center;
@@ -95,4 +96,23 @@
 
         .change-password-btn {
             text-align: center;
+        }
+
+        .account-address-container{
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 20px;
+          }
+
+        .account-edit-address-form{
+            display: none;
+        }
+
+        .edit-address-btn{
+            margin: 15px 0;
+            align-items: center;
+
+        }
+        .edit-address-input{
+            margin: 10px 0;
         }

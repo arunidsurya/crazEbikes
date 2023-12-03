@@ -126,10 +126,13 @@
                             </section>
                             <% }) %>
                                 <section class="order-total">
-                                    <p class="discount-paragraph">Discount Applied: <span class="order-total-price">$
+                                    <p class="discount-paragraph">Shipping cost: <span class="order-total-price">₹
+                                        <%= formatPrice(300) %>
+                                    </span></p>
+                                    <p class="discount-paragraph">Discount Applied: <span class="order-total-price">₹
                                             <%= formatPrice(order.coupon_discount) %>
                                         </span></p>
-                                    <p>Total Order price(including delivery charge): <span class="order-total-price">$
+                                    <p>Total Order price(including delivery charge): <span class="order-total-price">₹
                                             <%= formatPrice(order.total_price) %>
                                         </span></p>
                                 </section>

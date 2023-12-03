@@ -143,15 +143,15 @@
                                 data-item-id="<%= item.product._id %>" onchange="updateCart(this)" min="1">
                             </div>
                           </div>
-                          <input type="button" class="delete-button" onclick="deleteOrder('<%=userId %>','<%= item.product._id  %>')" value="Delete">
+                          <input type="button" class="delete-button"
+                            onclick="deleteOrder('<%=userId %>','<%= item.product._id  %>')" value="Delete">
                         </div>
                         <% }) %>
                     </div>
 
 
                     <div style="display: grid; justify-content: end;">
-                      <button class="btn btn-success shadow-0 border" type="button"
-                      onclick="hideOrders()">next</button>
+                      <button class="btn btn-success shadow-0 border" type="button" onclick="hideOrders()">next</button>
                     </div>
                   </div>
 
@@ -355,8 +355,14 @@
             const cartTotalSpan = document.getElementById('CartTotalPrice');
             const TotalPriceSpan = document.getElementById('TotalPrice');
 
-            cartTotalSpan.innerHTML = formatPrice(data.cartTotal);
-            TotalPriceSpan.innerHTML = formatPrice(data.cartTotal + 10);
+            cartTotalSpan.innerHTML = (data.cartTotal).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });;
+            TotalPriceSpan.innerHTML = (data.cartTotal + 300).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });;
 
 
           })
@@ -366,7 +372,7 @@
           });
       }
     </script>
-   
+
     <script>
       function editAddress(id, name, contactNumber, pincode, address, city, state) {
         const shippingAddressSection = document.getElementById('shipping-address');
@@ -433,15 +439,15 @@
             .then(data => {
               if (data.CODpayment) {
                 window.location.href = '/user/view-my-orders';
-              }else if(data.WALLETpayment){
+              } else if (data.WALLETpayment) {
                 window.location.href = '/user/view-my-orders';
               } else {
                 const order = data.order;
-                const walletAmount= data.walletAmount;
+                const walletAmount = data.walletAmount;
                 const KEY_ID = data.KEY_ID;
                 // console.log(KEY_ID);
                 // console.log(order); // Access the 'order' property from the response
-                razorpayPayment(order, KEY_ID,walletAmount);
+                razorpayPayment(order, KEY_ID, walletAmount);
               }
             })
         } else {
@@ -449,7 +455,7 @@
         }
       }
 
-      function razorpayPayment(order, KEY_ID,walletAmount) {
+      function razorpayPayment(order, KEY_ID, walletAmount) {
 
         var options = {
           "key": KEY_ID,
@@ -465,7 +471,7 @@
             // alert(response.razorpay_signature);
 
             // Call verifyPayment with the response and order
-            verifyPayment(response, order,walletAmount);
+            verifyPayment(response, order, walletAmount);
           },
           "prefill": {
             "name": "Gaurav Kumar",
@@ -485,13 +491,13 @@
       }
 
 
-      function verifyPayment(response, order,walletAmount) {
+      function verifyPayment(response, order, walletAmount) {
         fetch('/user/verify-payment', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ order, response,walletAmount}),
+          body: JSON.stringify({ order, response, walletAmount }),
         })
           .then(response => {
             if (response.ok) {
@@ -547,43 +553,43 @@
           });
       }
     </script>
-                           <script>
-                            function deleteOrder(userId, productId) {
-                                Swal.fire({
-                                    title: "Are you sure?",
-                                    text: "You won't be able to revert this!",
-                                    icon: "warning",
-                                    showCancelButton: true,
-                                    confirmButtonColor: "#3085d6",
-                                    cancelButtonColor: "#d33",
-                                    confirmButtonText: "Yes, delete it!"
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        fetch(`/user/detele-cart-item?userid=${userId}&productid=${productId}`, {
-                                            method: 'POST',
-                                        })
-                                        .then(response => {
-                                            if (response.ok) {
-                                                Swal.fire({
-                                                    title: "Deleted!",
-                                                    text: "Your file has been deleted.",
-                                                    icon: "success"
-                                                }).then(()=>{
-                                                    window.location.href = '/user/cart-view';
-                                                })
-                                                
-                                            } else {
-                                                Swal.fire({
-                                                    title: "Task incomplete!",
-                                                    text: "Error when deleting item. Please try again later.",
-                                                    icon: "failure"
-                                                });
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                        </script>
- 
+    <script>
+      function deleteOrder(userId, productId) {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            fetch(`/user/detele-cart-item?userid=${userId}&productid=${productId}`, {
+              method: 'POST',
+            })
+              .then(response => {
+                if (response.ok) {
+                  Swal.fire({
+                    title: "Deleted!",
+                    text: "Your file has been deleted.",
+                    icon: "success"
+                  }).then(() => {
+                    window.location.href = '/user/cart-view';
+                  })
+
+                } else {
+                  Swal.fire({
+                    title: "Task incomplete!",
+                    text: "Error when deleting item. Please try again later.",
+                    icon: "failure"
+                  });
+                }
+              });
+          }
+        });
+      }
+    </script>
+
 
     <%- include('layout/footerUser') %>

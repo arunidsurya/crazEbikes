@@ -1,14 +1,15 @@
 const express = require('express');
 const Cart = require('../models/cart');
 const mongoose = require('mongoose');
+const addressValidator = require('../middleware/addressValidator');
 
 const { handleCartView, handleAddToCart, handleUpdateCartQuantity, handleDeleteCartItem,
     handleCheckoutView, handleEditAddress, handleAddNewAddress, handlePlaceOrder,
-    handleAddAddressView, handleEditAddressView, handleMyOrdersView,handleSelectedOrderView, handleCancelOrder,
-    handleManageAccountView, handleChangeName, handleChangeNumber, handleChangeEmail,
-    handleVerifyOtp, handleChangePassword, handleVerifyPayment, handleApplyCoupon, handleWalletView,
-    handleAddToCartFromWishlist, handleAddToWishlist, handleWishlistView, handleDeleteFromWishlist,
-    handleAddToCartOneItemFromWishlist,handleDownloadInvoice } = require('../controllers/user')
+    handleAddAddressView, handleEditAddressView,handleAccountEditAddress, handleMyOrdersView,
+    handleSelectedOrderView, handleCancelOrder,handleManageAccountView, handleChangeName, handleChangeNumber, 
+    handleChangeEmail,handleVerifyOtp, handleChangePassword, handleVerifyPayment, handleApplyCoupon, 
+    handleWalletView,handleAddToCartFromWishlist, handleAddToWishlist, handleWishlistView, 
+    handleDeleteFromWishlist,handleAddToCartOneItemFromWishlist,handleDownloadInvoice } = require('../controllers/user')
 
 
 const router = express.Router();
@@ -18,8 +19,6 @@ const router = express.Router();
 router.get('/cart-view', handleCartView);
 
 router.get('/checkout', handleCheckoutView);
-
-router.get('/add-new-address', handleAddAddressView);
 
 router.post('/addToCart', handleAddToCart);
 
@@ -39,11 +38,13 @@ router.post('/detele-cart-item', handleDeleteCartItem);
 
 router.get('/edit-address', handleEditAddressView);
 
-router.post('/edit-address', handleEditAddress);
+router.post('/edit-address-form', handleEditAddress);
+
+router.post('/account-edit-address',addressValidator, handleAccountEditAddress);
 
 router.get('/add-new-address', handleAddAddressView);
 
-router.post('/addNewAddress', handleAddNewAddress);
+router.post('/addNewAddress',addressValidator, handleAddNewAddress);
 
 router.post('/place-order', handlePlaceOrder);
 
