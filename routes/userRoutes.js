@@ -4,12 +4,13 @@ const mongoose = require('mongoose');
 const addressValidator = require('../middleware/addressValidator');
 
 const { handleCartView, handleAddToCart, handleUpdateCartQuantity, handleDeleteCartItem,
-    handleCheckoutView, handleEditAddress, handleAddNewAddress, handlePlaceOrder,handleOrdersPay,handleWalletPay,
+    handleCheckoutView, handleEditAddress, handleAddNewAddress, handlePlaceOrder,handleOrdersPay,
+    handleWalletPay,handleUpdatePaymentMethod,
     handleAddAddressView, handleEditAddressView,handleAccountEditAddress, handleMyOrdersView,
     handleSelectedOrderView, handleCancelOrder,handleManageAccountView, handleChangeName, handleChangeNumber, 
     handleChangeEmail,handleVerifyOtp, handleChangePassword, handleVerifyPayment,handleVerifyWalletPayment, handleApplyCoupon, 
     handleWalletView,handleAddToCartFromWishlist, handleAddToWishlist, handleWishlistView, 
-    handleDeleteFromWishlist,handleAddToCartOneItemFromWishlist,handleDownloadInvoice } = require('../controllers/user')
+    handleDeleteFromWishlist,handleAddToCartOneItemFromWishlist,handleDownloadInvoice,handleReviewPageView,handleSubmitReview, } = require('../controllers/user')
 
 
 const router = express.Router();
@@ -56,6 +57,8 @@ router.post('/cancel-order', handleCancelOrder);
 
 router.post('/orders-pay', handleOrdersPay);
 
+router.post('/update-payment-method',handleUpdatePaymentMethod)
+
 router.post('/wallet-pay', handleWalletPay);
 
 router.get('/manage-account', handleManageAccountView);
@@ -78,7 +81,11 @@ router.post('/applyCoupon', handleApplyCoupon);
 
 router.get('/wallet', handleWalletView)
 
-router.get('/download-invoice',handleDownloadInvoice)
+router.get('/download-invoice',handleDownloadInvoice);
+
+router.get('/product-review',handleReviewPageView);
+
+router.post('/submit-review',handleSubmitReview)
 
 
 module.exports = router;

@@ -34,73 +34,77 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                                <% users.forEach((user,index)=> { %>
-                                                    <tr class="align-middle">
-                                                        <td>
-                                                            <%= 1 + index %>
-                                                        </td>
-                                                        <td>
-                                                            <%= user.name %>
-                                                        </td>
-                                                        <td>
-                                                            <%= user.email %>
-                                                        </td>
-                                                        <td>
-                                                            <%= user.contactNumber %>
-                                                        </td>
-                                                        <td>
-                                                            <a href="/admin/edit-customer-page/<%= user._id %>"
-                                                                class="text-success"><i
-                                                                    class="fas fa-edit fa-lg mx-1"></i></a>
-                                                            <!-- <a href="/admin/deleteCustomers/<%= user._id %>"
+                                            <% users.forEach((user,index)=> { %>
+                                                <tr class="align-middle">
+                                                    <td>
+                                                        <%= 1 + index %>
+                                                    </td>
+                                                    <td>
+                                                        <%= user.name %>
+                                                    </td>
+                                                    <td>
+                                                        <%= user.email %>
+                                                    </td>
+                                                    <td>
+                                                        <%= user.contactNumber %>
+                                                    </td>
+                                                    <td>
+                                                        <a href="/admin/edit-customer-page/<%= user._id %>"
+                                                            class="text-success"><i
+                                                                class="fas fa-edit fa-lg mx-1"></i></a>
+                                                        <!-- <a href="/admin/deleteCustomers/<%= user._id %>"
                                                                 class="text-danger"
                                                                 onclick="return confirm('Are you sure want to delete this product?')"><i
                                                                     class="fas fa-trash fa-lg mx-1"></i></a> -->
-                                                                    <a 
-                                                                        class="text-danger"
-                                                                        onclick="handleDelete('<%= user._id %>')"><i
-                                                                            class="fas fa-trash fa-lg mx-1"></i></a>
+                                                        <a class="text-danger"
+                                                            onclick="handleDelete('<%= user._id %>')"><i
+                                                                class="fas fa-trash fa-lg mx-1"></i></a>
 
 
-                                                                            <div id="modal<%= user._id %>" class="modal">
-                                                                                <span
-                                                                                    onclick="document.getElementById('modal<%= user._id %>').style.display='none'"
-                                                                                    class="close" title="Close Modal">×</span>
-                                                                                <form class="modal-content"
-                                                                                    action="/admin/deleteCustomers/<%= user._id %>">
-                                                                                    <div class="modal-container">
-                                                                                        <h1>Delete Account</h1>
-                                                                                        <p>Are you sure you want to delete this product?
-                                                                                        </p>
-                
-                                                                                        <div class="clearfix">
-                                                                                            <button type="button"
-                                                                                                onclick="document.getElementById('modal<%= user._id %>').style.display='none'"
-                                                                                                class="cancelbtn">Cancel</button>
-                                                                                            <button type="submit"
-                                                                                                onclick="document.getElementById('modal<%= user._id %>').style.display='none'"
-                                                                                                class="deletebtn">Delete</button>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </form>
-                                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <% if (user.isBlocked) { %>
-                                                                <form action="/admin/unBlockCustomers/<%= user._id %>">
-                                                                    <button
-                                                                        class="<%= user.isBlocked? 'btn btn-primary btn-sm' :'btn btn-danger btn-sm' %>">Unblock</button>
-                                                                </form>
-                                                                <% } else { %>
-                                                                    <form
-                                                                        action="/admin/blockCustomers/<%= user._id %>">
-                                                                        <button
-                                                                            class="btn btn-danger btn-sm">Block</button>
-                                                                    </form>
-                                                                    <% } %>
-                                                        </td>
-                                                    </tr>
-                                                    <% }) %>
+                                                        <div id="modal<%= user._id %>" class="modal">
+                                                            <span
+                                                                onclick="document.getElementById('modal<%= user._id %>').style.display='none'"
+                                                                class="close" title="Close Modal">×</span>
+                                                            <form class="modal-content"
+                                                                action="/admin/deleteCustomers/<%= user._id %>">
+                                                                <div class="modal-container">
+                                                                    <h1>Delete Account</h1>
+                                                                    <p>Are you sure you want to delete this product?
+                                                                    </p>
+
+                                                                    <div class="clearfix">
+                                                                        <button type="button"
+                                                                            onclick="document.getElementById('modal<%= user._id %>').style.display='none'"
+                                                                            class="cancelbtn">Cancel</button>
+                                                                        <button type="submit"
+                                                                            onclick="document.getElementById('modal<%= user._id %>').style.display='none'"
+                                                                            class="deletebtn">Delete</button>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <% if (user.isBlocked) { %>
+                                                            <input type="button" id="unblockButton<%= user._id %>"
+                                                                class="btn btn-primary btn-sm" value="Unblock"
+                                                                onclick="unblockUser('<%= user._id %>')">
+                                                            <input type="button" id="blockButton<%= user._id %>"
+                                                                class="btn btn-danger btn-sm" value="Block"
+                                                                style="display:none;"
+                                                                onclick="blockUser('<%= user._id %>')">
+                                                            <% } else { %>
+                                                                <input type="button" id="unblockButton<%= user._id %>"
+                                                                    class="btn btn-primary btn-sm" value="Unblock"
+                                                                    style="display:none;"
+                                                                    onclick="unblockUser('<%= user._id %>')">
+                                                                <input type="button" id="blockButton<%= user._id %>"
+                                                                    class="btn btn-danger btn-sm" value="Block"
+                                                                    onclick="blockUser('<%= user._id %>')">
+                                                                <% } %>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
                                         </tbody>
                                     </table>
                                     <% } %>
@@ -114,10 +118,10 @@
                     <script>
                         let table = new DataTable('#myTables', {
                             "columnDefs": [
-                                { "orderable": false, "targets": [ 4] } // Assuming 0 is the S/N column and 7 is the Action column
+                                { "orderable": false, "targets": [4, 5] } // Assuming 0 is the S/N column and 7 is the Action column
                             ]
                         });
-        
+
                     </script>
 
 
@@ -127,17 +131,93 @@
                             modalDiv.style.display = 'block';
                         }
                     </script>
-                    <script>
-                        // When the user clicks anywhere outside of a modal, close it
-                        window.onclick = function (event) {
-<% users.forEach(user => { %>
-var modal<%= user._id %> = document.getElementById('modal<%= user._id %>');
-                            if (event.target == modal <%= user._id %> ) {
-                                modal <%= user._id %>.style.display = "none";
-                            }
-<% }); %>
-}
-                    </script>
 
+                    <script>
+                        var unblockButtons = document.querySelectorAll('[id^="unblockButton"]');
+                        var blockButtons = document.querySelectorAll('[id^="blockButton"]');
+
+                        function blockUser(userId) {
+                            Swal.fire({
+                                title: "Are you sure?",
+                                text: "You won't be able to revert this!",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#3085d6",
+                                cancelButtonColor: "#d33",
+                                confirmButtonText: "Confirm!"
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    fetch(`/admin/blockCustomers/${userId}`, {
+                                        method: 'POST',
+                                    })
+                                        .then(response => {
+                                            if (response.ok) {
+                                                // Update button visibility after blocking
+                                                toggleButtonVisibility(userId, true);
+                                                Swal.fire({
+                                                    title: "Blocked!",
+                                                    text: "The customer has been blocked.",
+                                                    icon: "success"
+                                                })
+                                            } else {
+                                                Swal.fire({
+                                                    title: "Task incomplete!",
+                                                    text: "Error when blocking customer. Please try again later.",
+                                                    icon: "failure"
+                                                });
+                                            }
+                                        });
+                                }
+                            });
+                        }
+
+                        function unblockUser(userId) {
+                            Swal.fire({
+                                title: "Are you sure?",
+                                text: "You won't be able to revert this!",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#3085d6",
+                                cancelButtonColor: "#d33",
+                                confirmButtonText: "Confirm!"
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    fetch(`/admin/unBlockCustomers/${userId}`, {
+                                        method: 'POST',
+                                    })
+                                        .then(response => {
+                                            if (response.ok) {
+                                                // Update button visibility after unblocking
+                                                toggleButtonVisibility(userId, false);
+                                                Swal.fire({
+                                                    title: "Unblocked!",
+                                                    text: "The customer has been unblocked.",
+                                                    icon: "success"
+                                                })
+                                            } else {
+                                                Swal.fire({
+                                                    title: "Task incomplete!",
+                                                    text: "Error when unblocking customer. Please try again later.",
+                                                    icon: "failure"
+                                                });
+                                            }
+                                        });
+                                }
+                            });
+                        }
+
+                        function toggleButtonVisibility(userId, isBlocked) {
+                            var unblockButton = document.getElementById('unblockButton' + userId);
+                            var blockButton = document.getElementById('blockButton' + userId);
+
+                            if (isBlocked) {
+                                unblockButton.style.display = 'block';
+                                blockButton.style.display = 'none';
+                            } else {
+                                unblockButton.style.display = 'none';
+                                blockButton.style.display = 'block';
+                            }
+                        }
+                    </script>
 
                     <%- include('layout/footerAdmin') %>

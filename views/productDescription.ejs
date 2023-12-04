@@ -42,10 +42,11 @@
                     <h1>
                         <%= products.product_name %>
                     </h1>
+                    <p class="product-rating"><button class="star"><%= avergaeScore %>&#9734;</button>out of <%= totalReviews %> reviews </p>
                     <p><strong>Price: ₹<%= formatPrice(products.price) %></strong></p>
                     <p><strong>Availability: <%= products.stock>0? 'In Stock' :'Out of stock' %></strong></p>
                     <p>
-                        <%= products.stock %><b> Nos</b>
+                        <strong>Stock:</strong><%= products.stock %><b> No's</b>
                     </p>
                     <p><strong>Category: Category Name</strong></p>
                     <p><strong>Brand:<%= products.brand %></strong></p>
@@ -65,6 +66,26 @@
             <p>
                 <%= products.description %>
             </p>
+            <div class="rating-review-container">
+                <h3>Ratings & Reviews</h3>
+                <div class="review-body">
+                <% products.reviews.forEach(review => { %>
+                    <div class="review-head">
+                            <button class="star"><%= review.score %>&#9734;</button>       
+                        <p><%= review.title %></p>
+                    </div>
+                    <div>
+                        <p><%= review.description %></p>
+                    </div>
+                    <span class="user-info">
+                        <i class='bx bxs-user-check fs-4'></i>
+                        <p><%= review.name %></p>
+                    </span>
+                    <hr>
+                <% }) %>
+            </div>
+
+            </div>
         </div>
 
 

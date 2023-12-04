@@ -1299,6 +1299,23 @@ async function handleOrdersPay(req,res){
     }
 }
 
+async function handleUpdatePaymentMethod(req,res){
+    const orderId =req.body.order.receipt;
+    const userId = req.session.userId;
+
+    try {
+        
+        const updatedOrder= await Orders.findByIdAndUpdate({_id:orderId,User_id:userId},{payment_method:'ONLINE'});
+
+        res.json({success:true});
+
+    } catch (error) {
+        console.log(error);
+    }
+
+
+}
+
 async function handleWalletPay(req,res){
     const userId=req.session.userId;
 
@@ -1610,7 +1627,7 @@ async function handleVerifyPayment(req, res) {
         } else {
             const updateStatus = await Orders.findByIdAndUpdate({ _id: orderId },
                 {
-                    $set: { Status: "Placed", payment_status: "Completed" }
+                    $set: { Status: "Placed", payment_status: "Completed"}
                 }
             )
 
@@ -1720,6 +1737,51 @@ async function handleDownloadInvoice(req, res) {
     const order = await Orders.findById({ _id: orderId })
 
     res.render('Invoice', { order, imgUri, formatPrice, images })
+};
+
+async function handleReviewPageView(req, res) {
+    const productId = req.query.productId;
+    try {
+        res.render('userReview', { imgUri, formatPrice, images, productId })      
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+async function handleSubmitReview(req,res){
+    const userId = req.session.userId;
+    const{score,title,description,productId}=req.body;
+    console.log(req.body);
+    console.log(productId);
+    console.log(score);
+    console.log(title);
+    console.log(description);
+    const user = await User.findById({_id:userId});
+
+    const name = user.name;
+
+
+
+    const productReview = await Product.findByIdAndUpdate(
+        {
+            _id:productId
+        },
+        {
+            $push:{
+                reviews:{
+                    name,
+                    score,
+                    title,
+                    description
+                }
+            }
+        },
+        { new: true } // This option returns the modified document
+        
+        );
+
+        res.redirect('/user/view-my-orders')
 }
 
 
@@ -1733,6 +1795,7 @@ module.exports = {
     handleAddNewAddress,
     handlePlaceOrder,
     handleOrdersPay,
+    handleUpdatePaymentMethod,
     handleWalletPay,
     handleAddAddressView,
     handleEditAddressView,
@@ -1755,5 +1818,7 @@ module.exports = {
     handleAddToWishlist,
     handleWishlistView,
     handleDeleteFromWishlist,
-    handleDownloadInvoice
+    handleDownloadInvoice,
+    handleReviewPageView,
+    handleSubmitReview,
 }

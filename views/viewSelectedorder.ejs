@@ -55,7 +55,7 @@
                             <p>
                                 Payment Status :<%= order.payment_status %>
                                     <% if (order.payment_status==='Pending' ) { %>
-                                        <input type="button" class="btn btn-success" value="Pay Now"
+                                        <input type="button" class="btn btn-success btn-sm" value="Pay Now"
                                             onclick="payNow('<%= order._id %>')">
                                         <% } %>
                             </p>
@@ -63,42 +63,46 @@
                         </div>
                         <div class="order-cancel-button-container">
 
-                            <% if (order.IsCancelled) { %> <!-- Use order.isCancelled here -->
-                                <p>Order Cancelled</p>
-                                <% } else { %>
-                                    <!-- <a href="/user/cancel-order?orderId=<%=order.collectionId %>"
+
+
+
+                                    <% if (order.IsCancelled) { %> <!-- Use order.isCancelled here -->
+                                        <p>Order Cancelled</p>
+                                        <% } else { %>
+                                            <!-- <a href="/user/cancel-order?orderId=<%=order.collectionId %>"
                                                 onclick="return confirm('Are you sure you want to cancel this order?');"><input
                                                     type="text" class="btn btn-danger order-cancel-button"
                                                     value="Cancel Order"></a> -->
-                                    <a onclick="handleCancel('<%= order._id %>')"><input type="text"
-                                            class="btn btn-danger order-cancel-button" value="Cancel Order"></a>
+                                            <a onclick="handleCancel('<%= order._id %>')"><input type="text"
+                                                    class="btn btn-danger order-cancel-button btn-sm"
+                                                    value="Cancel Order"></a>
 
 
-                                    <div id="modal<%= order._id %>" class="modal">
-                                        <span
-                                            onclick="document.getElementById('modal<%= order._id %>').style.display='none'"
-                                            class="close" title="Close Modal">×</span>
-                                        <form class="modal-content" action="/user/cancel-order?orderId=<%= order._id %>"
-                                            method="post">
-                                            <div class="modal-container">
-                                                <h1>Delete Account</h1>
-                                                <p>Are you sure you want to cancel this
-                                                    Order?
-                                                </p>
+                                            <div id="modal<%= order._id %>" class="modal">
+                                                <span
+                                                    onclick="document.getElementById('modal<%= order._id %>').style.display='none'"
+                                                    class="close" title="Close Modal">×</span>
+                                                <form class="modal-content"
+                                                    action="/user/cancel-order?orderId=<%= order._id %>" method="post">
+                                                    <div class="modal-container">
+                                                        <h1>Delete Account</h1>
+                                                        <p>Are you sure you want to cancel this
+                                                            Order?
+                                                        </p>
 
-                                                <div class="clearfix">
-                                                    <button type="button"
-                                                        onclick="document.getElementById('modal<%= order._id %>').style.display='none'"
-                                                        class="cancelbtn">Cancel</button>
-                                                    <button type="submit"
-                                                        onclick="document.getElementById('modal<%= order._id %>').style.display='none'"
-                                                        class="deletebtn">Confirm</button>
-                                                </div>
+                                                        <div class="clearfix">
+                                                            <button type="button"
+                                                                onclick="document.getElementById('modal<%= order._id %>').style.display='none'"
+                                                                class="cancelbtn">Cancel</button>
+                                                            <button type="submit"
+                                                                onclick="document.getElementById('modal<%= order._id %>').style.display='none'"
+                                                                class="deletebtn">Confirm</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+
                                             </div>
-                                        </form>
-
-                                    </div>
-                                    <% } %>
+                                            <% } %>
 
                         </div>
                     </div>
@@ -126,8 +130,17 @@
                                 </p>
                             </div>
                             <div>
+                                <% if (order.Status==='Delivered' ) { %>
+                                    <a href="/user/product-review?productId=<%= product.product_id %>" class="starButtonContainer">
+                                        <button class="rating-btn">&#9734;</button>
+                                        <span>Rate & review</span>
+                                    </a>
+                                    <% } %>
+                            </div>
+                            <div>
                                 <p>Price: $<%= formatPrice(product.price)%>
                                 </p>
+                                
                             </div>
 
                         </section>
@@ -197,7 +210,7 @@
                         const KEY_ID = data.KEY_ID;
                         // console.log(KEY_ID);
                         // console.log(order); // Access the 'order' property from the response
-                        razorpayPayment(order, KEY_ID);
+                        razorpayPayment(order, KEY_ID, orderId);
 
                     })
 
@@ -248,7 +261,20 @@
                 })
                     .then(response => {
                         if (response.ok) {
-                            window.location.href = '/user/view-my-orders';
+                            fetch('/user/update-payment-method', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ order }),
+                            }).then(response => {
+                                if (response.ok) {
+                                    window.location.href = '/user/view-my-orders';
+                                } else {
+                                    console.log("response not ok")
+                                }
+                            })
+
                         } else {
                             console.log("response not ok")
                         }
@@ -259,7 +285,19 @@
         </script>
 
 
+        <script>
+            function productReview(productId) {
+                console.log('Hai');
+                fetch('/user/product-review', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ productId }),
+                })
 
+            }
+        </script>
 
 
 

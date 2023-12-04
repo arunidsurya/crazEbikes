@@ -1,0 +1,52 @@
+
+.rat-ng-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+  
+  .rat-ng-container  form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .rat-ng-container  label {
+    margin-bottom: 8px;
+    color: #333;
+  }
+  
+  .rat-ng-container  input,
+  textarea {
+    padding: 10px;
+    margin-bottom: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .rat-ng-container  button {
+    padding: 12px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .rat-ng-container  button:hover {
+    background-color: #218838;
+  }
+
+  .rate-submit-btn{
+    margin-top: 20px;
+  }
+
+  .rate-page-button{
+    background: unset;
+    color: goldenrod;
+    font-size: 900;
+  }

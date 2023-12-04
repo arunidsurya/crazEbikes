@@ -16,8 +16,61 @@
 .zoom_img {
   width: 100%;
   transition: transform 0.3s ease;
-
+}
   .button-orders{
     display: flex;
     justify-content: space-between;
   }
+
+  .rating-review-container{
+    max-width: 70%;
+    margin: 50px auto; /* Center the container and add some top margin */
+    padding: 20px;
+    background-color: #fff; /* Set a white background color */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+    border-radius: 8px; /* Add a border radius for a rounded appearance */
+}
+.rating-review-container h3 {
+  text-align: center;
+  color: #333; /* Set a dark color for the heading */
+}
+.review-body {
+  border: 1px solid #ddd; /* Add a light grey border */
+  padding: 20px;
+  margin-top: 20px; /* Add some top margin for separation */
+  border-radius: 8px; /* Add a border radius */
+}
+
+.review-head {
+  display: flex;
+  align-items: center; /* Align items center vertically */
+}
+
+.star {
+  box-sizing: border-box;
+  background-color: rgb(54, 160, 54);
+  width: 50px;
+  height: 30px;
+  font-weight: 900;
+  border: 2px solid #3498db; /* Set a border color for the star */
+  border-radius: 5%; 
+  color: white; /* Set a color for the star */
+  font-size: 20px; /* Adjust font size */
+  margin-right: 10px; /* Add some right margin for spacing */
+}
+
+.rating-review-container p {
+  margin: 0; /* Remove default margin for paragraphs */
+  color: #555; /* Set a dark color for text */
+}
+
+.user-info {
+  display: flex; /* Use flex display to align items in a row */
+  align-items: center; /* Align items vertically centered */
+  gap: 8px; /* Add some space between the icon and the paragraph */
+}
+
+/* Additional styling for the icon if needed */
+.user-info i {
+  color: #157dc2; /* Set a color for the icon */
+}

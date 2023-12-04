@@ -124,12 +124,19 @@ async function handleProductDescriptionPageView(req,res){
       const id=req.query.productid;
     const products= await Product.findOne({_id:id});
 
+      const totalReviews=products.reviews.length;
+      const totalScore= products.reviews.reduce((sum,review)=>sum + review.score,0 );
+      const avergaeScore= (totalScore / totalReviews).toFixed(1);
+
 
     const imgUri = process.env.IMGURI;
     return res.render("productDescription",{
         products:products,
         images:images,
         imgUri:imgUri,
+        totalReviews,
+        totalScore,
+        avergaeScore,
         formatPrice,
     });
 }
