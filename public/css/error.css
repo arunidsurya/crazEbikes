@@ -1,0 +1,37 @@
+/* Style for the error container */
+.error-container {
+    background: url('/errorImage/error.jpg');
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Style for the error content */
+.error-content {
+    text-align: center;
+    color: #fff; /* Set text color to white */
+}
+
+.error-content h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+}
+
+.error-content p {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    line-height: 1.6; /* Improve line spacing for better readability */
+}
+
+/* Style for the link (if any) */
+.error-content a {
+    color: #ffc107; /* Set link color to yellow */
+    text-decoration: underline; /* Underline the link */
+}
+
+/* Style for the link on hover */
+.error-content a:hover {
+    color: #ff8c00; /* Change link color on hover */
+}

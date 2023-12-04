@@ -70,7 +70,7 @@ app.use(multer({ dest: 'images', storage: fileStorage, fileFilter: fileFilter })
 
 app.use("/admin-auth", adminAuthRouter);
 app.use("/admin", checkAdminAuth, adminRouter);
-app.use('/', checkAdminAuth, staticRouter);
+app.use('/', checkAdminAuth, staticRouter,errorHandler);
 app.use("/user-auth", userAuthRouter);
 app.use('/user',checkUserAuth, userRouter ,errorHandler);
 
@@ -83,6 +83,12 @@ app.all('*',(req,res,next)=>{
   next(err);
 })
 
+app.use((error, req, res, next)=> {
+  error.statusCode=error.statusCode||500;
+  error.status=error.status||'error';
+  res.render('error',{error,images,imgUri});
+  next();
+})
 
 
 
