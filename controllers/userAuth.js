@@ -25,7 +25,7 @@ async function handleUserLogin(req, res) {
 
     const errors=validationResult(req);
     if(!errors.isEmpty()){
-        return res.render('userlogin',{
+        return res.render('auth/userlogin',{
             errors:errors.mapped(),
             images:images,
             imgUri:imgUri,
@@ -37,14 +37,14 @@ async function handleUserLogin(req, res) {
     if(user){
         const validPassword = await bycrypt.compare(password,user.password);
         if (!validPassword) {
-            return res.render("userlogin", {
+            return res.render("auth/userlogin", {
                 images:images,
                 imgUri:imgUri,
                 error: "Invalid email or password",
             });
         
             }else if(user.isBlocked){
-                return res.render("userlogin", {
+                return res.render("auth/userlogin", {
                     images:images,
                     imgUri:imgUri,
                     error: "This Account is bLocked!!! please contact Admin",
@@ -56,7 +56,7 @@ async function handleUserLogin(req, res) {
             req.session.userId=user._id;
             return res.redirect("/");
     }else{
-        return res.render("userlogin", {
+        return res.render("auth/userlogin", {
             images:images,
             imgUri:imgUri,
             error: "No user found",
@@ -169,7 +169,7 @@ const sendVerificationEmail = async({_id,email},res)=>{
         await newOTPVerification.save();
         transpoter.sendMail(mailOptions);
         console.log('verification mail send');
-        res.render('userOtpVerify',{ message:"Verification otp email sent", userid:_id,imgUri:imgUri,images:images})
+        res.render('auth/userOtpVerify',{ message:"Verification otp email sent", userid:_id,imgUri:imgUri,images:images})
   
     } catch (error) {
         res.json({
@@ -186,7 +186,7 @@ async function handleUserOtpVerification(req,res){
         let otp= req.body.otp;
         let userId = req.query.userid;
         if(!userId || !otp){
-            res.render('userOtpVerify',{
+            res.render('auth/userOtpVerify',{
                 userid:userId,
                 status:"FAILED",
                 imgUri:imgUri,
@@ -200,7 +200,7 @@ async function handleUserOtpVerification(req,res){
           });
           if(userOTPVerification.length <=0){
             //no records found
-            res.render('userOtpVerify',{
+            res.render('auth/userOtpVerify',{
                 userid:userId,
                 status:"FAILED",
                 imgUri:imgUri,
@@ -216,7 +216,7 @@ async function handleUserOtpVerification(req,res){
 
             if(expiresAt < Date.now()){
                await userOTPVerification.deleteMany({userId});
-               res.render('userOtpVerify',{
+               res.render('auth/userOtpVerify',{
                 userid:userId,
                 status:"FAILED",
                 imgUri:imgUri,
@@ -229,7 +229,7 @@ async function handleUserOtpVerification(req,res){
 
                if(!validOTP){
                 // throw new Error("Invalid code passed. Check  your inbox");
-                res.render('userOtpVerify',{
+                res.render('auth/userOtpVerify',{
                     userid:userId,
                     status:"VERIFIED",
                     imgUri:imgUri,
@@ -239,7 +239,7 @@ async function handleUserOtpVerification(req,res){
                }else {
                await User.updateOne({_id:userId},{isVerified:true});
                await userOTPVerification.deleteMany({userId});
-               res.render('userOtpVerify',{
+               res.render('auth/userOtpVerify',{
                 userid:userId,
                 status:"VERIFIED",
                 imgUri:imgUri,

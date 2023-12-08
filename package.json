@@ -23,6 +23,7 @@
     "express-validator": "^7.0.1",
     "js-image-zoom": "^0.7.0",
     "jsonwebtoken": "^9.0.2",
+    "localStorage": "^1.0.4",
     "mongoose": "^7.6.1",
     "multer": "^1.4.5-lts.1",
     "nocache": "^4.0.0",

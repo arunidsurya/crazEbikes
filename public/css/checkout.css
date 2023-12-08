@@ -175,3 +175,10 @@ input[type="radio"][name="selectedAddress"] {
 #edit-address-div{
   display: none;
 }
+
+#buyNow-payment-section{
+  display: flex;
+  flex-direction: column;
+  font-size: 20px;
+  margin-left: 15px;
+}

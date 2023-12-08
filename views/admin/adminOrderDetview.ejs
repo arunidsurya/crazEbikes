@@ -1,0 +1,309 @@
+<%- include('../layout/headerAdmin') %>
+    <%- include('../layout/sidebarAdmin') %>
+
+        <div class="col py-3">
+
+            <% ordersData.forEach((order,index)=> { %> <!-- Iterate over ordersData -->
+
+                <div class="order-container">
+                    <h5>Order Details</h5>
+
+                    <div class="order-outline">
+                        <div class="deliver-address">
+                            <h4>Delivery Address</h4>
+                            <h6>
+                                <%= order.address.Name %>
+                            </h6>
+                            <p><span>
+                                    <%= order.address.Address %>,
+                                </span><span>
+                                    <%= order.address.City %>-
+                                </span><span>
+                                    <%= order.address.Pincode %>
+                                </span></p>
+                            <p>
+                                <%=order.address.State %>
+                            </p>
+                            <p>Phone Number :<%= order.address.ContactNumber %>
+                            </p>
+                        </div>
+                        <div>
+                            <h4>Order Status</h4>
+                            <div id="order-status">
+                                <p style="display: inline-block;">Order : <%= order.Status %>
+                                </p>
+                            </div>
+
+
+
+                            <p>Order date :<%= order.OrderDate %>
+                            </p>
+                            <p>Payment method :<%= order.payment_method %>
+                            </p>
+                            <div id="payment-status">
+                                <p style="display: inline-block;">Coupon Applied :<%= order.coupon_name %>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="order-cancel-button-container">
+                            <h6>Order Status</h6>
+                            <div style="display: inline-block;">
+                                <select id="orderStatus" data-order-id="<%= order.collectionId %>"
+                                    onchange="handleOrdertStatusChange('<%=order.Status%>')">
+                                    <option value="Placed" <%=order.Status==="Placed" ? "selected" : "" %>>Placed
+                                    </option>
+                                    <option value="Pending" <%=order.Status==="Pending" ? "selected" : "" %>>Pending
+                                    </option>
+                                    <option value="Delivered" <%=order.Status==="Delivered" ? "selected" : "" %>
+                                        >Delivered</option>
+                                    <option value="Cancelled" <%=order.Status==="Cancelled" ? "selected" : "" %>
+                                        >Cancelled</option>
+                                    <option value="Deleted" <%=order.Status==="Deleted" ? "selected" : "" %>>Deleted
+                                    </option>
+                                </select>
+
+                            </div>
+                        </div>
+
+                        <div class="order-cancel-button-container">
+                            <h6>Payment Status</h6>
+                            <div style="display: inline-block;">
+                                <select id="paymentStatus" data-order-id="<%= order.collectionId %>"
+                                    onchange="handlePaymentStatusChange('<%=order.payment_status%>')">
+                                    <option value="Completed" <%=order.payment_status==="Completed" ? "selected" : "" %>
+                                        >Completed</option>
+                                    <option value="Pending" <%=order.payment_status==="Pending" ? "selected" : "" %>
+                                        >Pending</option>
+                                    <option value="Refund" <%=order.payment_status==="Refund" ? "selected" : "" %>
+                                        >Refund</option>
+
+                                </select>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <% order.productsArray.forEach(product=> { %>
+                        <section class="order">
+
+                            <div>
+                                <img class="order-image" src="<%= imgUri + product.imageUrl %>" alt="Image">
+
+                            </div>
+                            <div>
+                                <p>
+                                    <%= product.product_name.slice(0,20) %>
+                                </p>
+                            </div>
+                            <div>
+                                <p>
+                                    color: <%= product.color %>
+                                </p>
+                            </div>
+
+                            <div>
+                                <p>
+                                    <%= product.quantity %> No
+                                </p>
+                            </div>
+                            <div>
+                                <p>Price: $<%= formatPrice(product.price)%>
+                                </p>
+                            </div>
+
+                        </section>
+                        <% }) %>
+                            <section class="order-total">
+                                <p class="discount-paragraph">Discount Applied: <span class="order-total-price">$ <%=
+                                            formatPrice(order.coupon_amount) %>
+                                    </span></p>
+                                <p>Total Order price(including delivery charge): <span class="order-total-price">$ <%=
+                                            formatPrice(order.totalPrice) %>
+                                    </span></p>
+                            </section>
+                </div>
+                <% }) %>
+
+
+                    <a href="/admin/orders-view"><input type="button" class="btn btn-link"
+                            value="Back to orders View"></a>
+
+
+
+        </div>
+
+        <%- include('../layout/footerAdmin') %>
+
+            <script>
+
+                var currentPaymentStatus;
+                var currentOrderStatus;
+
+                function handleOrdertStatusChange(orderStatus) {
+                    currentOrderStatus = orderStatus
+                }
+                function handleOrderStatusChange(paymentStatus) {
+                    currentPaymentStatus = paymentStatus;
+                }
+
+                // Get a reference to the select element
+                var orderStatusSelect = document.getElementById('orderStatus');
+                var paymentStatusSelect = document.getElementById('paymentStatus');
+
+                var orderId = orderStatusSelect.getAttribute("data-order-id");
+
+
+
+
+                // Add an event listener to log the selected option to the console
+                orderStatusSelect.addEventListener("change", function () {
+                    var selectedOption = orderStatusSelect.options[orderStatusSelect.selectedIndex].text;
+                    var orderStatus = document.getElementById('order-status');
+
+
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "Read the instructions carefully!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Confirm!"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch('/admin/change-order-status', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ selectedOption, orderId }),
+                            })
+                                .then(response => {
+                                    if (response.ok) {
+                                        orderStatus.innerHTML = 'Order is' + " " + selectedOption;
+                                        Swal.fire({
+                                            title: "Changed!",
+                                            text: "Order status has been changed.",
+                                            icon: "success"
+                                        })
+
+                                    } else {
+                                        Swal.fire({
+                                            title: "Task incomplete!",
+                                            text: "Error when changing  status. Please try again later.",
+                                            icon: "failure"
+                                        });
+                                    }
+                                });
+                        } else {
+                            // User canceled the confirmation, revert the payment status
+                            var orderStatusOptions = orderStatusSelect.options;
+                            for (var i = 0; i < orderStatusOptions.length; i++) {
+                                orderStatusOptions[i].removeAttribute('selected'); // Remove the "selected" attribute from all options
+                                if (orderStatusOptions[i].value === currentOrderStatus) {
+                                    orderStatusOptions[i].setAttribute('selected', 'selected'); // Add the "selected" attribute to the correct option
+                                }
+                            }
+                        }
+                    });
+
+
+                });
+
+                // Add an event listener to log the selected option to the console
+                paymentStatusSelect.addEventListener("change", function () {
+                    var selectedPaymentOption = paymentStatusSelect.options[paymentStatusSelect.selectedIndex].text;
+                    var paymentStatus = document.getElementById('payment-status');
+
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "Read the instructions carefully!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Confirm!"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch('/admin/change-payment-status', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ selectedPaymentOption, orderId }),
+                            })
+                                .then(response => {
+                                    if (response.ok) {
+                                        paymentStatus.innerHTML = 'Payment  :' + " " + selectedPaymentOption;
+                                        Swal.fire({
+                                            title: "Changed!",
+                                            text: "Payment status has been changed.",
+                                            icon: "success"
+                                        })
+
+                                    } else {
+                                        Swal.fire({
+                                            title: "Task incomplete!",
+                                            text: "Error when changing  status. Please try again later.",
+                                            icon: "failure"
+                                        });
+                                    }
+                                });
+                        } else {
+                            // User canceled the confirmation, revert the payment status
+                            var paymentStatusOptions = paymentStatusSelect.options;
+                            for (var i = 0; i < paymentStatusOptions.length; i++) {
+                                paymentStatusOptions[i].removeAttribute('selected'); // Remove the "selected" attribute from all options
+                                if (paymentStatusOptions[i].value === currentPaymentStatus) {
+                                    paymentStatusOptions[i].setAttribute('selected', 'selected'); // Add the "selected" attribute to the correct option
+                                }
+                            }
+                        }
+                    });
+
+                });
+            </script>
+
+            <script>
+                function deleteOrder(userId, productId) {
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "You won't be able to revert this!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Yes, delete it!"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(`/user/detele-cart-item?userid=${userId}&productid=${productId}`, {
+                                method: 'POST',
+                            })
+                                .then(response => {
+                                    if (response.ok) {
+                                        Swal.fire({
+                                            title: "Deleted!",
+                                            text: "Your file has been deleted.",
+                                            icon: "success"
+                                        }).then(() => {
+                                            window.location.href = '/user/cart-view';
+                                        })
+
+                                    } else {
+                                        Swal.fire({
+                                            title: "Task incomplete!",
+                                            text: "Error when deleting item. Please try again later.",
+                                            icon: "failure"
+                                        });
+                                    }
+                                });
+                        }
+                    });
+                }
+            </script>
+
+
+
+            </div>
+            </div>
+            </div>

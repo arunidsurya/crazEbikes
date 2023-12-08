@@ -27,7 +27,7 @@ async function handleAdminLogin(req, res) {
         
         const errors=validationResult(req);
         if(!errors.isEmpty()){
-            return res.render('adminlogin',{
+            return res.render('auth/adminlogin',{
                 errors:errors.mapped(),
             });
         }
@@ -53,7 +53,7 @@ async function handleAdminLogout(req, res) {
 
     res.cookie("adminuid", " ");
     req.admin = " ";
-    return res.redirect("/adminLogin");
+    return res.redirect("auth/adminLogin");
 };
 
 

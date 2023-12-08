@@ -15,7 +15,7 @@ const images = {
 function errorHandler(error, req, res, next) {
     error.statusCode=error.statusCode||500;
     error.status=error.status||'error';
-    res.render('error',{error,images,imgUri});
+    res.render('static/error',{error,images,imgUri});
     next();
 }
 

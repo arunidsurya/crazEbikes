@@ -1,0 +1,165 @@
+<!-- views/walletView.ejs -->
+
+<%- include('../layout/headerUser') %>
+    <%- include('../layout/formatPrice') %>
+
+        <main class="manage-wallet-main-container">
+            <div class="manage-wallet-container">
+                <header class="header-wallet">
+                    <h3>Your Wallet</h3>
+                </header>
+
+                <div class="wallet-content">
+                    <h4>Available Balance:</h4>
+                    <h4>₹<%= formatPrice(wallet.amount) %>
+                    </h4>
+                </div>
+                <div>
+                    <input type="button" class="btn btn-success" id="" value="Wallet Pay" onclick="payToWalletClick()">
+                </div>
+                <div class="wallet-pay-form" id="wallet-pay-form">
+                    <label for="amount">Enter amount:</label>
+                    <input type="text" name="amount" id="walletPayAmount">
+                    <input type="button" class="btn btn-primary" onclick="payToWallet(event)" value="Pay">
+                </div>
+                <% if (wallet.transactions.length> 0) { %>
+
+                    <h4>Transactions</h4>
+                    <table class="table table-borderd" id="myTable">
+                        <thead>
+                            <tr class="table-success ">
+                                <th>Invoice Number</th>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Credit/Debit</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="table-body">
+                            <% wallet.transactions.forEach(transaction=> { %>
+                                <tr>
+                                    <td>
+                                        <%= transaction.source %>
+                                    </td>
+                                    <td>
+                                        <%= new Date(transaction.date).toLocaleString() %>
+                                    </td>
+                                    <td>
+                                        <%= transaction.description %>
+                                    </td>
+                                    <td>
+                                        <%= formatPrice(transaction.transaction_amount) %>
+                                    </td>
+                                    <% if (transaction.method==='credit' ) { %>
+                                        <td style="color: green;">+<%= transaction.method %>
+                                        </td>
+                                        <% } else { %>
+                                            <td style="color: red;">-<%= transaction.method %>
+                                            </td>
+                                            <% } %>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+
+                    </table>
+
+                    <% } %>
+
+            </div>
+        </main>
+
+        <%- include('../layout/footerUser') %>
+
+
+
+            <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+            <script>
+                // let table = new DataTable('#myTable');
+                $(document).ready(function () {
+                    $('#myTable').DataTable({
+                        "order": [[1, "desc"]] // This will sort the second column (Date) in descending order by default
+                    });
+                });
+            </script>
+            <script>
+                function payToWalletClick() {
+                    console.log('pay to wallet');
+                }
+
+                function payToWallet(event) {
+                    event.preventDefault();
+                    const amount = document.getElementById('walletPayAmount').value;
+
+                    fetch('/user/wallet-pay', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ amount }),
+                    })
+                        .then(response => response.json()) // Parse the JSON response
+                        .then(data => {
+                            const order = data.order;
+                            const KEY_ID = data.KEY_ID;
+                            // console.log(KEY_ID);
+                            // console.log(order); // Access the 'order' property from the response
+                            razorpayPayment(order, KEY_ID);
+
+                        })
+                }
+
+                function razorpayPayment(order, KEY_ID) {
+
+                    var options = {
+                        "key": KEY_ID,
+                        "amount": order.amount,
+                        "currency": "INR",
+                        "name": "crazEbikes",
+                        "description": "Test Transaction",
+                        "image": "https://example.com/your_logo",
+                        "order_id": order.id,
+                        "handler": function (response) {
+                            // alert(response.razorpay_payment_id);
+                            // alert(response.razorpay_order_id);
+                            // alert(response.razorpay_signature);
+
+                            // Call verifyPayment with the response and order
+                            verifyPayment(response, order);
+                        },
+                        "prefill": {
+                            "name": "Gaurav Kumar",
+                            "email": "gaurav.kumar@example.com",
+                            "contact": "9000090000"
+                        },
+                        "notes": {
+                            "address": "Razorpay Corporate Office"
+                        },
+                        "theme": {
+                            "color": "#3399cc"
+                        }
+                    };
+                    var rzp1 = new Razorpay(options);
+                    rzp1.open();
+
+                }
+
+                function verifyPayment(response, order) {
+                    fetch('/user/verify-wallet-payment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ order, response }),
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                window.location.href = '/user/wallet';
+                            } else {
+                                console.log("response not ok")
+                            }
+                        })
+                }
+
+
+            </script>

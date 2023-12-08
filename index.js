@@ -70,25 +70,25 @@ app.use(multer({ dest: 'images', storage: fileStorage, fileFilter: fileFilter })
 
 app.use("/admin-auth", adminAuthRouter);
 app.use("/admin", checkAdminAuth, adminRouter);
-app.use('/', checkAdminAuth, staticRouter,errorHandler);
+app.use('/', checkAdminAuth, staticRouter);
 app.use("/user-auth", userAuthRouter);
-app.use('/user',checkUserAuth, userRouter ,errorHandler);
+app.use('/user',checkUserAuth, userRouter);
 
 
 
-app.all('*',(req,res,next)=>{
-  const err = new Error(`cant find ${req.originalUrl} on the server` );
-  err.status='fail';
-  err.statusCode=404;
-  next(err);
-})
+// app.all('*',(req,res,next)=>{
+//   const err = new Error(`cant find ${req.originalUrl} on the server` );
+//   err.status='fail';
+//   err.statusCode=404;
+//   next(err);
+// })
 
-app.use((error, req, res, next)=> {
-  error.statusCode=error.statusCode||500;
-  error.status=error.status||'error';
-  res.render('error',{error,images,imgUri});
-  next();
-})
+// app.use((error, req, res, next)=> {
+//   error.statusCode=error.statusCode||500;
+//   error.status=error.status||'error';
+//   res.render('static/error',{error,images,imgUri});
+//   next();
+// })
 
 
 

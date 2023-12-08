@@ -12,6 +12,8 @@ const Razorpay = require('razorpay');
 const Coupon = require("../models/coupon");
 const Product = require("../models/product");
 const { check, validationResult } = require('express-validator');
+const generateInvoiceNumber = require('../utils/gerenrateInvoiceNumber');
+var localStorage = require('localStorage');
 
 var instance = new Razorpay({ key_id: process.env.RZP_KEY_ID, key_secret: process.env.RZP_SECRET_KEY })
 
@@ -35,12 +37,12 @@ function formatPrice(price) {
     });
 };
 
-function generateInvoiceNumber() {
-    const staticPrefix = "INV/CRAZEBIKES/WS/2023"; // Add your static alphanumeric values here
-    const randomDigits = Math.floor(1000 + Math.random() * 9000); // Generates a random 4-digit number
+// function generateInvoiceNumber() {
+//     const staticPrefix = "INV/CRAZEBIKES/WS/2023"; // Add your static alphanumeric values here
+//     const randomDigits = Math.floor(1000 + Math.random() * 9000); // Generates a random 4-digit number
 
-    return `${staticPrefix}${randomDigits}`;
-}
+//     return `${staticPrefix}${randomDigits}`;
+// }
 
 
 async function handleCartView(req, res, next) {
@@ -88,20 +90,22 @@ async function handleCartView(req, res, next) {
         ]);
 
         if (cartDataResult.length === 0) {
-            return res.render('cart', { imgUri, images, message: "0 items in the cart" });
+            return res.render('user/cart', { imgUri, images, message: "0 items in the cart" });
         }
 
         const { cartdata, cartTotal } = cartDataResult[0]; // Remove userId and totalQuantity here
 
-        res.render('cart', { cartdata, cartTotal, userId, totalQuantity: cartDataResult[0].totalQuantity, imgUri, images, formatPrice });
+        res.render('user/cart', { cartdata, cartTotal, userId, totalQuantity: cartDataResult[0].totalQuantity, imgUri, images, formatPrice });
     } catch (err) {
         console.error('Error:', err);
         next(err);
-        // return res.render('cart', { imgUri, images, message: "0 items in the cart" });
 
     }
 
 };
+
+
+
 
 async function handleAddToCart(req, res, next) {
     const userId = req.session.userId;
@@ -113,7 +117,7 @@ async function handleAddToCart(req, res, next) {
         // Check if the user's cart exists; if not, create a new one
         let cart = await Cart.findOne({ userId: userId }).populate({
             path: 'cartItems.product_id',
-            model: 'product' ,
+            model: 'product',
         });
 
         if (!cart) {
@@ -121,12 +125,15 @@ async function handleAddToCart(req, res, next) {
         }
 
         // Check if the product already exists in the cart
-        const existingCartItem = cart.cartItems.find(item => item.product_id.toString() === product_id);
+        const existingCartItem = await Cart.findOne({ userId: userId, cartItems: { $elemMatch: { product_id: product_id } } });
+
 
         const quantityToAdd = parseInt(quantity, 10);
         if (existingCartItem) {
             // If the product is already in the cart, update the quantity
-            existingCartItem.quantity += quantityToAdd;
+
+            return res.redirect('/user/cart-view')
+
         } else {
             // If the product is not in the cart, add it
             const product = await Product.findById(product_id);
@@ -152,59 +159,58 @@ async function handleAddToCart(req, res, next) {
 
         try {
             const cartDataResult = await Cart.aggregate([
-                                {
-                                    $match: { userId: new mongoose.Types.ObjectId(userId) }
-                                },
-                                {
-                                    $unwind: '$cartItems'
-                                },
-                                {
-                                    $lookup: {
-                                        from: 'products',
-                                        localField: 'cartItems.product_id',
-                                        foreignField: '_id',
-                                        as: 'product'
-                                    }
-                                },
-                                {
-                                    $unwind: '$product'
-                                },
-                                {
-                                    $group: {
-                                        _id: null,
-                                        cartdata: {
-                                            $push: {
-                                                product: '$product',
-                                                quantity: '$cartItems.quantity' // Include quantity from cartItems
-                                            }
-                                        },
-                                        cartTotal: {
-                                            $sum: {
-                                                $multiply: [
-                                                    '$cartItems.quantity',
-                                                    '$product.price'
-                                                ]
-                                            }
-                                        },
-                                        totalQuantity: { $sum: '$cartItems.quantity' }
-                                    }
-                                },
-                
-                            ]);
-                
-                
-                            if (cartDataResult.length === 0) {
-                                // No records found
-                                const err = new Error(`no matching data found!!!`);
-                                err.status = 'fail';
-                                err.statusCode = 404;
-                                next(err);
+                {
+                    $match: { userId: new mongoose.Types.ObjectId(userId) }
+                },
+                {
+                    $unwind: '$cartItems'
+                },
+                {
+                    $lookup: {
+                        from: 'products',
+                        localField: 'cartItems.product_id',
+                        foreignField: '_id',
+                        as: 'product'
+                    }
+                },
+                {
+                    $unwind: '$product'
+                },
+                {
+                    $group: {
+                        _id: null,
+                        cartdata: {
+                            $push: {
+                                product: '$product',
+                                quantity: '$cartItems.quantity' // Include quantity from cartItems
                             }
-                
-                            const { cartdata, cartTotal, totalQuantity } = cartDataResult[0];
-                            // console.log(cartdata)
-                
-                            res.render('cart', { cartdata, cartTotal, userId, totalQuantity, imgUri, images, formatPrice });
+                        },
+                        cartTotal: {
+                            $sum: {
+                                $multiply: [
+                                    '$cartItems.quantity',
+                                    '$product.price'
+                                ]
+                            }
+                        },
+                        totalQuantity: { $sum: '$cartItems.quantity' }
+                    }
+                },
+
+            ]);
+
+
+            if (cartDataResult.length === 0) {
+                // No records found
+                const err = new Error(`no matching data found!!!`);
+                err.status = 'fail';
+                err.statusCode = 404;
+                next(err);
+            }
+
+            const { cartdata, cartTotal, totalQuantity } = cartDataResult[0];
+
+            res.render('user/cart', { cartdata, cartTotal, userId, totalQuantity, imgUri, images, formatPrice });
 
         } catch (error) {
             console.error('Error:', error);
@@ -217,100 +223,6 @@ async function handleAddToCart(req, res, next) {
     }
 }
 
-// async function handleAddToCart(req, res, next) {
-//     const userId = req.session.userId;
-
-//     try {
-//         const product_id = req.query.product_id || req.body.productId;
-//         const quantity = req.body.quantity || 1;
-
-
-//         // Check if the user's cart exists; if not, create a new one
-//         let cart = await Cart.findOne({ userId: userId });
-//         if (!cart) {
-//             cart = new Cart({ userId: userId, cartItems: [] });
-//         }
-
-//         // Check if the product already exists in the cart
-//         const existingCartItemIndex = cart.cartItems.findIndex(item => item.product_id.toString() === product_id);
-
-//         const quantityToAdd = parseInt(quantity, 10);
-//         if (existingCartItemIndex !== -1) {
-//             // If the product is already in the cart, update the quantity
-//             cart.cartItems[existingCartItemIndex].quantity += quantityToAdd;
-//         } else {
-//             // If the product is not in the cart, add it
-//             cart.cartItems.push({ product_id, quantity });
-//         }
-
-//         // Save the updated cart
-//         await cart.save();
-
-//         try {
-//             const cartDataResult = await Cart.aggregate([
-//                 {
-//                     $match: { userId: new mongoose.Types.ObjectId(userId) }
-//                 },
-//                 {
-//                     $unwind: '$cartItems'
-//                 },
-//                 {
-//                     $lookup: {
-//                         from: 'products',
-//                         localField: 'cartItems.product_id',
-//                         foreignField: '_id',
-//                         as: 'product'
-//                     }
-//                 },
-//                 {
-//                     $unwind: '$product'
-//                 },
-//                 {
-//                     $group: {
-//                         _id: null,
-//                         cartdata: {
-//                             $push: {
-//                                 product: '$product',
-//                                 quantity: '$cartItems.quantity' // Include quantity from cartItems
-//                             }
-//                         },
-//                         cartTotal: {
-//                             $sum: {
-//                                 $multiply: [
-//                                     '$cartItems.quantity',
-//                                     '$product.price'
-//                                 ]
-//                             }
-//                         },
-//                         totalQuantity: { $sum: '$cartItems.quantity' }
-//                     }
-//                 },
-
-//             ]);
-
-
-//             if (cartDataResult.length === 0) {
-//                 // No records found
-//                 const err = new Error(`no matching data found!!!`);
-//                 err.status = 'fail';
-//                 err.statusCode = 404;
-//                 next(err);
-//             }
-
-//             const { cartdata, cartTotal, totalQuantity } = cartDataResult[0];
-//             // console.log(cartdata)
-
-//             res.render('cart', { cartdata, cartTotal, userId, totalQuantity, imgUri, images, formatPrice });
-//         } catch (error) {
-//             console.error('Error:', err);
-//             next(error);
-//         }
-//     } catch (error) {
-//         console.error(error);
-//         next(error);
-//         // res.status(500).json({ error: 'An error occurred while adding the item to the cart' });
-//     }
-// };
 
 async function handleAddToCartOneItemFromWishlist(req, res, next) {
     const userId = req.session.userId;
@@ -338,9 +250,9 @@ async function handleAddToCartOneItemFromWishlist(req, res, next) {
             cart.cartItems.push({ product_id, quantity });
         }
 
-        const product= await Product.findById({_id:product_id});
+        const product = await Product.findById({ _id: product_id });
         const price = product.price;
-        const tot=price * quantity;
+        const tot = price * quantity;
         cart.cartTotal += price * quantity;
 
         // Save the updated cart
@@ -407,12 +319,12 @@ async function handleAddToCartFromWishlist(req, res, next) {
             }
         }).filter(Boolean));
 
-                // Calculate the total price of items in the cart
-                let cartTotal = cart.cartTotal;
+        // Calculate the total price of items in the cart
+        let cartTotal = cart.cartTotal;
 
         // Iterate through wishlist product IDs and add them to the cart
         for (const product_id of wishlistProductIds) {
-            const quantityToAdd = 1; // You can adjust the quantity as needed
+            const quantityToAdd = 1;
 
             // Check if the product already exists in the cart
             if (cartItemMap.has(product_id.toString())) {
@@ -422,11 +334,11 @@ async function handleAddToCartFromWishlist(req, res, next) {
                 // If the product is not in the cart, add it
                 cartItemMap.set(product_id.toString(), { product_id, quantity: quantityToAdd });
             }
-                        // Calculate the total price of the current item and add to cartTotal
-                        const product = await Product.findById(product_id);
-                        if (product) {
-                            cartTotal += product.price * quantityToAdd;
-                        }
+            // Calculate the total price of the current item and add to cartTotal
+            const product = await Product.findById(product_id);
+            if (product) {
+                cartTotal += product.price * quantityToAdd;
+            }
         }
 
         // Convert back to array and update cart items
@@ -475,10 +387,9 @@ async function handleWishlistView(req, res, next) {
         }));
 
         if (products.length === 0) {
-            return res.render('cart', { imgUri, images, message: "0 items in your wishlist" });
+            return res.render('user/cart', { imgUri, images, message: "0 items in your wishlist" });
         }
-        // Now, you can send the 'products' array to the UI
-        res.render('wishlist', { products, images, imgUri, userId, formatPrice });
+        res.render('user/wishlist', { products, images, imgUri, userId, formatPrice });
     } catch (error) {
         console.error(error);
         next(error);
@@ -563,99 +474,6 @@ async function handleDeleteFromWishlist(req, res) {
     }
 
 }
-// async function handleUpdateCartQuantity(req, res) {
-
-//     function formatPrice(price) {
-//         return price.toLocaleString(undefined, {
-//             minimumFractionDigits: 2,
-//             maximumFractionDigits: 2,
-//         });
-//     };
-
-//     try {
-//         const userId = req.session.userId;
-//         const itemId = req.body.itemId;
-//         const newQuantity = req.body.newQuantity;
-
-//         // Find the user's cart
-//         const cart = await Cart.findOne({ userId: userId });
-
-//         if (!cart) {
-//             const err = new Error(`Cart not found!!!`);
-//             err.status = 'fail';
-//             err.statusCode = 404;
-//             next(err);
-//         }
-
-//         // Find the item in the cart
-//         const cartItem = cart.cartItems.find(item => item.product_id.toString() === itemId);
-
-//         if (!cartItem) {
-//             return res.json({ success: false, message: 'Item not found in the cart.' });
-//         } else {
-//             // Update the item's quantity
-//             cartItem.quantity = newQuantity;
-
-//             // Save the updated cart
-//             await cart.save();
-
-//             try {
-//                 const cartDataResult = await Cart.aggregate([
-//                     {
-//                         $match: { userId: new mongoose.Types.ObjectId(userId) }
-//                     },
-//                     {
-//                         $unwind: '$cartItems'
-//                     },
-//                     {
-//                         $lookup: {
-//                             from: 'products',
-//                             localField: 'cartItems.product_id',
-//                             foreignField: '_id',
-//                             as: 'product'
-//                         }
-//                     },
-//                     {
-//                         $unwind: '$product'
-//                     },
-//                     {
-//                         $group: {
-//                             _id: null,
-//                             cartdata: {
-//                                 $push: {
-//                                     product: '$product',
-//                                     quantity: '$cartItems.quantity',
-//                                 }
-//                             },
-//                             cartTotal: {
-//                                 $sum: {
-//                                     $multiply: [
-//                                         '$cartItems.quantity',
-//                                         '$product.price'
-//                                     ]
-//                                 }
-//                             },
-//                             totalQuantity: { $sum: '$cartItems.quantity' }
-//                         }
-//                     },
-//                 ]);
-
-//                 if (cartDataResult.length === 0) {
-//                     return res.render('cart', { imgUri, images, message: "0 items in the cart" });
-//                 }
-
-//                 const { cartTotal, totalQuantity } = cartDataResult[0];
-//                 res.json({ success: true, cartTotal, totalQuantity, formatPrice });
-//             } catch (err) {
-//                 console.error('Error:', err);
-//                 return res.render('cart', { imgUri, images, message: "0 items in the cart" });
-//             }
-//         }
-//     } catch (error) {
-//         console.error('Error updating cart quantity:', error);
-//         res.status(500).json({ success: false, message: 'An error occurred while updating the cart.' });
-//     }
-// };
 
 
 async function handleUpdateCartQuantity(req, res, next) {
@@ -689,13 +507,13 @@ async function handleUpdateCartQuantity(req, res, next) {
             return res.json({ success: false, message: 'Item not found in the cart.' });
         } else {
             // Update the item's quantity
-            const productId=cartItem.product_id;
-            const oldQuantity=cartItem.quantity;
+            const productId = cartItem.product_id;
+            const oldQuantity = cartItem.quantity;
 
-            const product= await Product.findById({_id:productId});
+            const product = await Product.findById({ _id: productId });
             const price = product.price;
 
-            const quantityDifference=newQuantity-oldQuantity;
+            const quantityDifference = newQuantity - oldQuantity;
 
             cart.cartTotal += quantityDifference * price;
 
@@ -746,14 +564,14 @@ async function handleUpdateCartQuantity(req, res, next) {
                 ]);
 
                 if (cartDataResult.length === 0) {
-                    return res.render('cart', { imgUri, images, message: "0 items in the cart" });
+                    return res.render('user/cart', { imgUri, images, message: "0 items in the cart" });
                 }
 
                 const { cartTotal, totalQuantity } = cartDataResult[0];
                 res.json({ success: true, cartTotal, totalQuantity, formatPrice });
             } catch (err) {
                 console.error('Error:', err);
-                return res.render('cart', { imgUri, images, message: "0 items in the cart" });
+                return res.render('user/cart', { imgUri, images, message: "0 items in the cart" });
             }
         }
     } catch (error) {
@@ -770,7 +588,6 @@ async function handleDeleteCartItem(req, res) {
 
     try {
         const cart = await Cart.findOne({ userId: userId });
-        console.log(cart);
 
         if (cart) {
             const productIndex = cart.cartItems.findIndex(item => item.product_id.toString() === product_id);
@@ -778,18 +595,18 @@ async function handleDeleteCartItem(req, res) {
                 // Product found in cartItems
                 const deletedProduct = cart.cartItems[productIndex];
                 const quantity = deletedProduct.quantity;
-                const product = await Product.findById({_id:product_id});
+                const product = await Product.findById({ _id: product_id });
                 const price = product.price;
 
                 // Calculate the total price of the deleted product
                 const deletedProductTotal = price * quantity;
-    
+
                 // Update cartItems by removing the product
                 cart.cartItems.splice(productIndex, 1);
-                
+
                 // Update cartTotal
                 cart.cartTotal -= deletedProductTotal;
-    
+
                 // Save the updated cart
                 await cart.save();
                 res.json({ success: true });
@@ -851,10 +668,10 @@ async function handleCheckoutView(req, res) {
 
         const { cartdata, cartTotal } = cartDataResult[0]; // Remove userId and totalQuantity here
 
-        res.render('checkout', { cartdata, cartTotal, userAddress, userId, totalQuantity: cartDataResult[0].totalQuantity, imgUri, images, formatPrice });
+        res.render('user/checkout', { cartdata, cartTotal, userAddress, userId, totalQuantity: cartDataResult[0].totalQuantity, imgUri, images, formatPrice });
     } catch (err) {
         console.error('Error:', err);
-        return res.render('cart', { imgUri, images, message: "0 items in the cart" });
+        return res.render('user/cart', { imgUri, images, message: "0 items in the cart" });
     }
 }
 
@@ -870,7 +687,7 @@ async function handleEditAddressView(req, res) {
 
     const deliveryAddress = address.delivery[0];
 
-    res.render('editAddress', { images, imgUri, deliveryAddress, userId });
+    res.render('user/editAddress', { images, imgUri, deliveryAddress, userId });
 }
 
 
@@ -892,7 +709,15 @@ async function handleEditAddress(req, res) {
                 }
             }
         );
-        res.redirect('/user/checkout')
+
+        const productId =localStorage.getItem('prodcutId')
+        console.log(productId);
+        if (productId) {
+            res.redirect('/user/buy-now');
+        } else {
+            res.redirect('/user/checkout');
+        }
+
     } catch (error) {
         console.log(error);
     }
@@ -902,7 +727,6 @@ async function handleAccountEditAddress(req, res) {
 
     const { id, name, contactNumber, pincode, address, city, state, userId } = req.body;
 
-    console.log(id, name, contactNumber, pincode, address, city, state, userId);
 
     try {
         const user = await User.updateOne({ _id: userId, 'delivery._id': id },
@@ -917,14 +741,14 @@ async function handleAccountEditAddress(req, res) {
                 }
             }
         );
-        res.json({success:true});
+        res.json({ success: true });
     } catch (error) {
         console.log(error);
     }
 }
 
 async function handleAddAddressView(req, res) {
-    res.render('addAddress', { imgUri, images });
+    res.render('user/addAddress', { imgUri, images });
 }
 
 async function handleAddNewAddress(req, res) {
@@ -933,8 +757,8 @@ async function handleAddNewAddress(req, res) {
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.render('addAddress', {
-            errors: errors.mapped(),imgUri,images,
+        return res.render('user/addAddress', {
+            errors: errors.mapped(), imgUri, images,
         });
     }
 
@@ -948,171 +772,24 @@ async function handleAddNewAddress(req, res) {
                 }
             }
         )
-        res.redirect('/user/checkout');
+    
+        const productId = localStorage.getItem('productId')
+        if (productId) {
+            res.redirect('/user/buy-now');
+        } else {
+            res.redirect('/user/checkout');
+        }
+
     } catch (error) {
 
     }
 }
 
-// async function handlePlaceOrder(req, res) {
-//     const { selectedAddressId, paymentMethod, userId, totalPrice, coupon_name, coupon_amount } = req.body;
-
-
-//     try {
-//         const status = paymentMethod === 'COD' ? 'placed' : 'pending';
-
-//         const user = await User.findById(userId);
-//         const address = [];
-//         const selectedAddressObj = user.delivery.find((deliveryAddress) =>
-//             deliveryAddress._id.equals(selectedAddressId) // Use the `equals` method to compare ObjectId
-//         );
-
-//         if (selectedAddressObj) {
-//             const cleanedAddress = {
-//                 Address: selectedAddressObj.address,
-//                 City: selectedAddressObj.city,
-//                 ContactNumber: selectedAddressObj.contactNumber,
-//                 Name: selectedAddressObj.name,
-//                 Pincode: selectedAddressObj.pincode,
-//                 State: selectedAddressObj.state,
-//             };
-
-//             address.push(cleanedAddress);
-//         }
-
-//         const cart = await Cart.findOne({ userId: userId })
-//             .populate('cartItems.product_id')
-//             .exec();
-
-//         if (cart) {
-//             // Step 2: Loop through the cart items and extract product details.
-//             console.log(cart);
-//             const orderItems = cart.cartItems.map(cartItem => {
-//                 const product = cartItem.product_id;
-//                 return {
-//                     product_id: product._id,
-//                     quantity: cartItem.quantity,
-//                     product_name: product.product_name,
-//                     imageUrl: product.imageUrl[0],
-//                     price: product.price,
-//                     color: product.color,
-//                 };
-//             });
-
-//             if (status && address && orderItems) {
-//                 const invoiceNumber = generateInvoiceNumber();
-
-//                 const newOrder = new Orders({
-//                     invoiceNumber: invoiceNumber,
-//                     total_price: totalPrice,
-//                     User_id: user._id,
-//                     delivery_address: address,
-//                     Items: orderItems,
-//                     Status: status,
-//                     payment_method: paymentMethod,
-//                     coupon_code: coupon_name || null,
-//                     coupon_discount: coupon_amount || 0,
-//                 });
-
-//                 const saveOrder = await newOrder.save();
-//                 await Cart.deleteMany({ userId: user._id });
-
-//                 // Update stock for each product in orderItems
-//                 for (const orderItem of orderItems) {
-//                     const productId = orderItem.product_id;
-//                     const quantity = orderItem.quantity;
-
-//                     // Assuming you have a Product model
-//                     const product = await Product.findById(productId);
-
-//                     // Update stock
-//                     if (product) {
-//                         const updatedStock = product.stock - quantity;
-//                         // Assuming 'stock' is the field in your Product model representing the stock
-//                         await Product.findByIdAndUpdate(productId, { stock: updatedStock });
-//                     }
-//                 }
-
-
-//                 if (req.body.paymentMethod === 'COD') {
-//                     res.json({ CODpayment: true });
-//                 } else if (req.body.paymentMethod === 'ONLINE') {
-//                     const user = await User.findById({ _id: userId });
-//                     const walletAmount = user.wallet.amount || 0;
-//                     const amount = (parseInt(totalPrice, 10)) * 100;
-//                     const orderId = saveOrder._id;
-//                     var options = {
-//                         amount: amount,
-//                         currency: "INR",
-//                         receipt: orderId,
-//                     };
-//                     instance.orders.create(options, function (err, order) {
-//                         const order_det = order;
-//                         // console.log("new Order:",order_det);
-//                         res.json({ order: order_det, walletAmount, KEY_ID: process.env.RZP_KEY_ID });
-//                     })
-//                 } else if (req.body.paymentMethod === 'WALLET') {
-//                     const user = await User.findById({ _id: userId });
-//                     if (user) {
-//                         const walletAmount = user.wallet.amount;
-//                         const priceToPay = (parseInt(totalPrice, 10));
-
-//                         if (priceToPay < walletAmount) {
-//                             const remainingWalletAmount = walletAmount - totalPrice;
-//                             console.log(remainingWalletAmount);
-//                             const orderId = saveOrder.id;
-//                             const updatedOrder = await Orders.findByIdAndUpdate(
-//                                 { _id: orderId },
-//                                 { $set: { payment_status: 'Completed', Status: 'Placed' } }
-//                             );
-//                             const source = updatedOrder.invoiceNumber;
-//                             const updatedWallet = await User.findByIdAndUpdate(
-//                                 { _id: userId },
-//                                 {
-//                                     $set: { 'wallet.amount': remainingWalletAmount }, // Increment wallet amount
-//                                     $push: { 'wallet.transactions': { source: source, method: 'debit', description: 'Payment completd for the order', transaction_amount: priceToPay } } // Push transaction details
-//                                 },
-//                                 { new: true }
-//                             );
-
-//                             res.json({ WALLETpayment: true });
-
-//                         } else {
-//                             const amount = (priceToPay - walletAmount) * 100;
-//                             const orderId = saveOrder._id;
-//                             var options = {
-//                                 amount: amount,
-//                                 currency: "INR",
-//                                 receipt: orderId,
-//                             };
-//                             instance.orders.create(options, function (err, order) {
-//                                 const order_det = order;
-//                                 // console.log("new Order:",order_det);
-//                                 res.json({ order: order_det, walletAmount, KEY_ID: process.env.RZP_KEY_ID });
-//                             })
-//                         }
-
-//                     }
-//                 }
-
-
-//                 // res.redirect('/user/view-my-orders');
-
-//                 // res.status(200).json({ message: 'Order placed successfully' });
-//             }
-//         } else {
-//             res.status(404).json({ error: 'Cart not found' });
-//         }
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ error: 'Internal server error' });
-//     }
-// }
 
 
 async function handlePlaceOrder(req, res) {
     const { selectedAddressId, paymentMethod, userId, totalPrice, coupon_name, coupon_amount } = req.body;
-    const discount=coupon_amount||0;
+    const discount = coupon_amount || 0;
 
 
     try {
@@ -1143,12 +820,11 @@ async function handlePlaceOrder(req, res) {
 
         if (cart) {
             // Step 2: Loop through the cart items and extract product details.
-            const cartTotal = (cart.cartTotal+300)-discount;
-            console.log(cartTotal);
-            var orderPrice=0;
-            if(totalPrice==cartTotal){
-              orderPrice = totalPrice;
-            }else{
+            const cartTotal = (cart.cartTotal + 300) - discount;
+            var orderPrice = 0;
+            if (totalPrice == cartTotal) {
+                orderPrice = totalPrice;
+            } else {
                 orderPrice = cartTotal;
             }
             const orderItems = cart.cartItems.map(cartItem => {
@@ -1212,7 +888,6 @@ async function handlePlaceOrder(req, res) {
                     };
                     instance.orders.create(options, function (err, order) {
                         const order_det = order;
-                        // console.log("new Order:",order_det);
                         res.json({ order: order_det, walletAmount, KEY_ID: process.env.RZP_KEY_ID });
                     })
                 } else if (req.body.paymentMethod === 'WALLET') {
@@ -1223,7 +898,6 @@ async function handlePlaceOrder(req, res) {
 
                         if (priceToPay < walletAmount) {
                             const remainingWalletAmount = walletAmount - orderPrice;
-                            console.log(remainingWalletAmount);
                             const orderId = saveOrder.id;
                             const updatedOrder = await Orders.findByIdAndUpdate(
                                 { _id: orderId },
@@ -1251,7 +925,6 @@ async function handlePlaceOrder(req, res) {
                             };
                             instance.orders.create(options, function (err, order) {
                                 const order_det = order;
-                                // console.log("new Order:",order_det);
                                 res.json({ order: order_det, walletAmount, KEY_ID: process.env.RZP_KEY_ID });
                             })
                         }
@@ -1259,10 +932,6 @@ async function handlePlaceOrder(req, res) {
                     }
                 }
 
-
-                // res.redirect('/user/view-my-orders');
-
-                // res.status(200).json({ message: 'Order placed successfully' });
             }
         } else {
             res.status(404).json({ error: 'Cart not found' });
@@ -1274,15 +943,15 @@ async function handlePlaceOrder(req, res) {
 }
 
 
-async function handleOrdersPay(req,res){
-    const userId=req.session.userId;
-    const orderId=req.body.orderId;
+async function handleOrdersPay(req, res) {
+    const userId = req.session.userId;
+    const orderId = req.body.orderId;
 
     try {
 
-        const order_det= await Orders.findOne({User_id:userId,_id:orderId});
+        const order_det = await Orders.findOne({ User_id: userId, _id: orderId });
 
-        const amount=order_det.total_price*100;
+        const amount = order_det.total_price * 100;
 
         var options = {
             amount: amount,
@@ -1293,21 +962,21 @@ async function handleOrdersPay(req,res){
             const order_det = order;
             res.json({ order: order_det, KEY_ID: process.env.RZP_KEY_ID });
         })
-        
+
     } catch (error) {
         console.log(error)
     }
 }
 
-async function handleUpdatePaymentMethod(req,res){
-    const orderId =req.body.order.receipt;
+async function handleUpdatePaymentMethod(req, res) {
+    const orderId = req.body.order.receipt;
     const userId = req.session.userId;
 
     try {
-        
-        const updatedOrder= await Orders.findByIdAndUpdate({_id:orderId,User_id:userId},{payment_method:'ONLINE'});
 
-        res.json({success:true});
+        const updatedOrder = await Orders.findByIdAndUpdate({ _id: orderId, User_id: userId }, { payment_method: 'ONLINE' });
+
+        res.json({ success: true });
 
     } catch (error) {
         console.log(error);
@@ -1316,8 +985,8 @@ async function handleUpdatePaymentMethod(req,res){
 
 }
 
-async function handleWalletPay(req,res){
-    const userId=req.session.userId;
+async function handleWalletPay(req, res) {
+    const userId = req.session.userId;
 
     const amount = req.body.amount * 100;
     const id = uuid.v4();
@@ -1332,7 +1001,7 @@ async function handleWalletPay(req,res){
             const order_det = order;
             res.json({ order: order_det, KEY_ID: process.env.RZP_KEY_ID });
         })
-        
+
     } catch (error) {
         console.log(error);
     }
@@ -1389,7 +1058,7 @@ async function handleMyOrdersView(req, res) {
         const totalPages = Math.ceil(totalOrders / itemsPerPage);
 
         // Now, after processing all orders, render the view and send the accumulated data
-        res.render('manageOrders', { imgUri, images, ordersData, formatPrice, currentPage: page, totalPages });
+        res.render('user/manageOrders', { imgUri, images, ordersData, formatPrice, currentPage: page, totalPages });
 
     } catch (error) {
         console.error(error);
@@ -1403,7 +1072,7 @@ async function handleSelectedOrderView(req, res) {
     const userId = req.session.userId;
 
     const order = await Orders.findById({ _id: orderId });
-    res.render('viewSelectedorder', { order, imgUri, images, formatPrice })
+    res.render('user/viewSelectedorder', { order, imgUri, images, formatPrice })
 
 }
 
@@ -1434,7 +1103,7 @@ async function handleManageAccountView(req, res) {
 
         const user = await User.findById({ _id: userId });
 
-        res.render('manageAccount', { user, images, imgUri });
+        res.render('user/manageAccount', { user, images, imgUri });
 
     } catch (error) {
         console.log(error)
@@ -1627,7 +1296,7 @@ async function handleVerifyPayment(req, res) {
         } else {
             const updateStatus = await Orders.findByIdAndUpdate({ _id: orderId },
                 {
-                    $set: { Status: "Placed", payment_status: "Completed"}
+                    $set: { Status: "Placed", payment_status: "Completed" }
                 }
             )
 
@@ -1638,14 +1307,14 @@ async function handleVerifyPayment(req, res) {
     }
 }
 
-async function handleVerifyWalletPayment(req,res){
+async function handleVerifyWalletPayment(req, res) {
     const razorpay_payment_id = req.body.response.razorpay_payment_id;
     const razorpay_order_id = req.body.response.razorpay_order_id;
     const razorpay_signature = req.body.response.razorpay_signature;
     const orderId = req.body.order.receipt;
     const userId = req.session.userId;
-    const amount =(req.body.order.amount)/100;
-    const wallet_amount=1172888;
+    const amount = (req.body.order.amount) / 100;
+
 
 
     const crypto = require('crypto');
@@ -1655,21 +1324,20 @@ async function handleVerifyWalletPayment(req,res){
     hmac = hmac.digest('hex'); // converting to hexa code
 
     if (hmac == razorpay_signature) {
-           const source = razorpay_payment_id;
-            const updatedWallet = await User.findByIdAndUpdate(
-                { _id: userId },
-                {
-                    $inc: { 'wallet.amount': amount }, // Increment wallet amount
-                    $push: { 'wallet.transactions': { source: source, method: 'credit', description: 'Payment added to the wallet', transaction_amount: amount } } // Push transaction details
-                },
-                { new: true }
-            );
+        const source = razorpay_payment_id;
+        const updatedWallet = await User.findByIdAndUpdate(
+            { _id: userId },
+            {
+                $inc: { 'wallet.amount': amount }, // Increment wallet amount
+                $push: { 'wallet.transactions': { source: source, method: 'credit', description: 'Payment added to the wallet', transaction_amount: amount } } // Push transaction details
+            },
+            { new: true }
+        );
 
 
-            res.json({ success: true });
+        res.json({ success: true });
 
-
-}
+    }
 }
 
 async function handleApplyCoupon(req, res) {
@@ -1714,7 +1382,7 @@ async function handleWalletView(req, res) {
 
 
             // Render the wallet view with pagination information
-            res.render('walletView', {
+            res.render('user/walletView', {
                 wallet,
                 imgUri,
                 images,
@@ -1736,28 +1404,24 @@ async function handleDownloadInvoice(req, res) {
 
     const order = await Orders.findById({ _id: orderId })
 
-    res.render('Invoice', { order, imgUri, formatPrice, images })
+    res.render('user/Invoice', { order, imgUri, formatPrice, images })
 };
 
 async function handleReviewPageView(req, res) {
     const productId = req.query.productId;
     try {
-        res.render('userReview', { imgUri, formatPrice, images, productId })      
+        res.render('user/userReview', { imgUri, formatPrice, images, productId })
     } catch (error) {
         console.log(error);
     }
 
 }
 
-async function handleSubmitReview(req,res){
+async function handleSubmitReview(req, res) {
     const userId = req.session.userId;
-    const{score,title,description,productId}=req.body;
-    console.log(req.body);
-    console.log(productId);
-    console.log(score);
-    console.log(title);
-    console.log(description);
-    const user = await User.findById({_id:userId});
+    const { score, title, description, productId } = req.body;
+
+    const user = await User.findById({ _id: userId });
 
     const name = user.name;
 
@@ -1765,11 +1429,11 @@ async function handleSubmitReview(req,res){
 
     const productReview = await Product.findByIdAndUpdate(
         {
-            _id:productId
+            _id: productId
         },
         {
-            $push:{
-                reviews:{
+            $push: {
+                reviews: {
                     name,
                     score,
                     title,
@@ -1778,10 +1442,168 @@ async function handleSubmitReview(req,res){
             }
         },
         { new: true } // This option returns the modified document
-        
+
+    );
+
+    res.redirect('/user/view-my-orders')
+}
+
+
+async function handleBuyNow(req, res) {
+    const productId = req.query.productId || localStorage.getItem('productId');
+    const userId = req.session.userId;
+    localStorage.setItem('productId',req.session.productId);
+
+    try {
+        const userAddress = await User.findById({ _id: userId }, { delivery: 1, _id: 0 });
+
+        const product = await Product.findById({ _id: productId });
+
+
+        res.render('user/buynowcheckout', { product, userAddress, userId, productId, imgUri, images, formatPrice });
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function handleBuyNowPlaceOrder(req, res) {
+    const { selectedAddressId, paymentMethod, userId, totalPrice, coupon_name, coupon_amount, productId } = req.body;
+    const discount = coupon_amount || 0;
+
+
+    try {
+        const status = paymentMethod === 'COD' ? 'placed' : 'pending';
+
+        const user = await User.findById(userId);
+        const address = [];
+        const selectedAddressObj = user.delivery.find((deliveryAddress) =>
+            deliveryAddress._id.equals(selectedAddressId) // Use the `equals` method to compare ObjectId
         );
 
-        res.redirect('/user/view-my-orders')
+        if (selectedAddressObj) {
+            const cleanedAddress = {
+                Address: selectedAddressObj.address,
+                City: selectedAddressObj.city,
+                ContactNumber: selectedAddressObj.contactNumber,
+                Name: selectedAddressObj.name,
+                Pincode: selectedAddressObj.pincode,
+                State: selectedAddressObj.state,
+            };
+
+            address.push(cleanedAddress);
+        }
+
+        const orderItems = [];
+
+        const product = await Product.findByIdAndUpdate(
+            { _id: productId },
+            {
+                $inc: { stock: -1 } // Decrement stock by 1
+            },
+            { new: true } // To return the updated document
+        );
+
+        orderItems.push({
+            product_id: product._id,
+            quantity: 1,
+            product_name: product.product_name,
+            imageUrl: product.imageUrl[0],
+            price: product.price,
+            color: product.color
+        });
+
+        const cartTotal = (product.price + 300) - discount;
+        var orderPrice = 0;
+        if (totalPrice == cartTotal) {
+            orderPrice = totalPrice;
+        } else {
+            orderPrice = cartTotal;
+        }
+
+        if (status && address && orderItems) {
+            const invoiceNumber = generateInvoiceNumber();
+
+            const newOrder = new Orders({
+                invoiceNumber: invoiceNumber,
+                total_price: orderPrice,
+                User_id: user._id,
+                delivery_address: address,
+                Items: orderItems,
+                Status: status,
+                payment_method: paymentMethod,
+                coupon_code: coupon_name || null,
+                coupon_discount: coupon_amount || 0,
+            });
+
+            const saveOrder = await newOrder.save();
+
+            localStorage.removeItem('productId');
+
+            if (req.body.paymentMethod === 'COD') {
+                res.json({ CODpayment: true });
+            } else if (req.body.paymentMethod === 'ONLINE') {
+                const user = await User.findById({ _id: userId });
+                const walletAmount = user.wallet.amount || 0;
+                const amount = (parseInt(orderPrice, 10)) * 100;
+                const orderId = saveOrder._id;
+                var options = {
+                    amount: amount,
+                    currency: "INR",
+                    receipt: orderId,
+                };
+                instance.orders.create(options, function (err, order) {
+                    const order_det = order;
+                    res.json({ order: order_det, walletAmount, KEY_ID: process.env.RZP_KEY_ID });
+                })
+            } else if (req.body.paymentMethod === 'WALLET') {
+                const user = await User.findById({ _id: userId });
+                if (user) {
+                    const walletAmount = user.wallet.amount;
+                    const priceToPay = (parseInt(orderPrice, 10));
+
+                    if (priceToPay < walletAmount) {
+                        const remainingWalletAmount = walletAmount - orderPrice;
+                        const orderId = saveOrder.id;
+                        const updatedOrder = await Orders.findByIdAndUpdate(
+                            { _id: orderId },
+                            { $set: { payment_status: 'Completed', Status: 'Placed' } }
+                        );
+                        const source = updatedOrder.invoiceNumber;
+                        const updatedWallet = await User.findByIdAndUpdate(
+                            { _id: userId },
+                            {
+                                $set: { 'wallet.amount': remainingWalletAmount }, // Increment wallet amount
+                                $push: { 'wallet.transactions': { source: source, method: 'debit', description: 'Payment completd for the order', transaction_amount: priceToPay } } // Push transaction details
+                            },
+                            { new: true }
+                        );
+
+                        res.json({ WALLETpayment: true });
+
+                    } else {
+                        const amount = (priceToPay - walletAmount) * 100;
+                        const orderId = saveOrder._id;
+                        var options = {
+                            amount: amount,
+                            currency: "INR",
+                            receipt: orderId,
+                        };
+                        instance.orders.create(options, function (err, order) {
+                            const order_det = order;
+                            res.json({ order: order_det, walletAmount, KEY_ID: process.env.RZP_KEY_ID });
+                        })
+                    }
+
+                }
+            }
+
+        }
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 }
 
 
@@ -1821,4 +1643,6 @@ module.exports = {
     handleDownloadInvoice,
     handleReviewPageView,
     handleSubmitReview,
+    handleBuyNow,
+    handleBuyNowPlaceOrder,
 }

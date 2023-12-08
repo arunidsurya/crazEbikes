@@ -35,7 +35,7 @@ async function handleCategoryView(req, res) {
         const categories = await Category.find({ isDeleted: false })
 
 
-        res.render('categories', { categories});
+        res.render('admin/categories', { categories });
     } catch (error) {
         console.log(error);
     }
@@ -64,7 +64,7 @@ async function handleCategorySearch(req, res) {
         const totalProducts = await Category.countDocuments({ isDeleted: false });
         const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
 
-        res.render('categories', { categories, currentPage: page, totalPages, PRODUCTS_PER_PAGE });
+        res.render('admin/categories', { categories, currentPage: page, totalPages, PRODUCTS_PER_PAGE });
     } catch (error) {
         console.log(error);
     }
@@ -74,7 +74,7 @@ async function handleCategorySearch(req, res) {
 
 async function handleAddCategoryPageView(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
-    res.render('addCategories');
+    res.render('admin/addCategories');
 }
 
 async function handleCategoryAdd(req, res) {
@@ -88,7 +88,7 @@ async function handleCategoryAdd(req, res) {
         return res.redirect("/admin/categories");
     } catch (error) {
         console.log(error);
-        return res.render("addCategories", { message: "Failed!!Category already exists" });
+        return res.render("admin/addCategories", { message: "Failed!!Category already exists" });
     }
 }
 async function handleEditCategoryPageView(req, res) {
@@ -97,7 +97,7 @@ async function handleEditCategoryPageView(req, res) {
     let id = req.params.id;
     const category = await Category.findOne({ _id: id });
     // if(!user && user==null) res.render("/categories");
-    res.render("editCategories", { category: category });
+    res.render("admin/editCategories", { category: category });
 
 }
 
@@ -124,7 +124,7 @@ async function handleCategoryDelete(req, res) {
         return res.redirect("/admin/categories");
     } catch (error) {
         console.log(error);
-        return res.rednder("categories");
+        return res.rednder("admin/categories");
     }
 
 }
@@ -137,7 +137,7 @@ async function handleUserView(req, res) {
 
         const users = await User.find({ isDeleted: false })
 
-        res.render('customers', { users});
+        res.render('admin/customers', { users });
     } catch (error) {
         console.log(error);
     }
@@ -165,7 +165,7 @@ async function handleUserSearch(req, res) {
         const totalProducts = await User.countDocuments({ isDeleted: false });
         const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
 
-        res.render('customers', { users, currentPage: page, totalPages, PRODUCTS_PER_PAGE });
+        res.render('admin/customers', { users, currentPage: page, totalPages, PRODUCTS_PER_PAGE });
     } catch (error) {
         console.log(error);
     }
@@ -174,7 +174,7 @@ async function handleUserSearch(req, res) {
 
 
 async function handleAddUserPageView(req, res) {
-    res.render('addCustomers');
+    res.render('admin/addCustomers');
 }
 
 async function handleUserAdd(req, res) {
@@ -183,7 +183,6 @@ async function handleUserAdd(req, res) {
         const { name, email, password, contactNumber } = req.body;
         const saltRounds = 10;
         const hashedPassword = await bycrypt.hash(password, saltRounds);
-        // console.log(name,email,password,contactNumber,hashedPassword);
         await User.create({
             name,
             email,
@@ -193,15 +192,13 @@ async function handleUserAdd(req, res) {
         return res.redirect("/admin/user");
     } catch (error) {
         console.log(error);
-        return res.render("addCustomers", { message: "Failed!!User already exists!!" });
+        return res.render("admin/addCustomers", { message: "Failed!!User already exists!!" });
     }
 };
 async function handleEditCustomerPageView(req, res) {
-    // if(!req.admin) return res.redirect('/adminlogin');
     let id = req.params.id;
     const customer = await User.findOne({ _id: id });
-    // if(!user && user==null) res.render("/categories");
-    res.render("editCustomers", { customer: customer });
+    res.render("admin/editCustomers", { customer: customer });
 
 }
 
@@ -270,10 +267,10 @@ async function handleProductsView(req, res) {
                 path: 'categoryId',
                 select: 'category_name',
             })
-;
+            ;
 
 
-        res.render('products', { products,formatPrice,imgUri });
+        res.render('admin/products', { products, formatPrice, imgUri });
     } catch (error) {
         console.log(error);
     }
@@ -284,14 +281,14 @@ async function handleProductsView(req, res) {
 async function handleAddProductPageView(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
     const categories = await Category.find({}, { category_name: 1, _id: 1 });
-    res.render('addProducts', { categories: categories });
+    res.render('admin/addProducts', { categories: categories });
 }
 
 async function handleProductAdd(req, res) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const categories = await Category.find({}, { category_name: 1, _id: 1 });
-        return res.render('addProducts', {
+        return res.render('admin/addProducts', {
             errors: errors.mapped(),
             categories: categories,
         });
@@ -319,19 +316,17 @@ async function handleProductAdd(req, res) {
         return res.redirect("/admin/products");
     } catch (error) {
         console.log(error);
-        return res.render("addSuccess", { message: "Failed!!" });
+        return res.render("admin/addSuccess", { message: "Failed!!" });
     }
 };
 
 async function handleProductUpdatePageView(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
-    // if(!req.admin) return res.redirect('/adminlogin');
     let id = req.params.id;
     const product = await Product.findOne({ _id: id });
 
     const categories = await Category.find({}, { category_name: 1, _id: 1 });
-    // if(!user && user==null) res.render("/categories");
-    res.render("editProducts", { product: product, categories: categories });
+    res.render("admin/editProducts", { product: product, categories: categories });
 
 }
 
@@ -420,16 +415,11 @@ async function handleOrdersView(req, res) {
         const totalProducts = await Orders.countDocuments({ isDeleted: false });
         const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
 
-        res.render('orders', { orders, formatPrice })
+        res.render('admin/orders', { orders, formatPrice })
 
     } catch (error) {
         console.log(error);
     }
-
-}
-
-async function handleOrdersSearch(req, res) {
-
 
 }
 
@@ -476,7 +466,7 @@ async function handleOrderDetailedView(req, res) {
 
 
             // Now, after processing all orders, render the view and send the accumulated data
-            res.render('adminOrderDetview', { ordersData, imgUri, formatPrice });
+            res.render('admin/adminOrderDetview', { ordersData, imgUri, formatPrice });
 
         } catch (error) {
             console.error(error);
@@ -568,7 +558,7 @@ async function handleChangePaymentStatus(req, res) {
 
 async function handleAddCouponView(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
-    res.render('addCoupon');
+    res.render('admin/addCoupon');
 }
 
 async function handleAddCoupon(req, res) {
@@ -599,7 +589,7 @@ async function handleCouponsView(req, res) {
 
     try {
         const coupons = await Coupon.find({ isDeleted: false });
-        res.render('couponsViews', { coupons });
+        res.render('admin/couponsViews', { coupons });
     } catch (error) {
 
     }
@@ -612,7 +602,7 @@ async function handleEditCouponPageView(req, res) {
     try {
 
         const coupon = await Coupon.findById({ _id: couponId });
-        res.render('editCoupons', { coupon });
+        res.render('admin/editCoupons', { coupon });
 
     } catch (error) {
         console.log(error);
@@ -656,163 +646,100 @@ async function handleDeleteCoupon(req, res) {
     }
 }
 
-// async function handleDashBoardView(req, res) {
-//     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
-//     try {
-
-//         const monthlyTotals = await Orders.aggregate([
-//             {
-//                 $group: {
-//                     _id: {
-//                         year: { $year: "$Order_date" }, // Group by year
-//                         month: { $month: "$Order_date" }, // Group by month
-//                     },
-//                     totalOrderPrice: { $sum: "$total_price" }, // Sum total_price for each group
-//                 },
-//             },
-//             {
-//                 $project: {
-//                     year: "$_id.year",
-//                     month: "$_id.month",
-//                     totalOrderPrice: 1,
-//                     _id: 0,
-//                 },
-//             },
-//         ]);
-
-//         const orders = await Orders.find({});
-//         const totalOrderPrice = orders.reduce((sum, order) => sum + order.total_price, 0);
-
-//         // Flatten the Items arrays from all orders into a single array of products
-//         const allProducts = orders.reduce((products, order) => {
-//             return products.concat(order.Items.map(item => item.product_id.toString()));
-//         }, []);
-
-//         // Count the occurrences of each product ID
-//         const productCount = allProducts.reduce((count, productId) => {
-//             count[productId] = (count[productId] || 0) + 1;
-//             return count;
-//         }, {});
-
-//         // Sort productCount object by count in descending order
-//         const sortedProductCount = Object.entries(productCount).sort((a, b) => b[1] - a[1]);
-
-//         // Extract the product IDs of the most ordered, second most ordered, and third most ordered products
-//         const mostOrderedProductId = sortedProductCount[0] ? sortedProductCount[0][0] : null;
-//         const secondMostOrderedProductId = sortedProductCount[1] ? sortedProductCount[1][0] : null;
-//         const thirdMostOrderedProductId = sortedProductCount[2] ? sortedProductCount[2][0] : null;
-
-//         const productIdsToFind = [mostOrderedProductId, secondMostOrderedProductId, thirdMostOrderedProductId].filter(Boolean);
-
-//         // Retrieve details of the most ordered products from the Products collection
-//         const products = await Product.find({
-//             _id: { $in: productIdsToFind }
-//         });
-
-
-
-//         // Send the monthly totals back to the UI
-//         res.render('dashBorad', { monthlyTotals, totalOrderPrice, products, formatPrice });
-
-//     } catch (error) {
-//         console.log(error);
-//     }
-
-// }
 
 async function handleDashBoardView(req, res) {
-      if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
-    
-    const timeRange = req.query.timeRange || 'monthly'; 
-    let totalsData;  
+    if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
 
-    if(timeRange=='monthly'){
-            try {
+    const timeRange = req.query.timeRange || 'monthly';
+    let totalsData;
 
-                totalsData = await Orders.aggregate([
-            {
-                $group: {
-                    _id: {
-                        year: { $year: "$Order_date" }, // Group by year
-                        month: { $month: "$Order_date" }, // Group by month
-                    },
-                    totalOrderPrice: { $sum: "$total_price" }, // Sum total_price for each group
-                },
-            },
-            {
-                $project: {
-                    year: "$_id.year",
-                    month: "$_id.month",
-                    totalOrderPrice: 1,
-                    _id: 0,
-                },
-            },
-        ]);
-
-    
-
-    } catch (error) {
-        console.log(error);
-    }
-    }else if(timeRange=='weekly'){
+    if (timeRange == 'monthly') {
         try {
 
             totalsData = await Orders.aggregate([
-                                {
-                                    $group: {
-                                        _id: {
-                                            year: { $year: "$Order_date" },
-                                            week: {  $week: "$Order_date" },
-                                        },
-                                        totalOrderPrice: { $sum: "$total_price" },
-                                    },
-                                },
-                                {
-                                    $project: {
-                                        year: "$_id.year",
-                                        week: "$_id.week",
-                                        totalOrderPrice: 1,
-                                        _id: 0,
-                                    },
-                                },
-                                {
-                                    $sort: {
-                                        year: 1,
-                                        week: 1
-                                    }
-                                }
-                            ]);
-    
-            
-    
+                {
+                    $group: {
+                        _id: {
+                            year: { $year: "$Order_date" }, // Group by year
+                            month: { $month: "$Order_date" }, // Group by month
+                        },
+                        totalOrderPrice: { $sum: "$total_price" }, // Sum total_price for each group
+                    },
+                },
+                {
+                    $project: {
+                        year: "$_id.year",
+                        month: "$_id.month",
+                        totalOrderPrice: 1,
+                        _id: 0,
+                    },
+                },
+            ]);
+
+
+
+        } catch (error) {
+            console.log(error);
+        }
+    } else if (timeRange == 'weekly') {
+        try {
+
+            totalsData = await Orders.aggregate([
+                {
+                    $group: {
+                        _id: {
+                            year: { $year: "$Order_date" },
+                            week: { $week: "$Order_date" },
+                        },
+                        totalOrderPrice: { $sum: "$total_price" },
+                    },
+                },
+                {
+                    $project: {
+                        year: "$_id.year",
+                        week: "$_id.week",
+                        totalOrderPrice: 1,
+                        _id: 0,
+                    },
+                },
+                {
+                    $sort: {
+                        year: 1,
+                        week: 1
+                    }
+                }
+            ]);
+
+
+
         } catch (error) {
             console.log(error);
         }
 
 
-    }else if(timeRange=='yearly'){
+    } else if (timeRange == 'yearly') {
         try {
 
             totalsData = await Orders.aggregate([
-                                {
-                                    $group: {
-                                        _id: {
-                                            year: { $year: { $toDate: "$Order_date" } },
-                                        },
-                                        totalOrderPrice: { $sum: "$total_price" },
-                                    },
-                                },
-                                {
-                                    $project: {
-                                        year: "$_id.year",
-                                        totalOrderPrice: 1,
-                                        _id: 0,
-                                    },
-                                },
-                            ]);
-    
-            
-    
+                {
+                    $group: {
+                        _id: {
+                            year: { $year: { $toDate: "$Order_date" } },
+                        },
+                        totalOrderPrice: { $sum: "$total_price" },
+                    },
+                },
+                {
+                    $project: {
+                        year: "$_id.year",
+                        totalOrderPrice: 1,
+                        _id: 0,
+                    },
+                },
+            ]);
+
+
+
         } catch (error) {
             console.log(error);
         }
@@ -821,8 +748,8 @@ async function handleDashBoardView(req, res) {
 
     const orders = await Orders.find({});
     const totalOrderPrice = orders.reduce((sum, order) => sum + order.total_price, 0);
-    const averageOrderValue =totalOrderPrice/(orders.length);
-    const totalOrders=orders.length;
+    const averageOrderValue = totalOrderPrice / (orders.length);
+    const totalOrders = orders.length;
 
     // Flatten the Items arrays from all orders into a single array of products
     const allProducts = orders.reduce((products, order) => {
@@ -853,103 +780,103 @@ async function handleDashBoardView(req, res) {
 
 
     // Send the monthly totals back to the UI
-    res.render('dashBorad', { totalsData, totalOrderPrice, products, timeRange, averageOrderValue, totalOrders,  formatPrice,imgUri });
+    res.render('admin/dashBorad', { totalsData, totalOrderPrice, products, timeRange, averageOrderValue, totalOrders, formatPrice, imgUri });
 }
 
-async function handleSalesReportView(req,res){
+async function handleSalesReportView(req, res) {
 
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
-    
-    const timeRange = req.query.timeRange || 'monthly'; 
-    let totalsData;  
 
-    if(timeRange=='monthly'){
-            try {
+    const timeRange = req.query.timeRange || 'monthly';
+    let totalsData;
 
-                totalsData = await Orders.aggregate([
-            {
-                $group: {
-                    _id: {
-                        year: { $year: "$Order_date" }, // Group by year
-                        month: { $month: "$Order_date" }, // Group by month
-                    },
-                    totalOrderPrice: { $sum: "$total_price" }, // Sum total_price for each group
-                },
-            },
-            {
-                $project: {
-                    year: "$_id.year",
-                    month: "$_id.month",
-                    totalOrderPrice: 1,
-                    _id: 0,
-                },
-            },
-        ]);
-
-    
-
-    } catch (error) {
-        console.log(error);
-    }
-    }else if(timeRange=='weekly'){
+    if (timeRange == 'monthly') {
         try {
 
             totalsData = await Orders.aggregate([
-                                {
-                                    $group: {
-                                        _id: {
-                                            year: { $year: "$Order_date" },
-                                            week: { $isoWeek: "$Order_date" },
-                                        },
-                                        totalOrderPrice: { $sum: "$total_price" },
-                                    },
-                                },
-                                {
-                                    $project: {
-                                        year: "$_id.year",
-                                        week: "$_id.week",
-                                        totalOrderPrice: 1,
-                                        _id: 0,
-                                    },
-                                },
-                                {
-                                    $sort: {
-                                        year: 1,
-                                        week: 1
-                                    }
-                                }
-                            ]);
-    
-            
-    
+                {
+                    $group: {
+                        _id: {
+                            year: { $year: "$Order_date" }, // Group by year
+                            month: { $month: "$Order_date" }, // Group by month
+                        },
+                        totalOrderPrice: { $sum: "$total_price" }, // Sum total_price for each group
+                    },
+                },
+                {
+                    $project: {
+                        year: "$_id.year",
+                        month: "$_id.month",
+                        totalOrderPrice: 1,
+                        _id: 0,
+                    },
+                },
+            ]);
+
+
+
+        } catch (error) {
+            console.log(error);
+        }
+    } else if (timeRange == 'weekly') {
+        try {
+
+            totalsData = await Orders.aggregate([
+                {
+                    $group: {
+                        _id: {
+                            year: { $year: "$Order_date" },
+                            week: { $isoWeek: "$Order_date" },
+                        },
+                        totalOrderPrice: { $sum: "$total_price" },
+                    },
+                },
+                {
+                    $project: {
+                        year: "$_id.year",
+                        week: "$_id.week",
+                        totalOrderPrice: 1,
+                        _id: 0,
+                    },
+                },
+                {
+                    $sort: {
+                        year: 1,
+                        week: 1
+                    }
+                }
+            ]);
+
+
+
         } catch (error) {
             console.log(error);
         }
 
 
-    }else if(timeRange=='yearly'){
+    } else if (timeRange == 'yearly') {
         try {
 
             totalsData = await Orders.aggregate([
-                                {
-                                    $group: {
-                                        _id: {
-                                            year: { $year: { $toDate: "$Order_date" } },
-                                        },
-                                        totalOrderPrice: { $sum: "$total_price" },
-                                    },
-                                },
-                                {
-                                    $project: {
-                                        year: "$_id.year",
-                                        totalOrderPrice: 1,
-                                        _id: 0,
-                                    },
-                                },
-                            ]);
-    
-            
-    
+                {
+                    $group: {
+                        _id: {
+                            year: { $year: { $toDate: "$Order_date" } },
+                        },
+                        totalOrderPrice: { $sum: "$total_price" },
+                    },
+                },
+                {
+                    $project: {
+                        year: "$_id.year",
+                        totalOrderPrice: 1,
+                        _id: 0,
+                    },
+                },
+            ]);
+
+
+
         } catch (error) {
             console.log(error);
         }
@@ -958,9 +885,9 @@ async function handleSalesReportView(req,res){
 
     const orders = await Orders.find({});
     const totalOrderPrice = orders.reduce((sum, order) => sum + order.total_price, 0);
-    const averageOrderValue =totalOrderPrice/(orders.length);
-    const totalOrders=orders.length;
-    
+    const averageOrderValue = totalOrderPrice / (orders.length);
+    const totalOrders = orders.length;
+
     // Flatten the Items arrays from all orders into a single array of products
     const allProducts = orders.reduce((products, order) => {
         return products.concat(order.Items.map(item => item.product_id.toString()));
@@ -981,9 +908,9 @@ async function handleSalesReportView(req,res){
     const thirdMostOrderedProductId = sortedProductCount[2] ? sortedProductCount[2][0] : null;
     const forthMostOrderedProductId = sortedProductCount[3] ? sortedProductCount[3][0] : null;
     const fifthMostOrderedProductId = sortedProductCount[4] ? sortedProductCount[4][0] : null;
-    
 
-    const productIdsToFind = [mostOrderedProductId, secondMostOrderedProductId, thirdMostOrderedProductId,forthMostOrderedProductId,fifthMostOrderedProductId].filter(Boolean);
+
+    const productIdsToFind = [mostOrderedProductId, secondMostOrderedProductId, thirdMostOrderedProductId, forthMostOrderedProductId, fifthMostOrderedProductId].filter(Boolean);
 
     // Retrieve details of the most ordered products from the Products collection
     const products = await Product.find({
@@ -992,30 +919,30 @@ async function handleSalesReportView(req,res){
 
     const top5Users = await Orders.aggregate([
         {
-          $group: {
-            _id: '$User_id',
-            count: { $sum: 1 },
-          },
+            $group: {
+                _id: '$User_id',
+                count: { $sum: 1 },
+            },
         },
         {
-          $sort: { count: -1 },
+            $sort: { count: -1 },
         },
         {
-          $limit: 5,
+            $limit: 5,
         },
-      ]);
-  
-      // Extract User_id values from the aggregation result
-      const top5UserIds = top5Users.map(user => user._id);
-  
-      // Find user details for the top 5 User_ids
-      const userDetails = await User.find({ _id: { $in: top5UserIds } });
-  
+    ]);
 
-    
+    // Extract User_id values from the aggregation result
+    const top5UserIds = top5Users.map(user => user._id);
+
+    // Find user details for the top 5 User_ids
+    const userDetails = await User.find({ _id: { $in: top5UserIds } });
+
+
+
 
     // Send the monthly totals back to the UI
-    res.render('salesReport', { totalsData, averageOrderValue, totalOrders, totalOrderPrice,orders,userDetails, products, timeRange, formatPrice });
+    res.render('admin/salesReport', { totalsData, averageOrderValue, totalOrders, totalOrderPrice, orders, userDetails, products, timeRange, formatPrice });
 
 
 
@@ -1053,7 +980,6 @@ module.exports = {
     handleCustomerUnblock,
     handleImageDelete,
     handleOrdersView,
-    handleOrdersSearch,
     handleOrderDetailedView,
     handleChangeOrderStatus,
     handleChangePaymentStatus,

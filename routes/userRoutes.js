@@ -2,15 +2,17 @@ const express = require('express');
 const Cart = require('../models/cart');
 const mongoose = require('mongoose');
 const addressValidator = require('../middleware/addressValidator');
+var localStorage = require('localStorage')
 
 const { handleCartView, handleAddToCart, handleUpdateCartQuantity, handleDeleteCartItem,
-    handleCheckoutView, handleEditAddress, handleAddNewAddress, handlePlaceOrder,handleOrdersPay,
-    handleWalletPay,handleUpdatePaymentMethod,
-    handleAddAddressView, handleEditAddressView,handleAccountEditAddress, handleMyOrdersView,
-    handleSelectedOrderView, handleCancelOrder,handleManageAccountView, handleChangeName, handleChangeNumber, 
-    handleChangeEmail,handleVerifyOtp, handleChangePassword, handleVerifyPayment,handleVerifyWalletPayment, handleApplyCoupon, 
-    handleWalletView,handleAddToCartFromWishlist, handleAddToWishlist, handleWishlistView, 
-    handleDeleteFromWishlist,handleAddToCartOneItemFromWishlist,handleDownloadInvoice,handleReviewPageView,handleSubmitReview, } = require('../controllers/user')
+    handleCheckoutView, handleEditAddress, handleAddNewAddress, handlePlaceOrder, handleOrdersPay,
+    handleWalletPay, handleUpdatePaymentMethod,
+    handleAddAddressView, handleEditAddressView, handleAccountEditAddress, handleMyOrdersView,
+    handleSelectedOrderView, handleCancelOrder, handleManageAccountView, handleChangeName, handleChangeNumber,
+    handleChangeEmail, handleVerifyOtp, handleChangePassword, handleVerifyPayment, handleVerifyWalletPayment, handleApplyCoupon,
+    handleWalletView, handleAddToCartFromWishlist, handleAddToWishlist, handleWishlistView,
+    handleDeleteFromWishlist, handleAddToCartOneItemFromWishlist, handleDownloadInvoice, handleReviewPageView, handleSubmitReview,
+    handleBuyNow, handleBuyNowPlaceOrder } = require('../controllers/user')
 
 
 const router = express.Router();
@@ -41,11 +43,11 @@ router.get('/edit-address', handleEditAddressView);
 
 router.post('/edit-address-form', handleEditAddress);
 
-router.post('/account-edit-address',addressValidator, handleAccountEditAddress);
+router.post('/account-edit-address', addressValidator, handleAccountEditAddress);
 
 router.get('/add-new-address', handleAddAddressView);
 
-router.post('/addNewAddress',addressValidator, handleAddNewAddress);
+router.post('/addNewAddress', addressValidator, handleAddNewAddress);
 
 router.post('/place-order', handlePlaceOrder);
 
@@ -57,7 +59,7 @@ router.post('/cancel-order', handleCancelOrder);
 
 router.post('/orders-pay', handleOrdersPay);
 
-router.post('/update-payment-method',handleUpdatePaymentMethod)
+router.post('/update-payment-method', handleUpdatePaymentMethod)
 
 router.post('/wallet-pay', handleWalletPay);
 
@@ -73,7 +75,7 @@ router.post('/verify-otp', handleVerifyOtp);
 
 router.post('/change-password', handleChangePassword);
 
-router.post('/verify-payment', handleVerifyPayment); 
+router.post('/verify-payment', handleVerifyPayment);
 
 router.post('/verify-wallet-payment', handleVerifyWalletPayment);
 
@@ -81,11 +83,16 @@ router.post('/applyCoupon', handleApplyCoupon);
 
 router.get('/wallet', handleWalletView)
 
-router.get('/download-invoice',handleDownloadInvoice);
+router.get('/download-invoice', handleDownloadInvoice);
 
-router.get('/product-review',handleReviewPageView);
+router.get('/product-review', handleReviewPageView);
 
-router.post('/submit-review',handleSubmitReview)
+router.post('/submit-review', handleSubmitReview);
+
+router.get('/buy-now', handleBuyNow);
+
+router.post('/buy-now-place-order', handleBuyNowPlaceOrder);
+
 
 
 module.exports = router;

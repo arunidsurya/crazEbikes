@@ -1,0 +1,51 @@
+<%- include('../layout/headerAdmin') %>
+    <%- include('../layout/sidebarAdmin') %>
+
+
+
+        <div class="col py-3">
+
+
+            <div class="container primary">
+                <div class="row">
+                    <div class="col-lg-6 mx-auto mt-4">
+                        <div class="card shadow">
+                            <div class="card-header bg-success">
+                                <h3 class="text-light">Edit Category </h3>
+                            </div>
+                            <div class="card-body p-4">
+                                <form action="/admin/editCustomers/<%= customer._id %>" method="post" id="add-form">
+                                    <div class="mb-3">
+                                        <label for="name">Name</label>
+                                        <input type="text" name="category_name" value="<%= customer.name %>"
+                                            class="form-control form-control-lg" placeholder="Enter Name" required />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email">Email</label>
+                                        <input type="text" name="email" value="<%= customer.email %>"
+                                            class="form-control form-control-lg" placeholder="Enter Email" required />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email">Contact Number</label>
+                                        <input type="text" name="contactNumber" value="<%= customer.contactNumber %>"
+                                            class="form-control form-control-lg" placeholder="Enter Email" required />
+                                    </div>
+                                    <div class="mb-3 d-grid">
+                                        <input type="submit" name="submit" value="update User"
+                                            class="btn btn-success btn-lg" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        </div>
+        </div>
+
+
+
+        <%- include('../layout/footerAdmin') %>

@@ -1,0 +1,394 @@
+<%- include('../layout/headerUser') %>
+  <%- include('../layout/formatPrice') %>
+
+    <header class="col-lg-12">
+
+      <div class="bg-primary">
+        <div class="container py-4">
+          <h3>Product Checkout</h3>
+        </div>
+      </div>
+      <!-- Heading -->
+    </header>
+
+
+
+
+
+    <section class="bg-light py-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-xl-8 col-lg-8 mb-4">
+            <form id="parent-form" action="">
+              <div class="card shadow-0 border">
+                <div class="p-4">
+
+                  <header class="col-lg-12 mt-0">
+                    <div class="bg-primary">
+                      <div class="container py-2">
+                        <!-- Breadcrumb -->
+                        <nav class="d-flex">
+                          <h6 class="mb-0">
+                            Shipping Address
+                          </h6>
+                        </nav>
+                        <!-- Breadcrumb -->
+                      </div>
+                    </div>
+                    <!-- Heading -->
+                  </header>
+                  <div id="shipping-address">
+                    <h5 class="card-title mb-3"></h5>
+
+                    <div id="addressList">
+                      <% userAddress.delivery.forEach(address=> { %>
+                        <div class="address-container">
+                          <label>
+                            <input type="radio" name="selectedAddress" value="<%= address._id %>"
+                              onclick="deliverAddress('<%= address._id %>')">
+
+                            <div class="name-mobile">
+                              <strong>
+                                <%= address.name %>
+                              </strong>
+                              <div class="contactNumber">
+                                <strong>Mob: <%= address.contactNumber %></strong>
+                              </div>
+
+                            </div>
+                            <div class="address-details">
+                              <%= address.address %>, <%= address.city %>, <%= address.pincode %>
+                            </div>
+                          </label>
+                          <a href="/user/edit-address?id=<%= address._id %>&userId=<%= userId %>"><input
+                              class="btn btn-link" type="text" value="Edit" />
+                          </a>
+
+                        </div>
+                        <% }) %>
+                    </div>
+
+                    <a href="/user/add-new-address"><input class="btn btn-primary" onclick="toggleNewAddress()"
+                        value="Add new address"></a>
+
+
+                  </div>
+
+
+
+                  <div class="float-end" id="change-address">
+                    <button class="btn btn-success shadow-0 border" type="button"
+                      onclick="displayAddress()">Change</button>
+                  </div>
+                  <hr class="my-4" />
+
+                  <!-- Payment Options -->
+                  <header class="col-lg-12 mt-0">
+                    <div class="bg-primary">
+                      <div class="container py-2">
+                        <!-- Breadcrumb -->
+                        <nav class="d-flex">
+                          <h6 class="mb-0">
+                            Payment Method
+                          </h6>
+                        </nav>
+                        <!-- Breadcrumb -->
+                      </div>
+                    </div>
+                    <!-- Heading -->
+                  </header>
+
+                  <div id="buyNow-payment-section">
+                    <label for="codOption" class="radio-inline">
+                      <input type="radio" id="codOption" name="paymentMethod" value="COD"
+                        onchange="getSelectedPaymentMethod(this)"> COD
+                    </label>
+                    <label for="onlineOption" class="radio-inline">
+                      <input type="radio" id="onlineOption" name="paymentMethod" value="ONLINE"
+                        onchange="getSelectedPaymentMethod(this)"> Online Payment
+                    </label>
+                    <label for="walletOption" class="radio-inline">
+                      <input type="radio" id="WalletOption" name="paymentMethod" value="WALLET"
+                        onchange="getSelectedPaymentMethod(this)"> Wallet
+                    </label>
+
+                    <P id="payment-error"></P>
+                    <input type="text" name="userId" id="userId" value="<%= userId %>" hidden>
+                    <input type="text" name="totalPrice" id="total-price" value="<%= product.price+300 %>" hidden>
+                    <input type="text" name="productId" id="product-id" value="<%= product._id %>" hidden>
+
+                    <div class="float-end">
+                      <button class="btn btn-light border">Cancel</button>
+                      <button class="btn btn-success shadow-0 border" type="button" onclick="placeOrder()">Place
+                        Order</button>
+
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </form>
+            <!-- Payment Options -->
+
+            <!-- Checkout -->
+          </div>
+          <div class="col-xl-4 col-lg-4 d-flex justify-content-center justify-content-lg-end">
+            <div class="ms-lg-4 mt-4 mt-lg-0" style="max-width: 320px;">
+              <h6 class="mb-3">Summary</h6>
+              <div class="d-flex justify-content-between">
+                <p class="mb-2">Product price:</p>
+                <p class="mb-2">₹<span id="CartTotalPrice">
+                    <%= formatPrice(product.price) %>
+                  </span></p>
+              </div>
+              <div class="d-flex justify-content-between">
+                <p class="mb-2">Shipping cost:</p>
+                <p class="mb-2">+ ₹300.00</p> <!-- You can change this value as needed -->
+              </div>
+              <div class="d-flex justify-content-between">
+                <p class="mb-2">Discount:</p>
+                <p class="mb-2" id="coupon-discount">₹ 0 </p> <!-- You can change this value as needed -->
+              </div>
+              <hr />
+              <div class="d-flex justify-content-between">
+                <p class="mb-2">Total price:</p>
+                <p class="mb-2 fw-bold" id="totalPrice">₹<span id="TotalPrice">
+                    <%= formatPrice(product.price+300)%>
+                  </span></p>
+              </div>
+
+
+              <div class="input-group mt-3 mb-4">
+                <input type="text" class="form-control border" id="coupon-code" name="" placeholder="Promo code" />
+                <button class="btn btn-light text-primary border" onclick="applCoupon()">Apply</button>
+
+              </div>
+              <p id="coupon-message"></p>
+              <hr />
+
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+
+    <script>
+      // JavaScript to handle toggling the "new-address" section
+      function toggleNewAddress() {
+        const newAddressSection = document.getElementById('new-address');
+        newAddressSection.style.display = 'block'; // Display the new address section
+
+        // Clear the selection of radio buttons
+        const radioButtons = document.querySelectorAll('input[type="radio"][name="selectedAddress"]');
+        radioButtons.forEach(function (radioButton) {
+          radioButton.checked = false;
+        });
+      }
+
+      // Add event listeners to radio buttons for previously saved addresses
+      const radioButtons = document.querySelectorAll('input[type="radio"][name="selectedAddress"]');
+      radioButtons.forEach(function (radioButton) {
+        radioButton.addEventListener('change', function () {
+          const newAddressSection = document.getElementById('new-address');
+          newAddressSection.style.display = 'none'; // Hide the new address section
+        });
+      });
+
+
+
+    </script>
+
+
+
+    <script>
+      function editAddress(id, name, contactNumber, pincode, address, city, state) {
+        const shippingAddressSection = document.getElementById('shipping-address');
+        const editAddressFromSection = document.getElementById('edit-address-div');
+
+
+        document.getElementById('name').value = name;
+        document.getElementById('contactNumber').value = contactNumber;
+        document.getElementById('pincode').value = pincode;
+        document.getElementById('address').value = address;
+        document.getElementById('city').value = city;
+        document.getElementById('state').value = state;
+        document.getElementById('id').value = id;
+
+        shippingAddressSection.style.display = 'none';
+        editAddressFromSection.style.display = 'block';
+      }
+
+    </script>
+
+    <script>
+      async function submitEditAddressForm() {
+        const editAddressForm = await document.getElementById('editAddressFrom');
+        if (editAddressForm) {
+          editAddressForm.submit();
+        } else {
+          console.error('Form element with ID "editAddressFrom" not found.');
+        }
+      }
+    </script>
+
+
+
+    <script>
+
+      var selectedAddressId;
+      var paymentMethod;
+      const userId = document.getElementById('userId').value;
+      var totalPrice = document.getElementById('total-price').value
+      const productId = document.getElementById('product-id').value
+      var coupon_name;
+      var coupon_amount;
+
+      function deliverAddress(addressId) {
+        selectedAddressId = addressId;
+      }
+
+
+      function getSelectedPaymentMethod() {
+        paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+      }
+
+      function placeOrder() {
+        // console.log(Price );
+        if (selectedAddressId && paymentMethod) {
+
+          console.log(selectedAddressId);
+          console.log(paymentMethod);
+          console.log(totalPrice);
+          console.log(productId);
+
+
+          fetch('/user/buy-now-place-order', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ selectedAddressId, paymentMethod, userId, totalPrice, coupon_name, coupon_amount, productId }),
+          })
+            .then(response => response.json()) // Parse the JSON response
+            .then(data => {
+              if (data.CODpayment) {
+                window.location.href = '/user/view-my-orders';
+              } else if (data.WALLETpayment) {
+                window.location.href = '/user/view-my-orders';
+              } else {
+                const order = data.order;
+                const walletAmount = data.walletAmount;
+                const KEY_ID = data.KEY_ID;
+                // console.log(KEY_ID);
+                // console.log(order); // Access the 'order' property from the response
+                razorpayPayment(order, KEY_ID, walletAmount);
+              }
+            })
+        } else {
+          document.getElementById('payment-error').innerHTML = "All fields are manadatory!!";
+        }
+      }
+
+      function razorpayPayment(order, KEY_ID, walletAmount) {
+
+        var options = {
+          "key": KEY_ID,
+          "amount": order.amount,
+          "currency": "INR",
+          "name": "crazEbikes",
+          "description": "Test Transaction",
+          "image": "https://example.com/your_logo",
+          "order_id": order.id,
+          "handler": function (response) {
+            // alert(response.razorpay_payment_id);
+            // alert(response.razorpay_order_id);
+            // alert(response.razorpay_signature);
+
+            // Call verifyPayment with the response and order
+            verifyPayment(response, order, walletAmount);
+          },
+          "prefill": {
+            "name": "Gaurav Kumar",
+            "email": "gaurav.kumar@example.com",
+            "contact": "9000090000"
+          },
+          "notes": {
+            "address": "Razorpay Corporate Office"
+          },
+          "theme": {
+            "color": "#3399cc"
+          }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+
+      }
+
+
+      function verifyPayment(response, order, walletAmount) {
+        fetch('/user/verify-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ order, response, walletAmount }),
+        })
+          .then(response => {
+            if (response.ok) {
+              window.location.href = '/user/view-my-orders';
+            } else {
+              console.log("response not ok")
+            }
+          })
+      }
+    </script>
+    <script>
+      function applCoupon() {
+        const couponName = document.getElementById('coupon-code').value;
+        const cartTotal = document.getElementById('TotalPrice');
+        const totalInput = document.getElementById('total-price');
+        const couponMessage = document.getElementById('coupon-message');
+        const couponDiscount = document.getElementById('coupon-discount');
+        // cartTotal.textContent=`${(totalPrice-50).toFixed(2)}`;
+        // totalInput.value=totalPrice-50;
+        // totalPrice=totalPrice-50;
+
+        fetch('/user/applyCoupon', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ couponName }),
+        })
+          .then((response) => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error('Network response was not ok.');
+            }
+          })
+          .then((data) => {
+            if (data.success) {
+              // Coupon applied successfully, update UI and display a success message
+              coupon_amount = data.couponAmount;
+              coupon_name = data.couponName;
+              cartTotal.textContent = `${(totalPrice - data.couponAmount).toFixed(2)}`;
+              totalInput.value = `${(totalPrice - data.couponAmount).toFixed(2)}`;
+              totalPrice = totalPrice - data.couponAmount;
+              couponMessage.textContent = `Coupon "${data.couponName}" applied successfully!`;
+              couponDiscount.innerHTML = `$${(data.couponAmount).toFixed(2)}`;
+            } else {
+              couponMessage.textContent = data.message;
+            }
+          })
+          .catch((error) => {
+            console.error('Error applying coupon:', error);
+            // Handle the error here (e.g., display a generic error message to the user)
+          });
+      }
+    </script>
+
+
+    <%- include('../layout/footerUser') %>

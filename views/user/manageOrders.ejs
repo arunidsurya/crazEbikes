@@ -1,0 +1,91 @@
+<%- include('../layout/headerUser') %>
+    <%- include('../layout/formatPrice') %>
+
+        <header class="header-order">
+            <h1>Your Orders</h1>
+        </header>
+
+        <main>
+            <% if (ordersData) { %>
+                
+
+                <% ordersData.forEach((order,index)=> { %> <!-- Iterate over ordersData -->
+
+                    <div id="orderContainer<%= order.collectionId %>" class="order-container">
+
+                        <h6>#<%= order.invoiceNumber %></h6>
+                        
+                        <% order.productsArray.forEach(product=> { %>
+                            <a href="/user/view-selected-order?orderId=<%= order.collectionId %>">
+                            <section class="order">
+                                <div>
+                                    <img class="order-image" src="<%= imgUri + product.imageUrl %>" alt="Image">
+
+                                </div>
+                                <div>
+                                    <p>
+                                        <%= product.product_name.slice(0,20) %>
+                                    </p>
+                                    <p>
+                                        color: <%= product.color %>
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p>
+                                        <%= product.quantity %> No
+                                    </p>
+                                </div>
+                                <div>
+                                    <p>Price: $<%= formatPrice(product.price)%>
+                                    </p>
+                                </div>
+                                <div class="orderStatus">
+                                 <% if (order.Status=='Cancelled') { %>
+                                  <div class="redCircle"></div>
+                                 <% } else {%>
+                                    <div class="greenCircle"></div>
+                                    <%}  %> 
+
+                                 Order <%= order.Status %> on <%= order.OrderDate %>
+                                </div>
+
+                            </section>
+                        </a>
+                            <% }) %>
+
+                    </div>
+
+
+                    <% }) %>
+
+                    <div class="pagination">
+                        <% if (currentPage > 1) { %>
+                            <a href="/user/view-my-orders?page=1">&laquo;&laquo; First</a>
+                            <a href="/user/view-my-orders?page=<%= currentPage - 1 %>">&laquo; Previous</a>
+                        <% } %>
+                    
+                        <% for (let i = Math.max(1, currentPage - 2); i <= Math.min(currentPage + 2, totalPages); i++) { %>
+                            <a href="/user/view-my-orders?page=<%= i %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+                        <% } %>
+                    
+                        <% if (currentPage < totalPages) { %>
+                            <a href="/user/view-my-orders?page=<%= currentPage + 1 %>">Next &raquo;</a>
+                            <a href="/user/view-my-orders?page=<%= totalPages %>">Last &raquo;&raquo;</a>
+                        <% } %>
+                    </div>
+
+                        <% } else {%>
+                            <h4>No orders to show</h4>
+                            <%}%>
+        </main>
+
+
+     
+
+
+
+
+
+
+        <%- include('../layout/footerUser') %>
