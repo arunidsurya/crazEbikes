@@ -18,10 +18,20 @@
               <label for="category_name" class="col-sm-2 col-form-label">Category Name:</label>
               <div class="col-sm-10">
                 <input type="text" name="category_name" class="form-control" id="category_name">
+                <% if (locals.errors && locals.errors.category_name) { %>
+                  <span class="text-danger image-upload" id="errors-category_name">
+                    <%= errors.category_name.msg %>
+                  </span>
+                  <% } %>
               </div>
               <label for="category_description" class="col-sm-2 col-form-label">Description:</label>
               <div class="col-sm-10">
                 <input type="text" name="description" class="form-control">
+                <% if (locals.errors && locals.errors.description) { %>
+                  <span class="text-danger image-upload" id="errors-description">
+                    <%= errors.description.msg %>
+                  </span>
+                  <% } %>
               </div>
             </div>
             <center>
@@ -39,3 +49,24 @@
 
 
     <%- include('../layout/footerAdmin') %>
+
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get all input elements
+        const inputElements = document.querySelectorAll('input');
+
+        // Add event listener for the 'focus' event on each input element
+        inputElements.forEach(function (input) {
+          input.addEventListener('focus', function () {
+            const fieldName = input.name;
+            const errorElement = document.querySelector(`#errors-${fieldName}`);
+
+            // Clear the error message when the input field gains focus
+            if (errorElement) {
+              errorElement.innerText = '';
+            }
+          });
+        });
+      });
+    </script>

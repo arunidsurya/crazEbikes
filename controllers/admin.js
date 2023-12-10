@@ -79,6 +79,16 @@ async function handleAddCategoryPageView(req, res) {
 
 async function handleCategoryAdd(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.render('admin/addCategories', {
+            errors: errors.mapped(),
+        });
+    }
+
+
     try {
         const { category_name, description } = req.body;
         await Category.create({
@@ -104,6 +114,16 @@ async function handleEditCategoryPageView(req, res) {
 async function handleCategoryEdit(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
     let id = req.params.id;
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        const category = await Category.findOne({ _id: id });
+        return res.render('admin/editCategories', {
+            errors: errors.mapped(), category 
+        });
+    }
+
     try {
         await Category.findByIdAndUpdate(id, {
             category_name: req.body.category_name,
@@ -179,6 +199,14 @@ async function handleAddUserPageView(req, res) {
 
 async function handleUserAdd(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.render('admin/addCustomers', {
+            errors: errors.mapped(),
+        });
+    }
+
     try {
         const { name, email, password, contactNumber } = req.body;
         const saltRounds = 10;
@@ -205,6 +233,15 @@ async function handleEditCustomerPageView(req, res) {
 async function handleCustomerEdit(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
     let id = req.params.id;
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        const customer = await User.findOne({ _id: id });
+        return res.render('admin/editCustomers', {
+            errors: errors.mapped(), customer
+        });
+    }
+
     try {
         await User.findByIdAndUpdate(id, {
             name: req.body.name,
@@ -320,9 +357,63 @@ async function handleProductAdd(req, res) {
     }
 };
 
+
+// async function handleProductAdd(req, res) {
+//     const errors = validationResult(req);
+//     if (!errors.isEmpty()) {
+//         const categories = await Category.find({}, { category_name: 1, _id: 1 });
+//         return res.render('admin/addProducts', {
+//             errors: errors.mapped(),
+//             categories: categories,
+//         });
+//     }
+//     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
+//     try {
+//         const { product_name, categoryId, brand, color, price, stock, description } = req.body;
+//         const files = req.files;
+//         let imagePaths = [];
+       
+//         if (files) {
+//             // Process each file
+//             for (const file of files) {
+//                 const imagePath = file.path;
+
+//                 // Perform image cropping using sharp
+//                 const croppedImagePath = `path/to/cropped/${file.filename}`;
+
+//                 await sharp(imagePath)
+//                     .resize({ width: 300, height: 300, fit: 'cover' })
+//                     .toFile(croppedImagePath);
+
+//                 imagePaths.push(croppedImagePath);
+//             }
+//         }
+
+//         await Product.create({
+//             product_name,
+//             categoryId,
+//             brand,
+//             color,
+//             imageUrl: imagePaths,
+//             price,
+//             stock,
+//             description,
+//         });
+//         return res.redirect("/admin/products");
+//     } catch (error) {
+//         console.log(error);
+//         return res.render("admin/addSuccess", { message: "Failed!!" });
+//     }
+// };
+
+
+
+
 async function handleProductUpdatePageView(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
     let id = req.params.id;
+
+
     const product = await Product.findOne({ _id: id });
 
     const categories = await Category.find({}, { category_name: 1, _id: 1 });
@@ -334,6 +425,16 @@ async function handleProductUpdate(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
     let id = req.params.id;
     const files = req.files;
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        const categories = await Category.find({}, { category_name: 1, _id: 1 });
+        return res.render('admin/addProducts', {
+            errors: errors.mapped(),
+            categories: categories,
+        });
+    }
+
     const product = await Product.findById(id);
     let newImagePaths = [];
     if (files) {
@@ -563,6 +664,15 @@ async function handleAddCouponView(req, res) {
 
 async function handleAddCoupon(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
+   
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.render('admin/addCoupon', {
+            errors: errors.mapped(),
+        });
+    }
+
     const { name, amount, maxUsage, expiresAt, description } = req.body;
     const selectedDate = new Date(expiresAt);
     const utcDate = new Date(selectedDate.toISOString());
@@ -597,12 +707,12 @@ async function handleCouponsView(req, res) {
 
 async function handleEditCouponPageView(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
-    const couponId = req.params.id;
+    const couponId = req.query.id;
 
     try {
 
         const coupon = await Coupon.findById({ _id: couponId });
-        res.render('admin/editCoupons', { coupon });
+        res.render('admin/editCoupons', { coupon:coupon });
 
     } catch (error) {
         console.log(error);
@@ -611,7 +721,15 @@ async function handleEditCouponPageView(req, res) {
 
 async function handleEditCoupon(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
-    const couponId = req.params.id;
+    const couponId = req.query.couponId;
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        const coupon = await Coupon.findById({ _id: couponId });
+        return res.render('admin/editCoupons', {
+            errors: errors.mapped(),coupon
+        });
+    }
 
     try {
 
@@ -942,7 +1060,7 @@ async function handleSalesReportView(req, res) {
 
 
     // Send the monthly totals back to the UI
-    res.render('admin/salesReport', { totalsData, averageOrderValue, totalOrders, totalOrderPrice, orders, userDetails, products, timeRange, formatPrice });
+    res.render('admin/salesReport', { totalsData, averageOrderValue, totalOrders, totalOrderPrice, orders, userDetails, products, timeRange, formatPrice,imgUri });
 
 
 

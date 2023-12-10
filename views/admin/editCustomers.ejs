@@ -17,19 +17,34 @@
                                 <form action="/admin/editCustomers/<%= customer._id %>" method="post" id="add-form">
                                     <div class="mb-3">
                                         <label for="name">Name</label>
-                                        <input type="text" name="category_name" value="<%= customer.name %>"
+                                        <input type="text" name="name" value="<%= customer.name %>"
                                             class="form-control form-control-lg" placeholder="Enter Name" required />
-                                    </div>
+                                            <% if (locals.errors && locals.errors.name) { %>
+                                                <span class="text-danger image-upload" id="errors-name">
+                                                  <%= errors.name.msg %>
+                                                </span>
+                                                <% } %>
+                                        </div>
                                     <div class="mb-3">
                                         <label for="email">Email</label>
                                         <input type="text" name="email" value="<%= customer.email %>"
                                             class="form-control form-control-lg" placeholder="Enter Email" required />
-                                    </div>
+                                            <% if (locals.errors && locals.errors.email) { %>
+                                                <span class="text-danger image-upload" id="errors-email">
+                                                  <%= errors.email.msg %>
+                                                </span>
+                                                <% } %>
+                                        </div>
                                     <div class="mb-3">
                                         <label for="email">Contact Number</label>
                                         <input type="text" name="contactNumber" value="<%= customer.contactNumber %>"
                                             class="form-control form-control-lg" placeholder="Enter Email" required />
-                                    </div>
+                                            <% if (locals.errors && locals.errors.contactNumber) { %>
+                                                <span class="text-danger image-upload" id="errors-contactNumber">
+                                                  <%= errors.contactNumber.msg %>
+                                                </span>
+                                                <% } %>
+                                        </div>
                                     <div class="mb-3 d-grid">
                                         <input type="submit" name="submit" value="update User"
                                             class="btn btn-success btn-lg" />
@@ -49,3 +64,24 @@
 
 
         <%- include('../layout/footerAdmin') %>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              // Get all input elements
+              const inputElements = document.querySelectorAll('input');
+      
+              // Add event listener for the 'focus' event on each input element
+              inputElements.forEach(function (input) {
+                input.addEventListener('focus', function () {
+                  const fieldName = input.name;
+                  const errorElement = document.querySelector(`#errors-${fieldName}`);
+      
+                  // Clear the error message when the input field gains focus
+                  if (errorElement) {
+                    errorElement.innerText = '';
+                  }
+                });
+              });
+            });
+          </script>
+      

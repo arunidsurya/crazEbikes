@@ -19,18 +19,38 @@
               <label for="name" class="col-sm-2 col-form-label">Name:</label>
               <div class="col-sm-10">
                 <input type="text" name="name" class="form-control">
+                <% if (locals.errors && locals.errors.name) { %>
+                  <span class="text-danger image-upload" id="errors-name">
+                    <%= errors.name.msg %>
+                  </span>
+                  <% } %>
               </div>
               <label for="email" class="col-sm-2 col-form-label">Email:</label>
               <div class="col-sm-10">
                 <input type="text" name="email" class="form-control">
+                <% if (locals.errors && locals.errors.email) { %>
+                  <span class="text-danger image-upload" id="errors-email">
+                    <%= errors.email.msg %>
+                  </span>
+                  <% } %>
               </div>
               <label for="password" class="col-sm-2 col-form-label">Password:</label>
               <div class="col-sm-10">
                 <input type="password" name="password" class="form-control">
+                <% if (locals.errors && locals.errors.password) { %>
+                  <span class="text-danger image-upload" id="errors-password">
+                    <%= errors.password.msg %>
+                  </span>
+                  <% } %>
               </div>
               <label for="contactNumber" class="col-sm-2 col-form-label">Contact Number:</label>
               <div class="col-sm-10">
                 <input type="text" name="contactNumber" class="form-control">
+                <% if (locals.errors && locals.errors.contactNumber) { %>
+                  <span class="text-danger image-upload" id="errors-contactNumber">
+                    <%= errors.contactNumber.msg %>
+                  </span>
+                  <% } %>
               </div>
 
             </div>
@@ -50,3 +70,24 @@
 
 
     <%- include('../layout/footerAdmin') %>
+
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get all input elements
+        const inputElements = document.querySelectorAll('input');
+
+        // Add event listener for the 'focus' event on each input element
+        inputElements.forEach(function (input) {
+          input.addEventListener('focus', function () {
+            const fieldName = input.name;
+            const errorElement = document.querySelector(`#errors-${fieldName}`);
+
+            // Clear the error message when the input field gains focus
+            if (errorElement) {
+              errorElement.innerText = '';
+            }
+          });
+        });
+      });
+    </script>

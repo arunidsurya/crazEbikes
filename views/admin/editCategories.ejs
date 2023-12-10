@@ -19,11 +19,21 @@
                                         <label for="name">Name</label>
                                         <input type="text" name="category_name" value="<%= category.category_name %>"
                                             class="form-control form-control-lg" placeholder="Enter Name" required />
+                                            <% if (locals.errors && locals.errors.category_name) { %>
+                                                <span class="text-danger image-upload" id="errors-category_name">
+                                                  <%= errors.category_name.msg %>
+                                                </span>
+                                                <% } %>
                                     </div>
                                     <div class="mb-3">
                                         <label for="email">Description</label>
                                         <input type="text" name="description" value="<%= category.description %>"
                                             class="form-control form-control-lg" placeholder="Enter Email" required />
+                                            <% if (locals.errors && locals.errors.description) { %>
+                                                <span class="text-danger image-upload" id="errors-description">
+                                                  <%= errors.description.msg %>
+                                                </span>
+                                                <% } %>
                                     </div>
                                     <div class="mb-3 d-grid">
                                         <input type="submit" name="submit" value="submit"
@@ -44,3 +54,25 @@
 
 
         <%- include('../layout/footerAdmin') %>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              // Get all input elements
+              const inputElements = document.querySelectorAll('input');
+      
+              // Add event listener for the 'focus' event on each input element
+              inputElements.forEach(function (input) {
+                input.addEventListener('focus', function () {
+                  const fieldName = input.name;
+                  const errorElement = document.querySelector(`#errors-${fieldName}`);
+      
+                  // Clear the error message when the input field gains focus
+                  if (errorElement) {
+                    errorElement.innerText = '';
+                  }
+                });
+              });
+            });
+          </script>
+      

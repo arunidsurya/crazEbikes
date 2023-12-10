@@ -75,6 +75,13 @@ main {
     justify-content: space-between;
     height: 200px;
 
+
+}
+
+.product-container{
+    position: relative;
+    margin-top: 20px;
+
 }
 
 .order-cancel-button-container {
@@ -147,4 +154,32 @@ main {
 .discount-paragraph {
     font-size: 18px; /* Set a smaller font size */
     font-weight: normal; /* Remove bold styling */
+}
+
+/* Media Query for screens smaller than 768px */
+
+
+/* Responsive Styles */
+@media (max-width: 767px) {
+    .order-outline{
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .product-container{
+        position: relative;
+        margin-top: 35rem;
+    }
+
+}
+@media (max-width: 1200px) {
+    .order-outline{
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .product-container{
+        position: relative;
+        margin-top: 35rem;
+    }
 }

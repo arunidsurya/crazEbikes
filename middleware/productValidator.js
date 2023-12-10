@@ -6,10 +6,11 @@ const { check, validationResult } = require('express-validator');
 
 
 const productValidator = [
-    check('product_name', 'invalid prodcut name!!')
+    check('product_name', 'invalid prodcut name!! Alphabets of max 25 characters ')
         .trim()
         .notEmpty()
-        .isLength({ max: 100 }),
+        .isAlpha()
+        .isLength({ max: 25 }),
     check('categoryId', 'Category can not be empty !!')
         .trim()
         .notEmpty(),

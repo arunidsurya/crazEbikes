@@ -1,25 +1,23 @@
 <%- include('../layout/headerAdmin') %>
     <%- include('../layout/sidebarAdmin') %>
 
-
-
         <div class="col py-3">
-
-
             <div class="container">
                 <div class="mt-4">
-                    <h4 id="products-heading">Orders View</h4>
+                    <h3 id="products-heading">Orders</h3>
+
+
 
                     <div class="row my-4">
                         <div class="col-lg-12">
                             <div class="table-responsive">
                                 <% if (locals.orders) { %>
-                                    <table class="table table-boarderd text-center" id="myTables">
+                                    <table class="table table-boardered text-center" id="productTables">
                                         <thead>
                                             <tr class="table-success">
                                                 <th>S/N</th>
-                                                <th>Order#</th>
                                                 <th>Customer Id</th>
+                                                <th>inv#</th>
                                                 <th>Order Date</th>
                                                 <th>Price</th>
                                                 <th>Method</th>
@@ -35,15 +33,15 @@
                                                             <%=  index +1 %>
                                                         </td>
                                                         <td>
-                                                            #<%= index+1 %>
-                                                        </td>
-                                                        <td>
                                                             <%= order.User_id %>
                                                         </td>
-
                                                         <td>
-                                                            <%= order.Order_date %>
+                                                            <%= order.invoiceNumber %>
                                                         </td>
+                                                        <td>
+                                                            <%= (order.Order_date).toLocaleDateString('en-GB') %>
+                                                        </td>
+                                                        
                                                         <td>
                                                             ₹<%= formatPrice(order.total_price ) %>
                                                         </td>
@@ -66,19 +64,26 @@
                                         </tbody>
                                     </table>
                                     <% } %>
-
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <script  src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+            <script>
+                let table = new DataTable('#productTables', {
+                    "columnDefs": [
+                        { "orderable": false, "targets": [ 6 ] } // Assuming 0 is the S/N column and 7 is the Action column
+                    ]
+                });
+
+            </script>
 
 
-                    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-                    <script>
-                        let table = new DataTable('#myTables', {
-                            "columnDefs": [
-                                { "orderable": false, "targets": [ 7] } // Assuming 0 is the S/N column and 7 is the Action column
-                            ]
-                        });
-        
-                    </script>
-                    <%- include('../layout/footerAdmin') %>
+
+
+            <%- include('../layout/footerAdmin') %>

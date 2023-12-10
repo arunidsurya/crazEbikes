@@ -3,6 +3,7 @@
 
     <div class="col py-3">
 
+      <h4 id="products-heading">Dashboard</h4>
       <div class="sales-report-view">
         <a href="/admin/sales-report"><input type="button" class="btn btn-success" value="Sales Report"></a>
       </div>
@@ -92,7 +93,7 @@
       <%- include('../layout/footerAdmin') %>
 
         <script>
-          const totalsData = <% - JSON.stringify(totalsData) %>;
+          const totalsData = <%- JSON.stringify(totalsData) %>
 
           var timeRange = document.getElementById('timeRange').value;
           var labels = [];

@@ -3,7 +3,7 @@
   <%- include('../layout/sidebarAdmin') %>
 
     <div class="col py-3">
-      <h4>Add Coupon</h4>
+      <h4 id="products-heading">Add Coupon</h4>
       <% if (locals.message) { %>
         <h7 style="color: red;">
           <%= message %>
@@ -12,31 +12,31 @@
           <h5></h5>
           <form action="/admin/add-coupons" method="post">
             <div class="form-group row">
-              <label for="product_name" class="col-sm-2 col-form-label">Coupon Name:</label>
+              <label for="coupon_name" class="col-sm-2 col-form-label">Coupon Name:</label>
               <div class="col-sm-10">
                 <input type="text" name="name" class="form-control" id="category_name">
-                <% if (locals.errors && locals.errors.coupon_name) { %>
-                  <span class="text-danger">
-                    <%= errors.coupon_name.msg %>
+                <% if (locals.errors && locals.errors.name) { %>
+                  <span class="text-danger" id="errors-name">
+                    <%= errors.name.msg %>
                   </span>
                   <% } %>
               </div>
-              <label for="brand" class="col-sm-2 col-form-label">Amount:</label>
+              <label for="amount" class="col-sm-2 col-form-label">Amount:</label>
               <div class="col-sm-10">
-                <input type="text" name="amount" class="form-control" id="brand">
+                <input type="text" name="amount" class="form-control" id="brand" o>
                 <% if (locals.errors && locals.errors.amount) { %>
-                  <span class="text-danger">
+                  <span class="text-danger" id="errors-amount">
                     <%= errors.amount.msg %>
                   </span>
                   <% } %>
               </div>
 
-              <label for="color" class="col-sm-2 col-form-label">Max.Usage</label>
+              <label for="maxUsage" class="col-sm-2 col-form-label">Max.Usage</label>
               <div class="col-sm-10">
-                <input type="text" name="maxUsage" class="form-control" id="brand">
-                <% if (locals.errors && locals.errors.color) { %>
-                  <span class="text-danger">
-                    <%= errors.color.msg %>
+                <input type="text" name="maxUsage" class="form-control" id="maxUsage">
+                <% if (locals.errors && locals.errors.maxUsage) { %>
+                  <span class="text-danger" id="errors-maxUsage">
+                    <%= errors.maxUsage.msg %>
                   </span>
                   <% } %>
               </div>
@@ -45,7 +45,7 @@
               <div class="col-sm-10">
                 <input type="text" name="expiresAt" class="form-control" id="expiresAtInput">
                 <% if (locals.errors && locals.errors.expiresAt) { %>
-                  <span class="text-danger">
+                  <span class="text-danger" id="errors-expiresAt">
                     <%= errors.expiresAt.msg %>
                   </span>
                   <% } %>
@@ -56,7 +56,7 @@
               <div class="col-sm-10">
                 <input type="text" name="description" class="form-control id=" description">
                 <% if (locals.errors && locals.errors.description) { %>
-                  <span class="text-danger">
+                  <span class="text-danger" id="errors-description">
                     <%= errors.description.msg %>
                   </span>
                   <% } %>
@@ -89,3 +89,24 @@
       </script>
 
       <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          // Get all input elements
+          const inputElements = document.querySelectorAll('input');
+  
+          // Add event listener for the 'focus' event on each input element
+          inputElements.forEach(function (input) {
+            input.addEventListener('focus', function () {
+              const fieldName = input.name;
+              const errorElement = document.querySelector(`#errors-${fieldName}`);
+  
+              // Clear the error message when the input field gains focus
+              if (errorElement) {
+                errorElement.innerText = '';
+              }
+            });
+          });
+        });
+      </script>
+  
