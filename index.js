@@ -76,19 +76,19 @@ app.use('/user',checkUserAuth, userRouter);
 
 
 
-// app.all('*',(req,res,next)=>{
-//   const err = new Error(`cant find ${req.originalUrl} on the server` );
-//   err.status='fail';
-//   err.statusCode=404;
-//   next(err);
-// })
+app.all('*',(req,res,next)=>{
+  const err = new Error(`cant find ${req.originalUrl} on the server` );
+  err.status='fail';
+  err.statusCode=404;
+  next(err);
+})
 
-// app.use((error, req, res, next)=> {
-//   error.statusCode=error.statusCode||500;
-//   error.status=error.status||'error';
-//   res.render('static/error',{error,images,imgUri});
-//   next();
-// })
+app.use((error, req, res, next)=> {
+  error.statusCode=error.statusCode||500;
+  error.status=error.status||'error';
+  res.render('static/error',{error,images,imgUri});
+  next();
+})
 
 
 
