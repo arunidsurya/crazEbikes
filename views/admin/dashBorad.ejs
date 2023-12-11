@@ -90,6 +90,51 @@
       </div>
 
 
+      <div class="top-products">
+        <h3 class="product-head"> out-of-stock products</h3>
+
+        <div class="row my-4">
+          <div class="col-lg-12">
+            <div class="table-responsive">
+              <% if (locals.outOfStockProducts) { %>
+                <table class="table table-borderless text-center">
+                  <thead class="table-success">
+                    <tr class="table-success" style="text-align: left;">
+                      <th></th>
+                      <th>Product</th>
+                      <th>Brand</th>
+                      <th>Price</th>
+                      <th>stock</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% outOfStockProducts.forEach((product,index)=> { %>
+                      <tr class="align-middle mt-5">
+                        <td>
+                          <img class="product-image" src="<%= imgUri %><%= product.imageUrl[0] %>" alt="product image">
+                        </td>
+                        <td>
+                          <%= product.product_name %>
+                        </td>
+                        <td>
+                          <%= product.brand %>
+                        </td>
+                        <td>
+                          $<%= product.price %>
+                        </td>
+                        <td>
+                          <%= product.stock %>
+                        </td>
+                      </tr>
+                      <% }) %>
+                  </tbody>
+                </table>
+                <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <%- include('../layout/footerAdmin') %>
 
         <script>

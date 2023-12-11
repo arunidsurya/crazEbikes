@@ -9,8 +9,7 @@ const productValidator = [
     check('product_name', 'invalid prodcut name!! Alphabets of max 25 characters ')
         .trim()
         .notEmpty()
-        .isAlpha()
-        .isLength({ max: 25 }),
+        .isLength({ max: 100 }),
     check('categoryId', 'Category can not be empty !!')
         .trim()
         .notEmpty(),
