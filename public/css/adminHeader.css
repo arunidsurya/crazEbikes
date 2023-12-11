@@ -133,6 +133,23 @@ i.far {
     padding: 10px 0;
 }
 
+.preview-image-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .preview-image-container img {
+    max-width: 50px;
+    max-height: 50px;
+  }
+
+  .preview-image-delete-button {
+    margin-left: 10px;
+    width: 50px;
+    font-size: 10px;
+  }
+
 /* Responsive Styles */
 
 @media (max-width: 767px) {

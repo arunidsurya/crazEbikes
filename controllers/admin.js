@@ -317,7 +317,7 @@ async function handleProductsView(req, res) {
 
 async function handleAddProductPageView(req, res) {
     if (!req.admin && req.admin == null) return res.redirect('/adminLogin');
-    const categories = await Category.find({}, { category_name: 1, _id: 1 });
+    const categories = await Category.find({isDeleted:false}, { category_name: 1, _id: 1 });
     res.render('admin/addProducts', { categories: categories });
 }
 

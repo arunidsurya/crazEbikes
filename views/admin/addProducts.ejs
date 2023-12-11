@@ -66,7 +66,7 @@
               <div class="col-sm-10">
                 <input type="file" multiple name="image" class="form-control" id="imageInput"
                   onchange="previewImages(event)">
-                <div id="imagePreviews" class="mt-2 image-container"></div>
+                <div id="imagePreviews" class="mt-2 preview-image-container"></div>
                 <% if (locals.errors && locals.errors.image) { %>
                   <span class="text-danger image-upload" id="errors-image">
                     <%= errors.image.msg %>
@@ -130,24 +130,6 @@
     </script>
 
 
-    <style>
-      .image-container {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-      }
-
-      .image-container img {
-        max-width: 50px;
-        max-height: 50px;
-      }
-
-      .delete-button {
-        margin-left: 10px;
-        width: 50px;
-        font-size: 10px;
-      }
-    </style>
 
     <script>
       function previewImages(event) {
@@ -179,7 +161,7 @@
             const deleteButton = document.createElement("button");
             deleteButton.type = "button";
             deleteButton.innerText = "Delete";
-            deleteButton.className = "btn btn-danger btn-sm delete-button";
+            deleteButton.className = "btn btn-danger btn-sm preview-imgage-delete-button";
 
             deleteButton.onclick = function () {
               const index = Array.from(imagePreviews.children).indexOf(imageContainer);
@@ -189,7 +171,7 @@
             };
 
             const imageContainer = document.createElement("div");
-            imageContainer.className = "image-container";
+            imageContainer.className = "preview-image-container";
             imageContainer.appendChild(img);
             imageContainer.appendChild(deleteButton);
             imagePreviews.appendChild(imageContainer);
