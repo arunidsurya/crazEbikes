@@ -109,7 +109,7 @@ dist
 
 # Serverless directories
 .serverless/
-
+git 
 # FuseBox cache
 .fusebox/
 

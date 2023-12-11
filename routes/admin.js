@@ -25,7 +25,7 @@ router.get("/add-category-page", handleAddCategoryPageView);
 router.post("/addCategories",categoryValidator, handleCategoryAdd);
 router.get("/edit-categoriy-page/:id", handleEditCategoryPageView);
 router.post("/editCategories/:id",categoryValidator, handleCategoryEdit);
-router.get("/deleteCategories/:id", handleCategoryDelete);
+router.delete("/deleteCategories/:id", handleCategoryDelete);
 
 
 router.get("/user", handleUserView);
