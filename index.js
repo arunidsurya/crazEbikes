@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 const path = require("path");
 const nocache = require("nocache");
 const multer = require('multer');
+const cron = require('node-cron');
+const deleteExpiredOrders = require('./utils/deleteExpiredOrders');
 const cookieParser = require("cookie-parser");
 const { check, validationResult } = require('express-validator');
 const MonthlyTotals = require('./models/monthlyTotal');
@@ -91,8 +93,7 @@ app.use((error, req, res, next)=> {
 })
 
 
-
-
+cron.schedule("* * 30 * *",deleteExpiredOrders);
 
 
 

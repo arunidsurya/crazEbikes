@@ -897,7 +897,6 @@ async function handleDashBoardView(req, res) {
 
     const outOfStockProducts = await Product.find({ stock: { $lt: 100 } }) || null;
 
-    console.log(outOfStockProducts);
 
     // Send the monthly totals back to the UI
     res.render('admin/dashBorad', { totalsData, totalOrderPrice, products, timeRange, averageOrderValue, totalOrders, outOfStockProducts, formatPrice, imgUri });

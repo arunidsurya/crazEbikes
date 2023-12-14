@@ -14,8 +14,8 @@
                     <h4>₹<%= formatPrice(wallet.amount) %>
                     </h4>
                 </div>
-                <div>
-                    <input type="button" class="btn btn-success" id="" value="Wallet Pay" onclick="payToWalletClick()">
+                <div class="wallet-pay-btn">
+                    <input type="button" class="btn btn-success mb-4" id="" value="Wallet Pay" onclick="payToWalletClick()">
                 </div>
                 <div class="wallet-pay-form" id="wallet-pay-form">
                     <label for="amount">Enter amount:</label>
@@ -24,7 +24,7 @@
                 </div>
                 <% if (wallet.transactions.length> 0) { %>
 
-                    <h4>Transactions</h4>
+                    <h4 class="mt-4">Transactions</h4>
                     <table class="table table-borderd table-responsive" id="myTable">
                         <thead>
                             <tr class="table-success ">
@@ -72,23 +72,42 @@
         <%- include('../layout/footerUser') %>
 
 
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+
 
             <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
             <script>
-                // let table = new DataTable('#myTable');
                 $(document).ready(function () {
                     $('#myTable').DataTable({
-                        "order": [[1, "desc"]] // This will sort the second column (Date) in descending order by default
+                        "columnDefs": [
+                            {
+                                "targets": 1, // index of the 'Date' column
+                                "render": function (data, type, row) {
+                                    // Format the date using moment.js
+                                    return moment(data).format('DD-MMM-YYYY');
+                                }
+                            }
+                        ],
+                        "order": [[1, "asc"]]
                     });
                 });
             </script>
+                                                
+
             <script>
                 function payToWalletClick() {
-                    console.log('pay to wallet');
+                    const walletPayInput=document.getElementById('wallet-pay-form');
+                    const walletPayBtn = document.getElementById('wallet-pay-btn');
+                    walletPayInput.style.display='block';
+                    walletPayBtn.style.display='none';
                 }
 
                 function payToWallet(event) {
                     event.preventDefault();
+                    const walletPayInput=document.getElementById('wallet-pay-form');
+                    const walletPayBtn = document.getElementById('wallet-pay-btn');
                     const amount = document.getElementById('walletPayAmount').value;
 
                     fetch('/user/wallet-pay', {
@@ -98,7 +117,14 @@
                         },
                         body: JSON.stringify({ amount }),
                     })
-                        .then(response => response.json()) // Parse the JSON response
+                        .then(response => 
+
+
+                                response.json()
+                            
+                            
+
+                        ) // Parse the JSON response
                         .then(data => {
                             const order = data.order;
                             const KEY_ID = data.KEY_ID;

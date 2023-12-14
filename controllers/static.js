@@ -28,7 +28,7 @@ function formatPrice(price) {
 
 async function handleHomePageView(req, res) {
 
-  const sort = req.query.sort || -1;
+  const sort = parseInt(req.query.sort) === 1 ? 1 : -1;
   try {
     const products = await Product.find({ isDeleted: false }).sort({ price: sort });
 

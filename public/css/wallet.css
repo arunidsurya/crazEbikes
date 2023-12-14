@@ -36,3 +36,7 @@
 .table-body{
     text-align: left;
 }
+
+.wallet-pay-form{
+    display: none;
+}

@@ -28,6 +28,11 @@
         </div>
       </div>
 
+      <div class="sales-heading">
+        <h4 class="graph-heading">
+          <%= timeRange %> sales
+        </h4>
+
 
       <input type="text" name="timeRange" id="timeRange" value="<%= timeRange %>" hidden>
 
@@ -39,6 +44,7 @@
         <a class="btn btn-primary" href="/admin/dash-board?timeRange=yearly"
           class="<%= timeRange === 'yearly' ? 'selected' : '' %>">Yearly</a>
       </div>
+    </div>
 
       <div id="chartContainer">
         <canvas id="monthlyTotalChart" width="200" height="70"></canvas>

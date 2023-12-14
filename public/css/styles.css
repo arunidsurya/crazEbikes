@@ -484,6 +484,20 @@ label[for="sortPrice"] {
 .no-margin {
   margin: 0;
 }
+
+.home-categories {
+  display: flex;
+  justify-content: space-between;
+}
+
+.top-selectors {
+  flex: 1; /* Each item takes equal space */
+
+  /* Add additional styling as needed */
+  text-align: center;
+  padding: 10px;
+  box-sizing: border-box;
+}
 /*/////////////////////////////////////////////*/
 
 /* responsive content */
@@ -556,6 +570,16 @@ label[for="sortPrice"] {
   .categories a {
     display: block;
     padding: 10px; /* Add padding to each category item */
+  }
+
+  .home-categories {
+    flex-direction: column; /* Stack items vertically on smaller screens */
+  }
+
+  .top-selectors {
+    flex: none; /* Reset flex property for individual items */
+    width: 100%; /* Take up full width */
+    margin-bottom: 5px; /* Add some space between items */
   }
   
 }
