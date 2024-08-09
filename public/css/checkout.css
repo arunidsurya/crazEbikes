@@ -1,94 +1,93 @@
-
-
-
 /* Header Styles */
 header {
-  background-color: #007BFF;
+  background-color: #007bff;
   color: white;
   padding: 10px;
 }
-  
-  /* Breadcrumb Styles */
-  nav {
-    margin-top: 10px;
-  }
-  
-  nav a {
-    color: #fff;
-    text-decoration: none;
-  }
-  
-  /* Card Styles */
-  .card {
-    border: 1px solid #ddd;
-    padding: 20px;
-  }
-  
-  /* Checkout Button Styles */
-  .btn-outline-primary {
-    background-color: #007BFF;
-    color: #fff;
-  }
-  
-  /* Summary Styles */
-  h6 {
-    font-size: 20px;
-  }
-  
-  /* Footer Styles */
-  footer {
-    background-color: #007BFF;
-    color: white;
-    padding: 20px 0;
-  }
-  
-  /* Footer Link Styles */
-  .text-white {
-    color: white !important;
-  }
-  
-  /* Payment Icons Styles */
-  .fa-cc-visa, .fa-cc-amex, .fa-cc-mastercard, .fa-cc-paypal {
-    font-size: 24px;
-    margin-right: 10px;
-  }
-  
-  /* Language Selector Styles */
-  .dropdown {
-    display: inline-block;
-  }
-  
-  .flag {
-    margin-right: 5px;
-  }
-  
-  /* Apply Button Styles */
-  .btn-light {
-    background-color: #fff;
-    color: #007BFF;
-  }
-  
-  #new-address{
-    display:none;
-  }
 
-  #Order-sumary{
-    display:none;
-  }
+/* Breadcrumb Styles */
+nav {
+  margin-top: 10px;
+}
 
-  #change-address{
-    display:none;
-  }
-  #payment-section{
-    font-size: 20px;
-    display: none;
-  }
+nav a {
+  color: #fff;
+  text-decoration: none;
+}
 
+/* Card Styles */
+.card {
+  border: 1px solid #ddd;
+  padding: 20px;
+}
 
-  /* Apply Button Styles */
+/* Checkout Button Styles */
+.btn-outline-primary {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Summary Styles */
+h6 {
+  font-size: 20px;
+}
+
+/* Footer Styles */
+footer {
+  background-color: #007bff;
+  color: white;
+  padding: 20px 0;
+}
+
+/* Footer Link Styles */
+.text-white {
+  color: white !important;
+}
+
+/* Payment Icons Styles */
+.fa-cc-visa,
+.fa-cc-amex,
+.fa-cc-mastercard,
+.fa-cc-paypal {
+  font-size: 24px;
+  margin-right: 10px;
+}
+
+/* Language Selector Styles */
+.dropdown {
+  display: inline-block;
+}
+
+.flag {
+  margin-right: 5px;
+}
+
+/* Apply Button Styles */
 .btn-light {
   background-color: #fff;
-  color: #007BFF;
+  color: #007bff;
+}
+
+#new-address {
+  display: none;
+}
+
+#Order-sumary {
+  display: none;
+}
+
+#change-address {
+  display: none;
+}
+#payment-section {
+  font-size: 20px;
+  display: none;
+}
+
+/* Apply Button Styles */
+.btn-light {
+  background-color: #fff;
+  color: #007bff;
 }
 
 /* Address Field Styles */
@@ -147,36 +146,36 @@ input[type="radio"][name="selectedAddress"] {
 
 .btn-light.border {
   background-color: #fff;
-  border: 1px solid #007BFF;
-  color: #007BFF;
+  border: 1px solid #007bff;
+  color: #007bff;
 }
 
-.address-container{
+.address-container {
   display: flex;
   justify-content: space-between;
   margin: 20px 20px;
 }
-#edit-button{
+#edit-button {
   margin-left: 10px;
-  display:none;
+  display: none;
 }
 .name-mobile {
   display: inline-block;
-  margin-right: 10px; 
+  margin-right: 10px;
 }
-.contactNumber{
+.contactNumber {
   display: inline-block;
-  margin-left: 50px;
+  margin-left: 25px;
 }
-.address-details{
+.address-details {
   margin-left: 25px;
 }
 
-#edit-address-div{
+#edit-address-div {
   display: none;
 }
 
-#buyNow-payment-section{
+#buyNow-payment-section {
   display: flex;
   flex-direction: column;
   font-size: 20px;

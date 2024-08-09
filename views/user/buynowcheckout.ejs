@@ -51,18 +51,18 @@
                               <strong>
                                 <%= address.name %>
                               </strong>
-                              <div class="contactNumber">
-                                <strong>Mob: <%= address.contactNumber %></strong>
-                              </div>
-
                             </div>
+
                             <div class="address-details">
                               <%= address.address %>, <%= address.city %>, <%= address.pincode %>
                             </div>
+                              <div class="contactNumber">
+                                Mob: <%= address.contactNumber %>
+                              </div>
                           </label>
-                          <a href="/user/edit-address?id=<%= address._id %>&userId=<%= userId %>"><input
+                          <!-- <a href="/user/edit-address?id=<%= address._id %>&userId=<%= userId %>"><input
                               class="btn btn-link" type="text" value="Edit" />
-                          </a>
+                          </a> -->
 
                         </div>
                         <% }) %>
